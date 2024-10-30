@@ -17,7 +17,7 @@
  */
 const themeConfig = {
   templateName: 'BRUH',
-  homePageUrl: '/home',
+  homePageUrl: '/login',
   settingsCookieName: 'vuexy-mui-next-demo-1',
   mode: 'light', // 'system', 'light', 'dark'
   skin: 'bordered', // 'default', 'bordered'

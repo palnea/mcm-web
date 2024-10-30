@@ -1,3 +1,4 @@
+"use client";
 // Third-party Imports
 import 'react-perfect-scrollbar/dist/css/styles.css'
 
@@ -6,19 +7,22 @@ import '@/app/globals.css'
 
 // Generated Icon CSS Imports
 import '@assets/iconify-icons/generated-icons.css'
+import {useEffect} from "react";
+import {useRouter} from "next/navigation";
 
-export const metadata = {
-  title: 'Vuexy - MUI Next.js Admin Dashboard Template',
-  description:
-    'Vuexy - MUI Next.js Admin Dashboard Template - is the most developer friendly & highly customizable Admin Dashboard Template based on MUI v5.'
-}
 
 const RootLayout = ({ children }) => {
   // Vars
   const direction = 'ltr'
 
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push('/login');
+  }, [router]);
+
   return (
-    <html id='__next' lang='en' dir={direction}>
+    <html id='__next' lang='tr' dir={direction}>
       <body className='flex is-full min-bs-full flex-auto flex-col'>{children}</body>
     </html>
   )

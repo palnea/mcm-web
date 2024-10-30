@@ -5,7 +5,7 @@ import { useTheme } from '@mui/material/styles'
 import PerfectScrollbar from 'react-perfect-scrollbar'
 
 // Component Imports
-import { Menu, MenuItem } from '@menu/vertical-menu'
+import {Menu, MenuItem, MenuSection} from '@menu/vertical-menu'
 
 // Hook Imports
 import useVerticalNav from '@menu/hooks/useVerticalNav'
@@ -56,15 +56,27 @@ const VerticalMenu = ({ scrollMenu }) => {
         renderExpandedMenuItemIcon={{ icon: <i className='tabler-circle text-xs' /> }}
         menuSectionStyles={menuSectionStyles(verticalNavOptions, theme)}
       >
-        <MenuItem href='/home' icon={<i className='tabler-smart-home' />}>
+        <MenuItem href='/dashboard' icon={<i className='tabler-layout-dashboard' />}>
           Pano
         </MenuItem>
+        <MenuSection label={"Yat"}/>
+
         {/*<MenuItem href='/about' icon={<i className='tabler-info-circle' />}>*/}
         {/*  About*/}
         {/*</MenuItem>*/}
-        {/*<MenuItem href='/about' icon={<i className='tabler-info-circle' />}>*/}
-        {/*  rbuh*/}
-        {/*</MenuItem>*/}
+        <MenuItem href='/yacht' icon={<i className='tabler-sailboat' />} button={"secondary"}>
+          Yat Listele
+        </MenuItem>
+        <MenuItem href='/spare-parts' icon={<i className='tabler-settings-plus' />} button={"secondary"}>
+          Yedek Parça
+        </MenuItem>
+        <MenuItem href='/yacht-accessories' icon={<i className='tabler-playlist-add' />} button={"secondary"}>
+          Yat Aksesuar
+        </MenuItem>
+        <MenuItem href='/team-statistics' icon={<i className='tabler-users-group' />} button={"secondary"}>
+          Ekip Istatistikleri
+        </MenuItem>
+
       </Menu>
       {/* <Menu
           popoutMenuOffset={{ mainAxis: 23 }}

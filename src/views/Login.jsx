@@ -31,6 +31,8 @@ import themeConfig from '@configs/themeConfig'
 // Hook Imports
 import { useImageVariant } from '@core/hooks/useImageVariant'
 import { useSettings } from '@core/hooks/useSettings'
+import axios from "axios";
+import secureLocalStorage from "react-secure-storage";
 
 // Styled Custom Components
 const LoginIllustration = styled('img')(({ theme }) => ({
@@ -55,6 +57,8 @@ const MaskImg = styled('img')({
   insetBlockEnd: 0,
   zIndex: -1
 })
+
+
 
 const LoginV2 = ({ mode }) => {
   // States
@@ -82,6 +86,26 @@ const LoginV2 = ({ mode }) => {
     borderedLightIllustration,
     borderedDarkIllustration
   )
+
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    let response;
+    try {
+      console.log(username, password)
+      response = await axios.post('http://somethingeelse:3000/api/login', { username, password });
+      console.log('Login response:', response);
+      const { accessToken } = response.data;
+      secureLocalStorage.setItem('accessToken', accessToken);
+      console.log('Access token saved successfully');
+      router.push('/dashboard');
+    } catch (error){
+      console.error('Error logging in:', error);
+    }
+    router.push('/dashboard'); //delete this after
+  };
 
   const handleClickShowPassword = () => setIsPasswordShown(show => !show)
 
@@ -116,19 +140,25 @@ const LoginV2 = ({ mode }) => {
           <form
             noValidate
             autoComplete='off'
-            onSubmit={e => {
-              e.preventDefault()
-              router.push('/')
-            }}
+            onSubmit={handleSubmit}
             className='flex flex-col gap-5'
           >
-            <CustomTextField autoFocus fullWidth label='Email or Username' placeholder='Enter your email or username' />
+            <CustomTextField
+              autoFocus
+              fullWidth
+              label='Email or Username'
+              placeholder='Enter your email or username'
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+            />
             <CustomTextField
               fullWidth
               label='Password'
               placeholder='············'
               id='outlined-adornment-password'
               type={isPasswordShown ? 'text' : 'password'}
+              value={password}
+              onChange={e => setPassword(e.target.value)}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position='end'>
