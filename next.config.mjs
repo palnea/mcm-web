@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
+import nextI18NextConfig from './next-i18next.config.js';
+
 const nextConfig = {
+  ...nextI18NextConfig,
   redirects: async () => {
     return [
       {
@@ -9,7 +12,16 @@ const nextConfig = {
         locale: false
       }
     ]
-  }
+  },
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+      };
+    }
+    return config;
+  },
 }
 
-export default nextConfig
+export default nextConfig;

@@ -1,0 +1,20 @@
+{
+  "login": "Giriş",
+  "welcomeTo": "",
+  "pleaseSign-inToYourAccount": "Lütfen Hesabınıza Giriş Yapınız",
+  "username": "Kullanıcı Adı",
+  "enterYourUsername": "Kullanıcı Adınızı Giriniz",
+  "password": "Parola",
+  "enterYourPassword": "Parolanızı Giriniz",
+  "forgotPassword": "Parolamı Unuttum",
+  "dashboard": "Pano",
+  "yahct": "Yat",
+  "yahcts": "Yatlar",
+  "brands": "Markalar",
+  "model": "Modeller",
+  "yahctAccessories": "Yat Aksesuarları",
+  "spareParts": "Yedek Parçalar",
+  "categories": "Kategoriler",
+  "company": "Firma",
+  "groupStatistics": "Grup İstatistikleri"
+}

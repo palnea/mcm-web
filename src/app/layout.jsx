@@ -9,6 +9,7 @@ import '@/app/globals.css'
 import '@assets/iconify-icons/generated-icons.css'
 import {useEffect} from "react";
 import {useRouter} from "next/navigation";
+import { appWithTranslation } from 'next-i18next';
 
 
 const RootLayout = ({ children }) => {
@@ -22,10 +23,10 @@ const RootLayout = ({ children }) => {
   }, [router]);
 
   return (
-    <html id='__next' lang='tr' dir={direction}>
+    <html id='__next' dir={direction}>
       <body className='flex is-full min-bs-full flex-auto flex-col'>{children}</body>
     </html>
   )
 }
 
-export default RootLayout
+export default appWithTranslation(RootLayout);

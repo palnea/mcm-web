@@ -1,10 +1,12 @@
 'use client'
 
 // React Imports
-import { useState } from 'react'
+import {useEffect, useState} from 'react'
 
 // Next Imports
 import { useRouter } from 'next/navigation'
+
+import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 
 // MUI Imports
 import useMediaQuery from '@mui/material/useMediaQuery'
@@ -12,10 +14,7 @@ import { styled, useTheme } from '@mui/material/styles'
 import Typography from '@mui/material/Typography'
 import IconButton from '@mui/material/IconButton'
 import InputAdornment from '@mui/material/InputAdornment'
-import Checkbox from '@mui/material/Checkbox'
 import Button from '@mui/material/Button'
-import FormControlLabel from '@mui/material/FormControlLabel'
-import Divider from '@mui/material/Divider'
 
 // Third-party Imports
 import classnames from 'classnames'
@@ -33,6 +32,8 @@ import { useImageVariant } from '@core/hooks/useImageVariant'
 import { useSettings } from '@core/hooks/useSettings'
 import axios from "axios";
 import secureLocalStorage from "react-secure-storage";
+import {useTranslation} from "react-i18next";
+import LanguageSelector from "@components/LanguageDropdown/LanguageSelector";
 
 // Styled Custom Components
 const LoginIllustration = styled('img')(({ theme }) => ({
@@ -58,11 +59,24 @@ const MaskImg = styled('img')({
   zIndex: -1
 })
 
+export async function getServerSideProps({ locale }) {
+  return {
+    props: {
+      ...(await serverSideTranslations(locale, ['common', 'footer'], null, ['en', 'tr'])),
 
+  },
+  };
+}
 
 const LoginV2 = ({ mode }) => {
   // States
   const [isPasswordShown, setIsPasswordShown] = useState(false)
+  const [isClient, setIsClient] = useState(false);
+
+  // Set up a client-only check to ensure text matches between server and client
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Vars
   const darkImg = '/images/pages/auth-mask-dark.png'
@@ -79,6 +93,7 @@ const LoginV2 = ({ mode }) => {
   const hidden = useMediaQuery(theme.breakpoints.down('md'))
   const authBackground = useImageVariant(mode, lightImg, darkImg)
 
+  const { t, i18n } = useTranslation('common');
   const characterIllustration = useImageVariant(
     mode,
     lightIllustration,
@@ -109,6 +124,12 @@ const LoginV2 = ({ mode }) => {
 
   const handleClickShowPassword = () => setIsPasswordShown(show => !show)
 
+  useEffect(() => {
+    // Change language on mount if needed (for example, from localStorage)
+    const savedLang = localStorage.getItem('language') || 'en';
+    // i18n.changeLanguage(savedLang).then(r => console.log('Language changed to:', r) );
+  }, [i18n]);
+
   return (
     <div className='flex bs-full justify-center'>
       <div
@@ -133,10 +154,16 @@ const LoginV2 = ({ mode }) => {
           <Logo />
         </Link>
         <div className='flex flex-col gap-6 is-full sm:is-auto md:is-full sm:max-is-[400px] md:max-is-[unset] mbs-11 sm:mbs-14 md:mbs-0'>
-          <div className='flex flex-col gap-1'>
-            <Typography variant='h4'>{`Welcome to ${themeConfig.templateName}! `}</Typography>
-            <Typography>Please sign-in to your account </Typography>
+          <div className='flex flex-row justify-content-between'>
+            <div className='flex flex-col gap-1 '>
+              <Typography variant='h4'>{t("welcomeTo") +`${themeConfig.templateName}`}</Typography>
+              <Typography>{t('pleaseSign-inToYourAccount')}</Typography>
+            </div>
+            <div  className='ml-auto'>
+              <LanguageSelector />
+            </div>
           </div>
+
           <form
             noValidate
             autoComplete='off'
@@ -146,14 +173,14 @@ const LoginV2 = ({ mode }) => {
             <CustomTextField
               autoFocus
               fullWidth
-              label='Email or Username'
-              placeholder='Enter your email or username'
+              label={t('username')}
+              placeholder={t('enterYourUsername')}
               value={username}
               onChange={e => setUsername(e.target.value)}
             />
             <CustomTextField
               fullWidth
-              label='Password'
+              label={t('password')}
               placeholder='············'
               id='outlined-adornment-password'
               type={isPasswordShown ? 'text' : 'password'}
@@ -169,35 +196,14 @@ const LoginV2 = ({ mode }) => {
                 )
               }}
             />
-            {/*<div className='flex justify-between items-center gap-x-3 gap-y-1 flex-wrap'>*/}
-            {/*  <FormControlLabel control={<Checkbox />} label='Remember me' />*/}
-            {/*  <Typography className='text-end' color='primary' component={Link}>*/}
-            {/*    Forgot password?*/}
-            {/*  </Typography>*/}
-            {/*</div>*/}
             <Button fullWidth variant='contained' type='submit'>
-              Login
+              {t('login')}
             </Button>
-            <div className='flex justify-center items-center flex-wrap gap-2'>
-              <Typography>New on our platform?</Typography>
-              <Typography component={Link} color='primary'>
-                Create an account
-              </Typography>
-            </div>
-            {/*<Divider className='gap-2 text-textPrimary'>or</Divider>*/}
-            {/*<div className='flex justify-center items-center gap-1.5'>*/}
-            {/*  <IconButton className='text-facebook' size='small'>*/}
-            {/*    <i className='tabler-brand-facebook-filled' />*/}
-            {/*  </IconButton>*/}
-            {/*  <IconButton className='text-twitter' size='small'>*/}
-            {/*    <i className='tabler-brand-twitter-filled' />*/}
-            {/*  </IconButton>*/}
-            {/*  <IconButton className='text-textPrimary' size='small'>*/}
-            {/*    <i className='tabler-brand-github-filled' />*/}
-            {/*  </IconButton>*/}
-            {/*  <IconButton className='text-error' size='small'>*/}
-            {/*    <i className='tabler-brand-google-filled' />*/}
-            {/*  </IconButton>*/}
+            {/*<div className='flex justify-center items-center flex-wrap gap-2'>*/}
+            {/*  <Typography>{t('New on our platform?')}</Typography>*/}
+            {/*  <Typography component={Link} color='primary'>*/}
+            {/*    {t('Create an account')}*/}
+            {/*  </Typography>*/}
             {/*</div>*/}
           </form>
         </div>

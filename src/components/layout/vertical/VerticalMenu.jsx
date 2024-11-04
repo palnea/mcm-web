@@ -5,7 +5,7 @@ import { useTheme } from '@mui/material/styles'
 import PerfectScrollbar from 'react-perfect-scrollbar'
 
 // Component Imports
-import {Menu, MenuItem, MenuSection} from '@menu/vertical-menu'
+import {Menu, MenuItem, MenuSection, SubMenu} from '@menu/vertical-menu'
 
 // Hook Imports
 import useVerticalNav from '@menu/hooks/useVerticalNav'
@@ -16,6 +16,7 @@ import StyledVerticalNavExpandIcon from '@menu/styles/vertical/StyledVerticalNav
 // Style Imports
 import menuItemStyles from '@core/styles/vertical/menuItemStyles'
 import menuSectionStyles from '@core/styles/vertical/menuSectionStyles'
+import {useTranslation} from "next-i18next";
 
 const RenderExpandIcon = ({ open, transitionDuration }) => (
   <StyledVerticalNavExpandIcon open={open} transitionDuration={transitionDuration}>
@@ -26,6 +27,9 @@ const RenderExpandIcon = ({ open, transitionDuration }) => (
 const VerticalMenu = ({ scrollMenu }) => {
   // Hooks
   const theme = useTheme()
+  const { t } = useTranslation('common');
+
+
   const verticalNavOptions = useVerticalNav()
   const { isBreakpointReached } = useVerticalNav()
 
@@ -57,24 +61,39 @@ const VerticalMenu = ({ scrollMenu }) => {
         menuSectionStyles={menuSectionStyles(verticalNavOptions, theme)}
       >
         <MenuItem href='/dashboard' icon={<i className='tabler-layout-dashboard' />}>
-          Pano
+          {t("dashboard")}
         </MenuItem>
-        <MenuSection label={"Yat"}/>
+        <MenuSection label={t("yahct")}/>
+        <SubMenu label={t("yahcts")} icon={<i className='tabler-sailboat' />}>
+          <MenuItem href={`/yacht/brand`} button={"secondary"}>
+            {t("brands")}
+          </MenuItem>
+          <MenuItem href='/model'  button={"secondary"}>
+            {t("model")}
+          </MenuItem>
+          <MenuItem href='/yacht'  button={"secondary"}>
+            {t("yahcts")}
+          </MenuItem>
+        </SubMenu>
 
-        {/*<MenuItem href='/about' icon={<i className='tabler-info-circle' />}>*/}
-        {/*  About*/}
-        {/*</MenuItem>*/}
-        <MenuItem href='/yacht' icon={<i className='tabler-sailboat' />} button={"secondary"}>
-          Yat Listele
-        </MenuItem>
-        <MenuItem href='/spare-parts' icon={<i className='tabler-settings-plus' />} button={"secondary"}>
-          Yedek Parça
-        </MenuItem>
         <MenuItem href='/yacht-accessories' icon={<i className='tabler-playlist-add' />} button={"secondary"}>
-          Yat Aksesuar
+          {t("yahctAccessories")}
         </MenuItem>
+        <MenuSection label={t("spareParts")}/>
+
+        <SubMenu label={t("spareParts")} icon={<i className='tabler-settings-plus' />}>
+          <MenuItem href={`/categories`} button={"secondary"}>
+            {t("categories")}
+          </MenuItem>
+          <MenuItem href='/yacht/model'  button={"secondary"}>
+            {t("spareParts")}
+          </MenuItem>
+
+        </SubMenu>
+        <MenuSection label={t("company")}/>
+
         <MenuItem href='/team-statistics' icon={<i className='tabler-users-group' />} button={"secondary"}>
-          Ekip Istatistikleri
+          {t("groupStatistics")}
         </MenuItem>
 
       </Menu>

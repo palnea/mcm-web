@@ -10,6 +10,7 @@ import UserDropdown from '@components/layout/shared/UserDropdown'
 
 // Util Imports
 import { verticalLayoutClasses } from '@layouts/utils/layoutClasses'
+import LanguageSelector from "@components/LanguageDropdown/LanguageSelector";
 
 const NavbarContent = () => {
   return (
@@ -19,6 +20,7 @@ const NavbarContent = () => {
         <ModeDropdown />
       </div>
       <div className='flex items-center'>
+        <LanguageSelector />
         <UserDropdown />
       </div>
     </div>

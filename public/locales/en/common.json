@@ -1,0 +1,22 @@
+{
+  "login": "Login",
+  "welcomeTo": "Welcome To ",
+  "pleaseSign-inToYourAccount": "Please Sign-in To Your Account",
+  "username": "Username",
+  "enterYourUsername": "Enter Your Username",
+  "password": "Password",
+  "enterYourPassword": "Enter Your Password",
+  "forgotPassword": "Forgot Password",
+  "dashboard": "Dashboard",
+  "yahct": "Yahct",
+  "yahcts": "Yahcts",
+  "brands": "Brands",
+  "model": "Models",
+  "yahctAccessories": "Yahct Accessories",
+  "spareParts": "Spare Parts",
+  "categories": "Categories",
+  "company": "Company",
+  "groupStatistics": "Group Statistics"
+
+
+}
