@@ -16,5 +16,18 @@
   "spareParts": "Yedek Parçalar",
   "categories": "Kategoriler",
   "company": "Firma",
-  "groupStatistics": "Grup İstatistikleri"
+  "groupStatistics": "Grup İstatistikleri",
+  "brandOps": "Marka İşlemleri",
+  "id": "ID",
+  "name": "Ad",
+  "createdDate": "Oluşturulma Tarihi",
+  "updatedDate": "Güncelleme Tarihi",
+  "actions": "İşlemler",
+  "cancel": "İptal",
+  "create": "Oluştur",
+  "createNewBrand": "Yeni Marka Oluştur",
+  "delete": "Sil",
+  "deleteBrand": "Markayı Sil",
+  "deleteBrandMessage": " markasını silmek istediğinizden emin misiniz?"
+
 }

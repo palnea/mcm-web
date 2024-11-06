@@ -8,6 +8,7 @@ import Paper from "@mui/material/Paper";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
 import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
+import secureLocalStorage from "react-secure-storage";
 
 const LanguageSelector = () => {
   const [open, setOpen] = useState(false);
@@ -41,6 +42,7 @@ const LanguageSelector = () => {
     console.log('Current language before change:', i18n.language);
     console.log('Available languages:', i18n.languages);
     i18n.changeLanguage(lng);
+    secureLocalStorage.setItem("lang",lng);
     console.log('Current language after change:', i18n.language);
     handleClose();
   };

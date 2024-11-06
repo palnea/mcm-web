@@ -16,7 +16,19 @@
   "spareParts": "Spare Parts",
   "categories": "Categories",
   "company": "Company",
-  "groupStatistics": "Group Statistics"
+  "groupStatistics": "Group Statistics",
+  "brandOps": "Brand Operations",
+  "id": "ID",
+  "name": "Name",
+  "createdDate": "Created Date",
+  "updatedDate": "Updated Date",
+  "actions": "Actions",
+  "cancel": "Cancel",
+  "create": "Create",
+  "createNewBrand": "Create New Brand",
+  "delete": "Delete",
+  "deleteBrand": "Delete Brand",
+  "deleteBrandMessage": "Are you sure you want to delete brand "
 
 
 }

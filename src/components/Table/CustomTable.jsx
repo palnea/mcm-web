@@ -11,11 +11,12 @@ import {
   TablePagination,
   Paper,
 } from "@mui/material";
+import {useTranslation} from "react-i18next";
 
 const CustomTable = ({ columns, rows }) => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-
+  const { t, i18n } = useTranslation('common');
   // Handle page change
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -40,20 +41,20 @@ const CustomTable = ({ columns, rows }) => {
           <TableHead>
             <TableRow>
               {columns.map((column) => (
-                <TableCell key={column.field}>{column.label}</TableCell>
+                <TableCell key={column.id} align={"center"}>{t(column.label)}</TableCell>
               ))}
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedRows.map((row, index) => (
-              <TableRow key={index}>
-                {columns.map((column) => (
-                  <TableCell key={column.field}>
-                    {row[column.field]}
-                  </TableCell>
-                ))}
-              </TableRow>
-            ))}
+            {rows.map((row) => (
+                <TableRow key={row.id}>
+                  {columns.map((column) => (
+                    <TableCell key={column.id} align={"center"}>
+                      {column.render ? column.render(row) : row[column.id]}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
