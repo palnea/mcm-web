@@ -108,18 +108,17 @@ const LoginV2 = ({ mode }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     let response;
+    const params = {
+      "username": username,
+      "password": password
+    }
     try {
-      console.log(username, password)
-      response = await axios.post('http://somethingeelse:3000/api/login', { username, password });
-      console.log('Login response:', response);
-      const { accessToken } = response.data;
-      secureLocalStorage.setItem('accessToken', accessToken);
-      console.log('Access token saved successfully');
+      response = await axios.post('http://localhost:7153/api/Users/Login', params, {});
+      secureLocalStorage.setItem('accessToken', response.data.data.accessToken);
       router.push('/dashboard');
     } catch (error){
       console.error('Error logging in:', error);
     }
-    router.push('/dashboard'); //delete this after
   };
 
   const handleClickShowPassword = () => setIsPasswordShown(show => !show)
