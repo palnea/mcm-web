@@ -28,6 +28,12 @@
   "createNewBrand": "Yeni Marka Oluştur",
   "delete": "Sil",
   "deleteBrand": "Markayı Sil",
-  "deleteBrandMessage": " markasını silmek istediğinizden emin misiniz?"
+  "deleteBrandMessage": " markasını silmek istediğinizden emin misiniz?",
+  "modelOps": "Model İşlemleri",
+  "createNewModel": "Yeni Model Oluştur",
+  "deleteModel": "Modeli Sil",
+  "deleteModelMessage": " modelini silmek istediğinizden emin misiniz?",
+  "brandID": "Marka ID"
+
 
 }

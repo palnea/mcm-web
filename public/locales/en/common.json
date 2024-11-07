@@ -28,7 +28,10 @@
   "createNewBrand": "Create New Brand",
   "delete": "Delete",
   "deleteBrand": "Delete Brand",
-  "deleteBrandMessage": "Are you sure you want to delete brand "
-
-
+  "deleteBrandMessage": "Are you sure you want to delete brand ",
+  "modelOps": "Model Operations",
+  "createNewModel": "Create New Model",
+  "deleteModel": "Delete Model",
+  "deleteModelMessage": "Are you sure you want to delete model ",
+  "brandID": "Brand ID"
 }

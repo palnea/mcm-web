@@ -19,9 +19,11 @@ import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
 import MenuItem from '@mui/material/MenuItem'
 import Button from '@mui/material/Button'
+import secureLocalStorage from "react-secure-storage";
 
 // Hook Imports
 import { useSettings } from '@core/hooks/useSettings'
+
 
 // Styled component for badge content
 const BadgeContentSpan = styled('span')({
@@ -62,6 +64,7 @@ const UserDropdown = () => {
 
   const handleUserLogout = async () => {
     // Redirect to login page
+    secureLocalStorage.removeItem("accessToken");
     router.push('/login')
   }
 

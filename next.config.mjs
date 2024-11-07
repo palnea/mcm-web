@@ -25,3 +25,14 @@ const nextConfig = {
 }
 
 export default nextConfig;
+
+// export default {
+//   async rewrites() {
+//     return [
+//       {
+//         source: '/api/:path*',
+//         destination: 'http://localhost:7153/:path*'
+//       }
+//     ]
+//   }
+// }

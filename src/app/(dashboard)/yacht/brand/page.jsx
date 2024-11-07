@@ -21,41 +21,45 @@ export default function Page() {
 
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
+  const [editID, setEditID] = useState('');
+  const [removeID, setRemoveID] = useState('');
+  const [rows, setRows] = useState([]);
+
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [nameDel, setNameDel] = useState('');
   const [isEdit, setIsEdit] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const { t, i18n } = useTranslation('common');
 
+
+  const fetchData = async (id, name) => {
+    try {
+      const response = await axios.get('http://localhost:7153/api/YachtBrands',
+        {
+          headers: {
+            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+          },
+        });
+      setRows(response.data.data);
+
+
+    } catch (err) {
+      // setErrorClosedTicket(false);
+    }
+  };
+
+
    useEffect(() => {
-     const fetchDataClosed = async () => {
-       try {
-         const response = await axios.get('http://localhost:7153/api/YachtBrands',
-           {
-             headers: {
-               Authorization: 'Bearer eyJhbGciOiJodHRwOi8vd3d3LnczLm9yZy8yMDAxLzA0L3htbGRzaWctbW9yZSNobWFjLXNoYTI1NiIsInR5cCI6IkpXVCJ9.eyJjb21wYW55IjoiZGVuZW1lIiwic3ViIjoiNCIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlJvb3QiLCJuYW1lIjoiQWRtaW4gYWFhYSIsImh0dHA6Ly9zY2hlbWFzLnhtbHNvYXAub3JnL3dzLzIwMDUvMDUvaWRlbnRpdHkvY2xhaW1zL3VyaSI6InByb2ZpbGUuanBnIiwibmJmIjoxNzMwNjY1NTk1LCJleHAiOjE3MzEyNzAzOTUsImlzcyI6Imh0dHBzOi8vbG9jYWxob3N0OjcxNTMiLCJhdWQiOiJodHRwczovL2xvY2FsaG9zdDo3MTUzIn0.ef3ilKQYbtDABfghoTE2bkPv8xPI-RsFdV_Ivmg1jNc',
-             },
-             withCredentials: false,
-              // httpsAgent: new https.Agent({ rejectUnauthorized: false }) // Disable SSL verification
-
-           });
-         console.log("response")
-         console.log(response)
-         // setClosedTicketData(response.data.stats);
-         // setClosedTicketData("40"); // delete this after
-
-       } catch (err) {
-         // setErrorClosedTicket(false);
-       }
-     };
-
-     fetchDataClosed();
+     fetchData();
      // console.log(data)
    }, []);
 
-  // useEffect(() => {
-  //   console.log(i18n);
-  // }, []);
+
+  useEffect(() => {
+    if (isEdit) {
+      setInputValue(name);
+    }
+  }, [isEdit, name]);
 
   const columns = [
     { id: "id", label: "id" },
@@ -104,6 +108,7 @@ export default function Page() {
   const handleEdit = (id, name) => {
     setIsEdit(true);
     setName(name);
+    setEditID(id)
     handleOpen();
     //edit logic here
     console.log('Edit ID:', id);
@@ -113,6 +118,7 @@ export default function Page() {
   const handleDelete = (id, name) => {
      handleOpenDeleteModal(true);
     setNameDel(name);
+    setRemoveID(id);
     //delete logic here
     console.log('Delete ID:', id);
   };
@@ -123,44 +129,44 @@ export default function Page() {
   //   email: `email${index + 1}@example.com`,
   // }));
 
-  const rows =  [
-    {
-      "id": 1,
-      "name": "Aquila",
-      "createdDate": "2024-10-22T17:03:27.497487",
-      "updatedDate": "2024-10-22T17:08:04.755234"
-    },
-    {
-      "id": 2,
-      "name": "Azimut",
-      "createdDate": "2024-10-22T17:03:59.189454",
-      "updatedDate": "2024-10-22T17:03:59.189456"
-    },
-    {
-      "id": 4,
-      "name": "Ferretti",
-      "createdDate": "2024-10-22T17:04:22.121183",
-      "updatedDate": "2024-10-22T17:04:22.121184"
-    },
-    {
-      "id": 6,
-      "name": "Princess",
-      "createdDate": "2024-10-22T17:07:41.375176",
-      "updatedDate": "2024-10-22T17:07:41.375178"
-    },
-    {
-      "id": 3,
-      "name": "Sunseeker",
-      "createdDate": "2024-10-22T17:04:11.172213",
-      "updatedDate": "2024-10-22T17:04:11.172214"
-    },
-    {
-      "id": 7,
-      "name": "testBrand",
-      "createdDate": "2024-11-03T23:27:53.910182",
-      "updatedDate": "2024-11-03T23:27:53.910184"
-    }
-  ]
+  // const rows =  [
+  //   {
+  //     "id": 1,
+  //     "name": "Aquila",
+  //     "createdDate": "2024-10-22T17:03:27.497487",
+  //     "updatedDate": "2024-10-22T17:08:04.755234"
+  //   },
+  //   {
+  //     "id": 2,
+  //     "name": "Azimut",
+  //     "createdDate": "2024-10-22T17:03:59.189454",
+  //     "updatedDate": "2024-10-22T17:03:59.189456"
+  //   },
+  //   {
+  //     "id": 4,
+  //     "name": "Ferretti",
+  //     "createdDate": "2024-10-22T17:04:22.121183",
+  //     "updatedDate": "2024-10-22T17:04:22.121184"
+  //   },
+  //   {
+  //     "id": 6,
+  //     "name": "Princess",
+  //     "createdDate": "2024-10-22T17:07:41.375176",
+  //     "updatedDate": "2024-10-22T17:07:41.375178"
+  //   },
+  //   {
+  //     "id": 3,
+  //     "name": "Sunseeker",
+  //     "createdDate": "2024-10-22T17:04:11.172213",
+  //     "updatedDate": "2024-10-22T17:04:11.172214"
+  //   },
+  //   {
+  //     "id": 7,
+  //     "name": "testBrand",
+  //     "createdDate": "2024-11-03T23:27:53.910182",
+  //     "updatedDate": "2024-11-03T23:27:53.910184"
+  //   }
+  // ]
 
   const handleOpen = () => {
     setOpen(true);
@@ -174,11 +180,54 @@ export default function Page() {
     setOpen(false);
     setIsEdit(false);
     setInputValue(''); // Reset the input when closing
+    setEditID("");
+    setRemoveID("");
   };
 
   const handleSave = () => {
-    console.log('Created item:', inputValue);
-    // Add logic here to save the new item (e.g., send to backend)
+    if (isEdit) {
+      const params = {
+        "id": editID,
+        "name": inputValue
+      }
+      const editBrand = async () => {
+        try {
+          const response = await axios.put('http://localhost:7153/api/YachtBrands/Update', params,
+            {
+              headers: {
+                Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+              },
+            });
+
+        } catch (err) {
+          // setErrorClosedTicket(false);
+        }
+      };
+
+      editBrand();
+    }
+    else {
+      const params = {
+        "name": inputValue
+      }
+      const createBrand = async () => {
+        try {
+          const response = await axios.post('http://localhost:7153/api/YachtBrands', params,
+            {
+              headers: {
+                Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+              },
+            });
+
+        } catch (err) {
+          // setErrorClosedTicket(false);
+        }
+      };
+
+      createBrand();
+    }
+    setTimeout(() => { fetchData(); }, 2000)
+
     handleClose();
   };
 
@@ -188,7 +237,22 @@ export default function Page() {
   };
 
   const handleDelSave = () => {
-    console.log('Deleted item:', inputValue);
+    const deleteBrand = async () => {
+      try {
+        const response = await axios.get('http://localhost:7153/api/YachtBrands/Remove/' + removeID,
+          {
+            headers: {
+              Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+            },
+          });
+
+      } catch (err) {
+        // setErrorClosedTicket(false);
+      }
+    };
+
+    deleteBrand();
+    setTimeout(() => { fetchData(); }, 2000)
     // Add logic here to save the new item (e.g., send to backend)
     handleDelClose();
   };
@@ -205,7 +269,7 @@ export default function Page() {
             type="text"
             fullWidth
             variant="outlined"
-            value={isEdit ? name : inputValue}
+            value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
           />
         </DialogContent>

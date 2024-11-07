@@ -85,7 +85,7 @@ const VerticalMenu = ({ scrollMenu }) => {
           <MenuItem href={`/categories`} button={"secondary"}>
             {t("categories")}
           </MenuItem>
-          <MenuItem href='/yacht/model'  button={"secondary"}>
+          <MenuItem href='/yacht/someting'  button={"secondary"}>
             {t("spareParts")}
           </MenuItem>
 
