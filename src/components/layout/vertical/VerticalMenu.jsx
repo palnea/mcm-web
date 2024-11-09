@@ -90,8 +90,22 @@ const VerticalMenu = ({ scrollMenu }) => {
           </MenuItem>
 
         </SubMenu>
-        <MenuSection label={t("company")}/>
+        <MenuSection label={t("users")}/>
 
+        <SubMenu label={t("users")} icon={<i className='tabler-users-group' />}>
+          <MenuItem href={`/users/user`} button={"secondary"}>
+            {t("users")}
+          </MenuItem>
+          <MenuItem href='/users/user-group'  button={"secondary"}>
+            {t("userGroups")}
+          </MenuItem>
+
+        </SubMenu>
+
+        <MenuSection label={t("company")}/>
+        <MenuItem href='/company/company' icon={<i className='tabler-building' />} button={"secondary"}>
+          {t("company")}
+        </MenuItem>
         <MenuItem href='/team-statistics' icon={<i className='tabler-users-group' />} button={"secondary"}>
           {t("groupStatistics")}
         </MenuItem>

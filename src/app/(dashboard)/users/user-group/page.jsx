@@ -6,35 +6,81 @@ import CustomTable from "../../../../components/Table/CustomTable";
 import Card from "@mui/material/Card";
 import React, {useEffect, useState} from "react";
 import axios from "axios";
-import useApi from "@/api_helper/useApi";
 import * as https from "https";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
-import {Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  InputLabel,
+  Select,
+  Tab,
+  Tabs
+} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import {useTranslation} from "react-i18next";
 import secureLocalStorage from "react-secure-storage";
 import Box from "@mui/material/Box";
-
+import MenuItem from "@mui/material/MenuItem";
 
 export default function Page() {
 
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState('');
-  const [editID, setEditID] = useState('');
   const [removeID, setRemoveID] = useState('');
   const [rows, setRows] = useState([]);
+  const [inputValue, setInputValue] = useState('');
+
+  const [params, setParams] = useState({
+    "name": "",
+    "isOpenTicket": false,
+    "isCloseTicket": false,
+    "isAssignOwn": false,
+    "isAssignAnyone": false,
+    "isAddProcess": false,
+    "isTransferAssign": false,
+    "isManageInventory": false,
+    "isManagePart": false,
+    "isManageUser": false,
+    "isManageGroup": false,
+    "isManageFault": false,
+    "isAcceptProcess": false
+  });
+
+  const clearParams = () => {
+    let clearValues = {
+      "name": "",
+      "isOpenTicket": false,
+      "isCloseTicket": false,
+      "isAssignOwn": false,
+      "isAssignAnyone": false,
+      "isAddProcess": false,
+      "isTransferAssign": false,
+      "isManageInventory": false,
+      "isManagePart": false,
+      "isManageUser": false,
+      "isManageGroup": false,
+      "isManageFault": false,
+      "isAcceptProcess": false
+    }
+    setParams(param => ({
+      ...param,
+      ...clearValues
+    }))
+  }
 
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [id, setId] = useState('');
+
   const [nameDel, setNameDel] = useState('');
   const [isEdit, setIsEdit] = useState(false);
-  const [inputValue, setInputValue] = useState('');
   const { t, i18n } = useTranslation('common');
-
 
   const fetchData = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/YachtBrands',
+      const response = await axios.get('http://localhost:7153/api/Groups',
         {
           headers: {
             Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -47,16 +93,10 @@ export default function Page() {
     }
   };
 
-   useEffect(() => {
-     fetchData();
-   }, []);
-
-
   useEffect(() => {
-    if (isEdit) {
-      setInputValue(name);
-    }
-  }, [isEdit, name]);
+    fetchData();
+
+  }, []);
 
   const columns = [
     { id: "id", label: "id" },
@@ -81,7 +121,7 @@ export default function Page() {
           <IconButton
             size="small"
             color={'primary'}
-            onClick={() => handleEdit(row.id,  row.name)}
+            onClick={() => handleEdit(row)}
           >
             <i className='tabler-pencil' />
           </IconButton>
@@ -97,16 +137,16 @@ export default function Page() {
     },
   ];
 
-  const handleEdit = (id, name) => {
+  const handleEdit = (row) => {
     setIsEdit(true);
-    setName(name);
-    setEditID(id)
+    setParams(row);
+    removeKeysWithFilter(["createdDate",  "updatedDate"]);  // Pass an array of keys to remove
     handleOpen();
   };
 
 
   const handleDelete = (id, name) => {
-     handleOpenDeleteModal(true);
+    handleOpenDeleteModal(true);
     setNameDel(name);
     setRemoveID(id);
   };
@@ -123,19 +163,24 @@ export default function Page() {
     setOpen(false);
     setIsEdit(false);
     setInputValue(''); // Reset the input when closing
-    setEditID("");
-    setRemoveID("");
+    clearParams()
+  };
+
+  const removeKeysWithFilter = (keysToRemove) => {
+    setParams(prevParams =>
+      Object.fromEntries(
+        Object.entries(prevParams).filter(
+          ([key]) => !keysToRemove.includes(key)
+        )
+      )
+    );
   };
 
   const handleSave = () => {
     if (isEdit) {
-      const params = {
-        "id": editID,
-        "name": inputValue
-      }
-      const editBrand = async () => {
+      const editGroup = async () => {
         try {
-          const response = await axios.put('http://localhost:7153/api/YachtBrands/Update', params,
+          const response = await axios.put('http://localhost:7153/api/Groups/Update', params,
             {
               headers: {
                 Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -147,15 +192,12 @@ export default function Page() {
         }
       };
 
-      editBrand();
+      editGroup();
     }
     else {
-      const params = {
-        "name": inputValue
-      }
-      const createBrand = async () => {
+      const createGroup = async () => {
         try {
-          const response = await axios.post('http://localhost:7153/api/YachtBrands', params,
+          const response = await axios.post('http://localhost:7153/api/Groups', params,
             {
               headers: {
                 Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -167,22 +209,22 @@ export default function Page() {
         }
       };
 
-      createBrand();
+      createGroup();
     }
     setTimeout(() => { fetchData(); }, 2000)
-
     handleClose();
   };
 
   const handleDelClose = () => {
     setOpenDeleteModal(false);
+    handleClose();
     setNameDel(''); // Reset the input when closing
   };
 
   const handleDelSave = () => {
-    const deleteBrand = async () => {
+    const deleteUser = async () => {
       try {
-        const response = await axios.get('http://localhost:7153/api/YachtBrands/Remove/' + removeID,
+        const response = await axios.get('http://localhost:7153/api/Groups/Remove/' + removeID,
           {
             headers: {
               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -194,27 +236,69 @@ export default function Page() {
       }
     };
 
-    deleteBrand();
+    deleteUser();
     setTimeout(() => { fetchData(); }, 2000)
-    // Add logic here to save the new item (e.g., send to backend)
     handleDelClose();
+  };
+
+  const handleInputChange = (key, value) => {
+    if (key === "expiryDate") {
+      // Store the date value as full timestamp format
+      const fullTimestamp = new Date(value).toISOString().slice(0, -1);  // Adjusted to get a full ISO timestamp
+      setParams(prevParams => ({ ...prevParams, [key]: fullTimestamp }));
+    } else {
+      setParams(prevParams => ({ ...prevParams, [key]: value }));
+
+    }
   };
 
   return (
     <>
       <Dialog open={open} onClose={handleClose}>
-        {isEdit ? <DialogTitle>{t("editBrand")}</DialogTitle> :  <DialogTitle>{t("createNewBrand")}</DialogTitle>}
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label={t("name")}
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-          />
+        {isEdit ? <DialogTitle>{t("editUserGroup")}</DialogTitle> :  <DialogTitle>{t("createNewUserGroup")}</DialogTitle>}
+        <DialogContent className={"pt-3"} sx={{ minWidth: "500px", maxWidth: "800px" }}>
+          <Grid container spacing={4} >
+            { Object.keys(params).map(key => (
+              key !== "name"  && key !== "id" ? (
+                  <Grid item xs={12} sm={6} key={key}>
+                    <FormControl fullWidth variant="outlined">
+                      <InputLabel>{t(key)}</InputLabel>
+                      <Select
+                        margin="dense"
+                        key={key}
+                        label={t(key)}
+                        fullWidth
+                        variant="outlined"
+                        value={params[key]}
+                        onChange={(e) => handleInputChange(key, e.target.value)}
+                        displayEmpty
+                      >
+                        {/*<MenuItem value="" disabled>{t("select"+key)}</MenuItem>*/}
+                        <MenuItem value="true">{t("True")}</MenuItem>
+                        <MenuItem value="false">{t("False")}</MenuItem>
+                      </Select>
+
+                    </FormControl>
+
+                  </Grid>
+
+                ) :  key !== "id" && (
+                  <Grid item xs={12} sm={6} key={key}>
+                    { key !== "id" &&
+                      <TextField
+                        key={key}
+                        fullWidth
+                        variant="outlined"
+                        label={t(key)}
+                        type={typeof params[key] === "string" ? "text" : "number"}
+                        value={params[key]}
+                        onChange={(e) => handleInputChange(key, e.target.value)}
+                      />
+                    }
+                  </Grid>
+                )
+            ))}
+          </Grid>
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="secondary">
@@ -226,11 +310,11 @@ export default function Page() {
         </DialogActions>
       </Dialog>
       <Dialog open={openDeleteModal} onClose={handleDelClose}>
-        <DialogTitle>{t("deleteBrand")}</DialogTitle>
+        <DialogTitle>{t("deleteUserGroup")}</DialogTitle>
         <DialogContent>
           {i18n.language==='en' ?
-            <Typography component='div'>{t('deleteBrandMessage') }<Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box>?</Typography>
-            : <Typography> <Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box> {t('deleteBrandMessage') }</Typography>}
+            <Typography component='div'>{t('deleteUserGroupMessage') }<Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box>?</Typography>
+            : <Typography> <Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box> {t('deleteUserGroupMessage') }</Typography>}
 
         </DialogContent>
         <DialogActions>
@@ -244,7 +328,7 @@ export default function Page() {
       </Dialog>
       <Grid container spacing={6}>
         <Grid item xs={12} sm={6} md={6} lg={6}>
-          <Typography variant='h4'>{t("brandOps")}</Typography>
+          <Typography variant='h4'>{t("userGroupOps")}</Typography>
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <Card>
@@ -257,6 +341,8 @@ export default function Page() {
           </Card>
         </Grid>
       </Grid>
+
     </>
+
   )
 }

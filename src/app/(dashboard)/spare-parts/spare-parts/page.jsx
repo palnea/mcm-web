@@ -10,7 +10,17 @@ import useApi from "@/api_helper/useApi";
 import * as https from "https";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
-import {Dialog, DialogActions, DialogContent, DialogTitle, Select, Tab, Tabs} from "@mui/material";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  InputLabel,
+  Select,
+  Tab,
+  Tabs
+} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import {useTranslation} from "react-i18next";
 import secureLocalStorage from "react-secure-storage";
@@ -61,7 +71,6 @@ export default function Page() {
   const [optionsCompanies, setOptionsCompanies] = useState([]); // Options for the Select component
   const [activeTab, setActiveTab] = useState(0);  // 0 for yacht fields tab, 1 for PartCodes tab
   const [PartCodes, setPartCodes] = useState( []);
-
 
   const fetchData = async (id, name) => {
     try {
@@ -166,15 +175,6 @@ export default function Page() {
 
   }, []);
 
-
-  // useEffect(() => {
-  //   // if (isEdit) {
-  //   //   setInputValue(name);
-  //   // }
-  //   console.log(PartCodes)
-  // }, [PartCodes]);
-
-
   const columns = [
     { id: "id", label: "id" },
     { id: "name", label: "name" },
@@ -198,27 +198,20 @@ export default function Page() {
           <IconButton
             size="small"
             color={'primary'}
-            // startIcon={<i className='tabler-pencil m-null' />}
             onClick={() => handleEdit(row)}
           >
             <i className='tabler-pencil' />
           </IconButton>
-
-
-
           <IconButton
             color={'error'}
             size="small"
-            // startIcon={<i className='tabler-trash' />}
             onClick={() => handleDelete(row.id, row.name, row.yachtBrandId)}
           >
             <i className='tabler-trash' />
           </IconButton>
-
           <IconButton
             size="small"
             color={'secondary'}
-            // startIcon={<i className='tabler-pencil m-null' />}
             onClick={() => handlePartCode(row.id)}
           >
             <i className='tabler-tool' />
@@ -230,13 +223,11 @@ export default function Page() {
 
   const handleEdit = (row) => {
     setIsEdit(true);
-    console.log(row);
     setParams(row);
     getPartCodeByID(row.id);
     removeKeysWithFilter([ "sparePartCodes", "createdDate",  "updatedDate"]);  // Pass an array of keys to remove
     handleOpen();
   };
-
 
   const handleDelete = (id, name) => {
     handleOpenDeleteModal(true);
@@ -280,8 +271,6 @@ export default function Page() {
 
   const handleSave = () => {
     if (isEdit) {
-      console.log("edit");
-      console.log(params);
       const editModel = async () => {
         try {
           const response = await axios.put('http://localhost:7153/api/SpareParts/Update', params,
@@ -340,9 +329,7 @@ export default function Page() {
     };
 
     createPartCode();
-
     setTimeout(() => { fetchData(); }, 2000)
-
     handlePartCodeClose();
   };
 
@@ -354,7 +341,6 @@ export default function Page() {
   const handlePartCodeClose = () => {
     setOpenPartCodeModal(false);
     setInputValue("");
-    // setNameDel(''); // Reset the input when closing
   };
 
   const handleDelSave = () => {
@@ -399,7 +385,6 @@ export default function Page() {
     updatedPartCodes[index].name = newName;  // Update the specific PartCode's name
     setPartCodes(updatedPartCodes);
 
-
   };
 
   const handleDeletePartCode = (partCode_id) => {
@@ -443,11 +428,9 @@ export default function Page() {
             // setErrorClosedTicket(false);
           }
         };
-
         updatePartCode();
       }
     }
-
     setTimeout(() => { getPartCodeByID(id); }, 2000)
 
   };
@@ -455,83 +438,93 @@ export default function Page() {
   return (
     <>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>{t("createNewModel")}</DialogTitle>
+        {isEdit ? <DialogTitle>{t("editSparePart")}</DialogTitle> :  <DialogTitle>{t("createNewSparePart")}</DialogTitle>}
+
         <DialogContent className={"pt-3"} sx={{ minWidth: "500px", maxWidth: "800px" }}>
           {isEdit &&
             <Box className={"mb-3"}>
               <Grid container spacing={4} >
-                <Tabs value={activeTab} onChange={handleTabChange} aria-label="Edit Yacht Tabs">
-                  <Tab label={t("Spare Parts")} />
+                <Tabs value={activeTab} onChange={handleTabChange}>
+                  <Tab label={t("spareParts")} />
                   <Tab label={t("partCodes")} />
                 </Tabs>
               </Grid>
             </Box>
           }
-
-
-
           {activeTab === 0   &&
             <Grid container spacing={4} >
               { Object.keys(params).map(key => (
                 key === "yachtBrandId" ? (
                     <Grid item xs={12} sm={6} key={key}>
-                      <Select
-                        margin="dense"
-                        key={key}
-                        fullWidth
-                        variant="outlined"
-                        value={params[key] || "" }
-                        onChange={(e) => handleInputChange(key, e.target.value)}
-                        displayEmpty
-                      >
-                        <MenuItem value="" disabled>{t("selectBrand")}</MenuItem>
-                        {optionsBrands.map(option => (
-                          <MenuItem key={option.value} value={option.value}>
-                            {option.label}
-                          </MenuItem>
-                        ))}
-                      </Select>
+                      <FormControl fullWidth variant="outlined">
+                        <InputLabel>{t("selectBrand")}</InputLabel>
+                        <Select
+                          margin="dense"
+                          key={key}
+                          fullWidth
+                          label={t("selectBrand")}
+                          variant="outlined"
+                          value={params[key] || "" }
+                          onChange={(e) => handleInputChange(key, e.target.value)}
+                          displayEmpty
+                        >
+                          {/*<MenuItem value="" disabled>{t("selectBrand")}</MenuItem>*/}
+                          {optionsBrands.map(option => (
+                            <MenuItem key={option.value} value={option.value}>
+                              {option.label}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+
 
                     </Grid>
 
                   ) :
                   key === "sparePartCategoryId" ? (
                       <Grid item xs={12} sm={6} key={key}>
-                        <Select
-                          key={key}
-                          fullWidth
-                          variant="outlined"
-                          value={params[key]|| "" }
-                          onChange={(e) => handleInputChange(key, e.target.value)}
-                          displayEmpty
-                        >
-                          <MenuItem value="" disabled>{t("selectSparePartCategory")}</MenuItem>
-                          {optionsSparePartCategories.map(option => (
-                            <MenuItem key={option.value} value={option.value}>
-                              {option.label}
-                            </MenuItem>
-                          ))}
-                        </Select>
+                        <FormControl fullWidth variant="outlined">
+                          <InputLabel>{t("selectSparePartCategory")}</InputLabel>
+                          <Select
+                            key={key}
+                            fullWidth
+                            label={t("selectSparePartCategory")}
+                            variant="outlined"
+                            value={params[key]|| "" }
+                            onChange={(e) => handleInputChange(key, e.target.value)}
+                            displayEmpty
+                          >
+                            {/*<MenuItem value="" disabled>{t("selectSparePartCategory")}</MenuItem>*/}
+                            {optionsSparePartCategories.map(option => (
+                              <MenuItem key={option.value} value={option.value}>
+                                {option.label}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
                       </Grid>
-
                     ):
                     key === "companyId" ? (
                       <Grid item xs={12} sm={6} key={key}>
-                        <Select
-                          key={key}
-                          fullWidth
-                          variant="outlined"
-                          value={params[key]|| "" }
-                          onChange={(e) => handleInputChange(key, e.target.value)}
-                          displayEmpty
-                        >
-                          <MenuItem value="" disabled>{t("selectCompany")}</MenuItem>
-                          {optionsCompanies.map(option => (
-                            <MenuItem key={option.value} value={option.value}>
-                              {option.label}
-                            </MenuItem>
-                          ))}
-                        </Select>
+                        <FormControl fullWidth variant="outlined">
+                          <InputLabel>{t("selectCompany")}</InputLabel>
+                          <Select
+                            key={key}
+                            fullWidth
+                            label={t("selectCompany")}
+                            variant="outlined"
+                            value={params[key]|| "" }
+                            onChange={(e) => handleInputChange(key, e.target.value)}
+                            displayEmpty
+                          >
+                            {/*<MenuItem value="" disabled>{t("selectCompany")}</MenuItem>*/}
+                            {optionsCompanies.map(option => (
+                              <MenuItem key={option.value} value={option.value}>
+                                {option.label}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
                       </Grid>
 
                     ) : (
@@ -573,7 +566,7 @@ export default function Page() {
                     <TextField
                       variant="outlined"
                       // label={`PartCode ${index + 1} Name`}
-                      label={t("PartCodeName")}
+                      label={t("partCodeName")}
                       value={PartCode.name}
                       className={"ms-2 mt-4"}
                       onChange={(e) => handlePartCodeChange(index, e.target.value)}
@@ -591,22 +584,20 @@ export default function Page() {
                   </Grid>
                 </Box>
                 <Divider flexItem={true}/>
-
               </div>
-
-
-
-
-
             ))
           }
+          {PartCodes.length === 0 && activeTab === 1 &&
+            <div>
+              <Box className={"mb-3 flex"} sx={{ alignItems: 'flex-end' , justifyContent: "space-between"}}>
+                <Grid item xs={10} sm={6} className={"me-8"}>
+                  <Typography>{t('thereAreNoPartCode')}</Typography>
 
 
-
-
-
-
-
+                </Grid>
+              </Box>
+            </div>
+          }
         </DialogContent>
 
         {activeTab === 0 &&
@@ -615,18 +606,18 @@ export default function Page() {
               {t("cancel")}
             </Button>
             <Button onClick={handleSave} color="primary">
-              {t("create")}
+              {isEdit ? t("edit") : t("create")}
             </Button>
           </DialogActions>
         }
 
       </Dialog>
       <Dialog open={openDeleteModal} onClose={handleDelClose}>
-        <DialogTitle>{t("deleteModel")}</DialogTitle>
+        <DialogTitle>{t("deleteSparePart")}</DialogTitle>
         <DialogContent>
           {i18n.language==='en' ?
-            <Typography component='div'>{t('deleteModelMessage') }<Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box>?</Typography>
-            : <Typography> <Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box> {t('deleteBrandMessage') }</Typography>}
+            <Typography component='div'>{t('deleteSparePartMessage') }<Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box>?</Typography>
+            : <Typography> <Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box> {t('deleteSparePartMessage') }</Typography>}
 
         </DialogContent>
         <DialogActions>
@@ -663,7 +654,7 @@ export default function Page() {
       </Dialog>
       <Grid container spacing={6}>
         <Grid item xs={12} sm={6} md={6} lg={6}>
-          <Typography variant='h4'>{t("yachtOps")}</Typography>
+          <Typography variant='h4'>{t("sparePartOps")}</Typography>
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <Card>

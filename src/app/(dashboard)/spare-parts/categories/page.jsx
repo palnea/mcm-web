@@ -84,18 +84,13 @@ export default function Page() {
           <IconButton
             size="small"
             color={'primary'}
-            // startIcon={<i className='tabler-pencil m-0' />}
             onClick={() => handleEdit(row.id,  row.name)}
           >
             <i className='tabler-pencil' />
           </IconButton>
-
-
-
           <IconButton
             color={'error'}
             size="small"
-            // startIcon={<i className='tabler-trash' />}
             onClick={() => handleDelete(row.id, row.name)}
           >
             <i className='tabler-trash' />
@@ -110,17 +105,12 @@ export default function Page() {
     setName(name);
     setEditID(id)
     handleOpen();
-    //edit logic here
-    console.log('Edit ID:', id);
   };
 
-
   const handleDelete = (id, name) => {
-     handleOpenDeleteModal(true);
+    handleOpenDeleteModal(true);
     setNameDel(name);
     setRemoveID(id);
-    //delete logic here
-    console.log('Delete ID:', id);
   };
 
   const handleOpen = () => {
@@ -208,14 +198,14 @@ export default function Page() {
 
     deleteSparePartCategories();
     setTimeout(() => { fetchData(); }, 2000)
-    // Add logic here to save the new item (e.g., send to backend)
     handleDelClose();
   };
 
   return (
     <>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>{t("createNewSparePartCategories")}</DialogTitle>
+        {isEdit ? <DialogTitle>{t("editNewSparePartCategories")}</DialogTitle> :  <DialogTitle>{t("createNewSparePartCategories")}</DialogTitle>}
+
         <DialogContent>
           <TextField
             autoFocus
@@ -233,7 +223,7 @@ export default function Page() {
             {t("cancel")}
           </Button>
           <Button onClick={handleSave} color="primary">
-            {t("create")}
+            {isEdit ? t("edit") : t("create")}
           </Button>
         </DialogActions>
       </Dialog>
@@ -258,9 +248,6 @@ export default function Page() {
         <Grid item xs={12} sm={6} md={6} lg={6}>
           <Typography variant='h4'>{t("SparePartCategoriesOps")}</Typography>
         </Grid>
-        {/*<Grid item xs={12} sm={12} md={12} lg={12}>*/}
-        {/*  <FormLayout title={"Yat Oluştur"}/>*/}
-        {/*</Grid>*/}
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <Card>
             <div className={"flex justify-end p-3"}>

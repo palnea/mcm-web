@@ -10,7 +10,17 @@ import useApi from "@/api_helper/useApi";
 import * as https from "https";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
-import {Dialog, DialogActions, DialogContent, DialogTitle, Select, Tab, Tabs} from "@mui/material";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  FormControl,
+  InputLabel,
+  Select,
+  Tab,
+  Tabs
+} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import {useTranslation} from "react-i18next";
 import secureLocalStorage from "react-secure-storage";
@@ -107,7 +117,6 @@ export default function Page() {
         });
       setRows(response.data.data);
 
-
     } catch (err) {
       // setErrorClosedTicket(false);
     }
@@ -126,7 +135,6 @@ export default function Page() {
         value: item.id,
       }));
       setOptionsBrands(optionsData);
-
 
     } catch (err) {
       // setErrorClosedTicket(false);
@@ -147,7 +155,6 @@ export default function Page() {
       }));
       setOptionsModels(optionsData);
 
-
     } catch (err) {
       // setErrorClosedTicket(false);
     }
@@ -167,7 +174,6 @@ export default function Page() {
       }));
       setOptionsUsers(optionsData);
 
-
     } catch (err) {
       // setErrorClosedTicket(false);
     }
@@ -181,11 +187,7 @@ export default function Page() {
             Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
           },
         });
-
-      // console.log(response.data.data);
-
       setNotes(response.data.data);
-
 
     } catch (err) {
       // setErrorClosedTicket(false);
@@ -199,15 +201,6 @@ export default function Page() {
     fetchSelectUser();
 
   }, []);
-
-
-  // useEffect(() => {
-  //   // if (isEdit) {
-  //   //   setInputValue(name);
-  //   // }
-  //   console.log(notes)
-  // }, [notes]);
-
 
   const columns = [
     { id: "id", label: "id" },
@@ -232,27 +225,20 @@ export default function Page() {
           <IconButton
             size="small"
             color={'primary'}
-            // startIcon={<i className='tabler-pencil m-null' />}
             onClick={() => handleEdit(row)}
           >
             <i className='tabler-pencil' />
           </IconButton>
-
-
-
           <IconButton
             color={'error'}
             size="small"
-            // startIcon={<i className='tabler-trash' />}
             onClick={() => handleDelete(row.id, row.name, row.yachtBrandId)}
           >
             <i className='tabler-trash' />
           </IconButton>
-
           <IconButton
             size="small"
             color={'secondary'}
-            // startIcon={<i className='tabler-pencil m-null' />}
             onClick={() => handleNote(row.id)}
           >
             <i className='tabler-notes' />
@@ -485,16 +471,15 @@ export default function Page() {
   return (
     <>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>{t("createNewModel")}</DialogTitle>
+        {isEdit ? <DialogTitle>{t("editYacht")}</DialogTitle> :  <DialogTitle>{t("createNewYacht")}</DialogTitle>}
         <DialogContent className={"pt-3"} sx={{ minWidth: "500px", maxWidth: "800px" }}>
-
           {isEdit &&
             <Box className={"mb-3"}>
 
               <Grid container spacing={4} >
                 <Tabs value={activeTab} onChange={handleTabChange} aria-label="Edit Yacht Tabs">
-                  <Tab label="Yacht Fields" />
-                  <Tab label="Yacht Notes" />
+                  <Tab label={t("yachtFields")} />
+                  <Tab label={t("yachtNotes")} />
                 </Tabs>
               </Grid>
             </Box>
@@ -505,63 +490,78 @@ export default function Page() {
                 { Object.keys(params).map(key => (
                     key === "yachtBrandId" ? (
                         <Grid item xs={12} sm={6} key={key}>
-                          <Select
-                            margin="dense"
-                            key={key}
-                            fullWidth
-                            variant="outlined"
-                            value={params[key] || "" }
-                            onChange={(e) => handleInputChange(key, e.target.value)}
-                            displayEmpty
-                          >
-                            <MenuItem value="" disabled>{t("selectBrand")}</MenuItem>
-                            {optionsBrands.map(option => (
-                              <MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                              </MenuItem>
-                            ))}
-                          </Select>
+                          <FormControl fullWidth variant="outlined">
+                            <InputLabel>{t("selectBrand")}</InputLabel>
+                            <Select
+                              margin="dense"
+                              key={key}
+                              fullWidth
+                              label={t("selectBrand")}
+                              variant="outlined"
+                              value={params[key] || "" }
+                              onChange={(e) => handleInputChange(key, e.target.value)}
+                              displayEmpty
+                            >
+                              {/*<MenuItem value="" disabled>{t("selectBrand")}</MenuItem>*/}
+                              {optionsBrands.map(option => (
+                                <MenuItem key={option.value} value={option.value}>
+                                  {option.label}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                          </FormControl>
+
 
                         </Grid>
 
                       ) :
                       key === "yachtModelId" ? (
                           <Grid item xs={12} sm={6} key={key}>
-                            <Select
-                              key={key}
-                              fullWidth
-                              variant="outlined"
-                              value={params[key]|| "" }
-                              onChange={(e) => handleInputChange(key, e.target.value)}
-                              displayEmpty
-                            >
-                              <MenuItem value="" disabled>{t("selectModel")}</MenuItem>
-                              {optionsModels.map(option => (
-                                <MenuItem key={option.value} value={option.value}>
-                                  {option.label}
-                                </MenuItem>
-                              ))}
-                            </Select>
+                            <FormControl fullWidth variant="outlined">
+                              <InputLabel>{t("selectModel")}</InputLabel>
+                              <Select
+                                key={key}
+                                fullWidth
+                                variant="outlined"
+                                value={params[key]|| "" }
+                                label={t("selectModel")}
+                                onChange={(e) => handleInputChange(key, e.target.value)}
+                                displayEmpty
+                              >
+                                {/*<MenuItem value="" disabled>{t("selectModel")}</MenuItem>*/}
+                                {optionsModels.map(option => (
+                                  <MenuItem key={option.value} value={option.value}>
+                                    {option.label}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </FormControl>
+
                           </Grid>
 
                         ):
                         key === "userId" ? (
                           <Grid item xs={12} sm={6} key={key}>
-                            <Select
-                              key={key}
-                              fullWidth
-                              variant="outlined"
-                              value={params[key]|| "" }
-                              onChange={(e) => handleInputChange(key, e.target.value)}
-                              displayEmpty
-                            >
-                              <MenuItem value="" disabled>{t("selectUsers")}</MenuItem>
-                              {optionsUsers.map(option => (
-                                <MenuItem key={option.value} value={option.value}>
-                                  {option.label}
-                                </MenuItem>
-                              ))}
-                            </Select>
+                            <FormControl fullWidth variant="outlined">
+                              <InputLabel>{t("selectUsers")}</InputLabel>
+                              <Select
+                                key={key}
+                                fullWidth
+                                label={t("selectUsers")}
+                                variant="outlined"
+                                value={params[key]|| "" }
+                                onChange={(e) => handleInputChange(key, e.target.value)}
+                                displayEmpty
+                              >
+                                {/*<MenuItem value="" disabled>{t("selectUsers")}</MenuItem>*/}
+                                {optionsUsers.map(option => (
+                                  <MenuItem key={option.value} value={option.value}>
+                                    {option.label}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                            </FormControl>
+
                           </Grid>
 
                         ) : (
@@ -603,7 +603,7 @@ export default function Page() {
                           <TextField
                             variant="outlined"
                             // label={`Note ${index + 1} Name`}
-                            label={t("noteName")}
+                            label={t("name")}
                             value={note.name}
                             className={"ms-2 mt-4"}
                             onChange={(e) => handleNoteChange(index, e.target.value)}
@@ -621,22 +621,9 @@ export default function Page() {
                         </Grid>
                       </Box>
                     <Divider flexItem={true}/>
-
                   </div>
-
-
-
-
-
                 ))
           }
-
-
-
-
-
-
-
         </DialogContent>
 
         {activeTab === 0 &&
@@ -645,18 +632,18 @@ export default function Page() {
               {t("cancel")}
             </Button>
             <Button onClick={handleSave} color="primary">
-              {t("create")}
+              {isEdit ? t("edit") : t("create")}
             </Button>
           </DialogActions>
         }
 
       </Dialog>
       <Dialog open={openDeleteModal} onClose={handleDelClose}>
-        <DialogTitle>{t("deleteModel")}</DialogTitle>
+        <DialogTitle>{t("deleteYacht")}</DialogTitle>
         <DialogContent>
           {i18n.language==='en' ?
-            <Typography component='div'>{t('deleteModelMessage') }<Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box>?</Typography>
-            : <Typography> <Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box> {t('deleteBrandMessage') }</Typography>}
+            <Typography component='div'>{t('deleteYachtMessage') }<Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box>?</Typography>
+            : <Typography> <Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box> {t('deleteYachtMessage') }</Typography>}
 
         </DialogContent>
         <DialogActions>
@@ -695,9 +682,6 @@ export default function Page() {
         <Grid item xs={12} sm={6} md={6} lg={6}>
           <Typography variant='h4'>{t("yachtOps")}</Typography>
         </Grid>
-        {/*<Grid item xs={12} sm={12} md={12} lg={12}>*/}
-        {/*  <FormLayout title={"Yat Oluştur"}/>*/}
-        {/*</Grid>*/}
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <Card>
             <div className={"flex justify-end p-3"}>

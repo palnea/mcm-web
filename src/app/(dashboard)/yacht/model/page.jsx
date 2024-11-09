@@ -10,7 +10,7 @@ import useApi from "@/api_helper/useApi";
 import * as https from "https";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
-import {Dialog, DialogActions, DialogContent, DialogTitle, Select} from "@mui/material";
+import {Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, Select} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import {useTranslation} from "react-i18next";
 import secureLocalStorage from "react-secure-storage";
@@ -251,7 +251,7 @@ export default function Page() {
   return (
     <>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>{t("createNewModel")}</DialogTitle>
+        {isEdit ? <DialogTitle>{t("editModel")}</DialogTitle> :  <DialogTitle>{t("createNewModel")}</DialogTitle>}
         <DialogContent>
           <Box display="flex" sx={{ alignItems: 'baseline' }}  gap={2}>
               <TextField
@@ -259,44 +259,31 @@ export default function Page() {
                 margin="dense"
                 label={t("name")}
                 type="text"
-                fullWidth
-
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
-                sx = {{ flex: 2 }}
+                sx = {{ flex: 1 }}
               />
+            <FormControl variant="outlined"   sx={{ flex: 1 }}>
+              <InputLabel>{t("selectBrand")}</InputLabel>
+              <Select
+                margin="dense"
+                fullWidth
+                variant="outlined"
+                className="p-0"
+                value={idValue}
+                label={t("selectBrand")}
+                onChange={(e) => handleChange(e)}
+                displayEmpty
 
-            {/*<TextField*/}
-            {/*  autoFocus*/}
-            {/*  margin="dense"*/}
-            {/*  label={t("brandID")}*/}
-            {/*  type="number"*/}
-            {/*  fullWidth*/}
-            {/*  variant="outlined"*/}
-            {/*  value={idValue}*/}
-            {/*  onChange={(e) => setIdValue(e.target.value)}*/}
-            {/*  sx = {{ flex: 1 }}*/}
-            {/*/>*/}
-            <Select
-              margin="dense"
-              fullWidth
-              variant="outlined"
-              className="p-0"
-              value={idValue}
-              onChange={(e) => handleChange(e)}
-              // onChange={handleChange}
-              displayEmpty
-              sx={{ flex: 1 }}
-            >
-              <MenuItem value="" disabled>
-                {t("selectBrand")}
-              </MenuItem>
-              {options.map((option) => (
-                <MenuItem key={option.value} value={option.value}>
-                  {option.label}
-                </MenuItem>
-              ))}
-            </Select>
+              >
+                {options.map((option) => (
+                  <MenuItem key={option.value} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
           </Box>
 
         </DialogContent>
@@ -305,7 +292,7 @@ export default function Page() {
             {t("cancel")}
           </Button>
           <Button onClick={handleSave} color="primary">
-            {t("create")}
+            {isEdit ? t("edit") : t("create")}
           </Button>
         </DialogActions>
       </Dialog>
@@ -330,9 +317,6 @@ export default function Page() {
         <Grid item xs={12} sm={6} md={6} lg={6}>
           <Typography variant='h4'>{t("modelOps")}</Typography>
         </Grid>
-        {/*<Grid item xs={12} sm={12} md={12} lg={12}>*/}
-        {/*  <FormLayout title={"Yat Oluştur"}/>*/}
-        {/*</Grid>*/}
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <Card>
             <div className={"flex justify-end p-3"}>

@@ -10,18 +10,19 @@ import useApi from "@/api_helper/useApi";
 import * as https from "https";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
-import {Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
+import {Dialog, DialogActions, DialogContent, DialogTitle, Select} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import {useTranslation} from "react-i18next";
 import secureLocalStorage from "react-secure-storage";
 import Box from "@mui/material/Box";
 
-
 export default function Page() {
 
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
+  const [img, setIMG] = useState('');
   const [editID, setEditID] = useState('');
+  const [brandId, setBrandID] = useState('');
   const [removeID, setRemoveID] = useState('');
   const [rows, setRows] = useState([]);
 
@@ -29,12 +30,15 @@ export default function Page() {
   const [nameDel, setNameDel] = useState('');
   const [isEdit, setIsEdit] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const [inputIMGValue, setInputIMGValue] = useState('');
+  const [idValue, setIdValue] = useState('');
   const { t, i18n } = useTranslation('common');
+  const [options, setOptions] = useState([]); // Options for the Select component
 
 
   const fetchData = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/YachtBrands',
+      const response = await axios.get('http://localhost:7153/api/Companies',
         {
           headers: {
             Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -42,21 +46,24 @@ export default function Page() {
         });
       setRows(response.data.data);
 
+
     } catch (err) {
       // setErrorClosedTicket(false);
     }
   };
 
-   useEffect(() => {
-     fetchData();
-   }, []);
+  useEffect(() => {
+    fetchData();
+  }, []);
 
 
   useEffect(() => {
     if (isEdit) {
       setInputValue(name);
+      setInputIMGValue(img);
+      setIdValue(brandId);
     }
-  }, [isEdit, name]);
+  }, [isEdit, name, brandId, img ]);
 
   const columns = [
     { id: "id", label: "id" },
@@ -81,14 +88,14 @@ export default function Page() {
           <IconButton
             size="small"
             color={'primary'}
-            onClick={() => handleEdit(row.id,  row.name)}
+            onClick={() => handleEdit(row.id,  row.name, row.imgUrl)}
           >
             <i className='tabler-pencil' />
           </IconButton>
           <IconButton
             color={'error'}
             size="small"
-            onClick={() => handleDelete(row.id, row.name)}
+            onClick={() => handleDelete(row.id, row.name, row.imgUrl)}
           >
             <i className='tabler-trash' />
           </IconButton>
@@ -97,16 +104,16 @@ export default function Page() {
     },
   ];
 
-  const handleEdit = (id, name) => {
+  const handleEdit = (id, name, imgUrl) => {
     setIsEdit(true);
     setName(name);
-    setEditID(id)
+    setEditID(id);
+    setIMG(imgUrl);
     handleOpen();
   };
 
-
   const handleDelete = (id, name) => {
-     handleOpenDeleteModal(true);
+    handleOpenDeleteModal(true);
     setNameDel(name);
     setRemoveID(id);
   };
@@ -123,7 +130,11 @@ export default function Page() {
     setOpen(false);
     setIsEdit(false);
     setInputValue(''); // Reset the input when closing
+    setIdValue("")
+    setInputIMGValue("")
+    setIMG("")
     setEditID("");
+    setBrandID("");
     setRemoveID("");
   };
 
@@ -131,11 +142,12 @@ export default function Page() {
     if (isEdit) {
       const params = {
         "id": editID,
-        "name": inputValue
+        "name": inputValue,
+        "imgUrl": inputIMGValue
       }
-      const editBrand = async () => {
+      const editModel = async () => {
         try {
-          const response = await axios.put('http://localhost:7153/api/YachtBrands/Update', params,
+          const response = await axios.put('http://localhost:7153/api/Companies/Update', params,
             {
               headers: {
                 Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -147,15 +159,17 @@ export default function Page() {
         }
       };
 
-      editBrand();
+      editModel();
     }
     else {
       const params = {
-        "name": inputValue
+        "name": inputValue,
+        "imgUrl":inputIMGValue
+
       }
-      const createBrand = async () => {
+      const createModel = async () => {
         try {
-          const response = await axios.post('http://localhost:7153/api/YachtBrands', params,
+          const response = await axios.post('http://localhost:7153/api/Companies', params,
             {
               headers: {
                 Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -167,7 +181,7 @@ export default function Page() {
         }
       };
 
-      createBrand();
+      createModel();
     }
     setTimeout(() => { fetchData(); }, 2000)
 
@@ -182,7 +196,7 @@ export default function Page() {
   const handleDelSave = () => {
     const deleteBrand = async () => {
       try {
-        const response = await axios.get('http://localhost:7153/api/YachtBrands/Remove/' + removeID,
+        const response = await axios.get('http://localhost:7153/api/Companies/Remove/' + removeID,
           {
             headers: {
               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -200,21 +214,39 @@ export default function Page() {
     handleDelClose();
   };
 
+  const handleChange = (e) => {
+    setIdValue(e.target.value);
+  };
+
   return (
     <>
       <Dialog open={open} onClose={handleClose}>
-        {isEdit ? <DialogTitle>{t("editBrand")}</DialogTitle> :  <DialogTitle>{t("createNewBrand")}</DialogTitle>}
+        {isEdit ? <DialogTitle>{t("editCompany")}</DialogTitle> :  <DialogTitle>{t("createNewCompany")}</DialogTitle>}
         <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label={t("name")}
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-          />
+          <Box display="flex" sx={{ alignItems: 'baseline' }}  gap={2}>
+            <TextField
+              autoFocus
+              margin="dense"
+              label={t("name")}
+              type="text"
+              fullWidth
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              sx = {{ flex: 2 }}
+            />
+            <TextField
+              autoFocus
+              margin="dense"
+              label={t("imgUrl")}
+              type="text"
+              fullWidth
+              value={inputIMGValue}
+              onChange={(e) => setInputIMGValue(e.target.value)}
+              sx = {{ flex: 2 }}
+            />
+
+          </Box>
+
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="secondary">
@@ -226,10 +258,10 @@ export default function Page() {
         </DialogActions>
       </Dialog>
       <Dialog open={openDeleteModal} onClose={handleDelClose}>
-        <DialogTitle>{t("deleteBrand")}</DialogTitle>
+        <DialogTitle>{t("deleteCompany")}</DialogTitle>
         <DialogContent>
           {i18n.language==='en' ?
-            <Typography component='div'>{t('deleteBrandMessage') }<Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box>?</Typography>
+            <Typography component='div'>{t('deleteCompanyMsg') }<Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box>?</Typography>
             : <Typography> <Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box> {t('deleteBrandMessage') }</Typography>}
 
         </DialogContent>
@@ -244,7 +276,7 @@ export default function Page() {
       </Dialog>
       <Grid container spacing={6}>
         <Grid item xs={12} sm={6} md={6} lg={6}>
-          <Typography variant='h4'>{t("brandOps")}</Typography>
+          <Typography variant='h4'>{t("companyOps")}</Typography>
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <Card>
@@ -253,10 +285,14 @@ export default function Page() {
                 <i className='tabler-plus' />
               </IconButton>
             </div>
+
             <CustomTable rows={rows} columns={columns} />
+
           </Card>
         </Grid>
       </Grid>
+
     </>
+
   )
 }
