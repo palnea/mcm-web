@@ -33,5 +33,6 @@
   "createNewModel": "Create New Model",
   "deleteModel": "Delete Model",
   "deleteModelMessage": "Are you sure you want to delete model ",
-  "brandID": "Brand ID"
+  "brandID": "Brand ID",
+  "selectBrand": "Select Brand"
 }

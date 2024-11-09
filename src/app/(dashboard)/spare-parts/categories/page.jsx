@@ -22,7 +22,6 @@ export default function Page() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [editID, setEditID] = useState('');
-  const [brandId, setBrandID] = useState('');
   const [removeID, setRemoveID] = useState('');
   const [rows, setRows] = useState([]);
 
@@ -30,13 +29,12 @@ export default function Page() {
   const [nameDel, setNameDel] = useState('');
   const [isEdit, setIsEdit] = useState(false);
   const [inputValue, setInputValue] = useState('');
-  const [idValue, setIdValue] = useState('');
   const { t, i18n } = useTranslation('common');
 
 
   const fetchData = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/YachtModels',
+      const response = await axios.get('http://localhost:7153/api/SparePartCategories',
         {
           headers: {
             Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -51,18 +49,17 @@ export default function Page() {
   };
 
 
-  useEffect(() => {
-    fetchData();
-    // console.log(data)
-  }, []);
+   useEffect(() => {
+     fetchData();
+     // console.log(data)
+   }, []);
 
 
   useEffect(() => {
     if (isEdit) {
       setInputValue(name);
-      setIdValue(brandId);
     }
-  }, [isEdit, name, brandId ]);
+  }, [isEdit, name]);
 
   const columns = [
     { id: "id", label: "id" },
@@ -88,7 +85,7 @@ export default function Page() {
             size="small"
             color={'primary'}
             // startIcon={<i className='tabler-pencil m-0' />}
-            onClick={() => handleEdit(row.id,  row.name, row.yachtBrandId)}
+            onClick={() => handleEdit(row.id,  row.name)}
           >
             <i className='tabler-pencil' />
           </IconButton>
@@ -99,7 +96,7 @@ export default function Page() {
             color={'error'}
             size="small"
             // startIcon={<i className='tabler-trash' />}
-            onClick={() => handleDelete(row.id, row.name, row.yachtBrandId)}
+            onClick={() => handleDelete(row.id, row.name)}
           >
             <i className='tabler-trash' />
           </IconButton>
@@ -108,66 +105,23 @@ export default function Page() {
     },
   ];
 
-  const handleEdit = (id, name, brandId) => {
-    console.log('Edit ID: name: brandID: ', id);
-    console.log('Edit ID: name: brandID: ', name);
-    console.log('Edit ID: name: brandID: ', brandId);
-
+  const handleEdit = (id, name) => {
     setIsEdit(true);
     setName(name);
-    setEditID(id);
-    setBrandID(brandId);
+    setEditID(id)
     handleOpen();
     //edit logic here
+    console.log('Edit ID:', id);
   };
 
 
   const handleDelete = (id, name) => {
-    handleOpenDeleteModal(true);
+     handleOpenDeleteModal(true);
     setNameDel(name);
     setRemoveID(id);
     //delete logic here
     console.log('Delete ID:', id);
   };
-
-  // const rows =  [
-  //   {
-  //     "id": 1,
-  //     "name": "Aquila",
-  //     "createdDate": "2024-10-22T17:03:27.497487",
-  //     "updatedDate": "2024-10-22T17:08:04.755234"
-  //   },
-  //   {
-  //     "id": 2,
-  //     "name": "Azimut",
-  //     "createdDate": "2024-10-22T17:03:59.189454",
-  //     "updatedDate": "2024-10-22T17:03:59.189456"
-  //   },
-  //   {
-  //     "id": 4,
-  //     "name": "Ferretti",
-  //     "createdDate": "2024-10-22T17:04:22.121183",
-  //     "updatedDate": "2024-10-22T17:04:22.121184"
-  //   },
-  //   {
-  //     "id": 6,
-  //     "name": "Princess",
-  //     "createdDate": "2024-10-22T17:07:41.375176",
-  //     "updatedDate": "2024-10-22T17:07:41.375178"
-  //   },
-  //   {
-  //     "id": 3,
-  //     "name": "Sunseeker",
-  //     "createdDate": "2024-10-22T17:04:11.172213",
-  //     "updatedDate": "2024-10-22T17:04:11.172214"
-  //   },
-  //   {
-  //     "id": 7,
-  //     "name": "testBrand",
-  //     "createdDate": "2024-11-03T23:27:53.910182",
-  //     "updatedDate": "2024-11-03T23:27:53.910184"
-  //   }
-  // ]
 
   const handleOpen = () => {
     setOpen(true);
@@ -181,9 +135,7 @@ export default function Page() {
     setOpen(false);
     setIsEdit(false);
     setInputValue(''); // Reset the input when closing
-    setIdValue("")
     setEditID("");
-    setBrandID("");
     setRemoveID("");
   };
 
@@ -191,13 +143,11 @@ export default function Page() {
     if (isEdit) {
       const params = {
         "id": editID,
-        "name": inputValue,
-        "yachtBrandId": idValue
+        "name": inputValue
       }
-      console.log(params);
-      const editModel = async () => {
+      const editSparePartCategories = async () => {
         try {
-          const response = await axios.put('http://localhost:7153/api/YachtModels/Update', params,
+          const response = await axios.put('http://localhost:7153/api/SparePartCategories/Update', params,
             {
               headers: {
                 Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -209,17 +159,15 @@ export default function Page() {
         }
       };
 
-      editModel();
+      editSparePartCategories();
     }
     else {
       const params = {
-        "name": inputValue,
-        "yachtBrandId":idValue
-
+        "name": inputValue
       }
-      const createModel = async () => {
+      const createSparePartCategories = async () => {
         try {
-          const response = await axios.post('http://localhost:7153/api/YachtModels', params,
+          const response = await axios.post('http://localhost:7153/api/SparePartCategories', params,
             {
               headers: {
                 Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -231,7 +179,7 @@ export default function Page() {
         }
       };
 
-      createModel();
+      createSparePartCategories();
     }
     setTimeout(() => { fetchData(); }, 2000)
 
@@ -244,9 +192,9 @@ export default function Page() {
   };
 
   const handleDelSave = () => {
-    const deleteBrand = async () => {
+    const deleteSparePartCategories = async () => {
       try {
-        const response = await axios.get('http://localhost:7153/api/YachtModels/Remove/' + removeID,
+        const response = await axios.get('http://localhost:7153/api/SparePartCategories/Remove/' + removeID,
           {
             headers: {
               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -258,7 +206,7 @@ export default function Page() {
       }
     };
 
-    deleteBrand();
+    deleteSparePartCategories();
     setTimeout(() => { fetchData(); }, 2000)
     // Add logic here to save the new item (e.g., send to backend)
     handleDelClose();
@@ -267,33 +215,18 @@ export default function Page() {
   return (
     <>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>{t("createNewModel")}</DialogTitle>
+        <DialogTitle>{t("createNewSparePartCategories")}</DialogTitle>
         <DialogContent>
-          <Box display="flex" gap={2}>
-            <TextField
-              autoFocus
-              margin="dense"
-              label={t("name")}
-              type="text"
-              fullWidth
-              variant="outlined"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              sx = {{ flex: 2 }}
-            />
-            <TextField
-              autoFocus
-              margin="dense"
-              label={t("brandID")}
-              type="number"
-              fullWidth
-              variant="outlined"
-              value={idValue}
-              onChange={(e) => setIdValue(e.target.value)}
-              sx = {{ flex: 1 }}
-            />
-          </Box>
-
+          <TextField
+            autoFocus
+            margin="dense"
+            label={t("name")}
+            type="text"
+            fullWidth
+            variant="outlined"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={handleClose} color="secondary">
@@ -305,11 +238,11 @@ export default function Page() {
         </DialogActions>
       </Dialog>
       <Dialog open={openDeleteModal} onClose={handleDelClose}>
-        <DialogTitle>{t("deleteModel")}</DialogTitle>
+        <DialogTitle>{t("deleteSparePartCategories")}</DialogTitle>
         <DialogContent>
           {i18n.language==='en' ?
-            <Typography component='div'>{t('deleteModelMessage') }<Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box>?</Typography>
-            : <Typography> <Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box> {t('deleteBrandMessage') }</Typography>}
+            <Typography component='div'>{t('deleteSparePartCategoriesMessage') }<Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box>?</Typography>
+            : <Typography> <Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box> {t('deleteSparePartCategoriesMessage') }</Typography>}
 
         </DialogContent>
         <DialogActions>
@@ -323,7 +256,7 @@ export default function Page() {
       </Dialog>
       <Grid container spacing={6}>
         <Grid item xs={12} sm={6} md={6} lg={6}>
-          <Typography variant='h4'>{t("modelOps")}</Typography>
+          <Typography variant='h4'>{t("SparePartCategoriesOps")}</Typography>
         </Grid>
         {/*<Grid item xs={12} sm={12} md={12} lg={12}>*/}
         {/*  <FormLayout title={"Yat Oluştur"}/>*/}

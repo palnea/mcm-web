@@ -13,38 +13,43 @@ export default function Page() {
   const [errorOpenTicket, setErrorOpenTicket] = useState(null);
 
   useEffect(() => {
-    const fetchDataClosed = async () => {
-      try {
-        const response = await axios.post('/backend', {
-          // Replace with actual payload
-          params: { /* ... */ }
-        });
-        // console.log(response)
-        setClosedTicketData(response.data.stats);
-        setClosedTicketData("40"); // delete this after
+    // const fetchDataClosed = async () => {
+    //   try {
+    //     const response = await axios.post('/backend', {
+    //       // Replace with actual payload
+    //       params: { /* ... */ }
+    //     });
+    //     // console.log(response)
+    //     setClosedTicketData(response.data.stats);
+    //     setClosedTicketData("40"); // delete this after
+    //
+    //   } catch (err) {
+    //     setErrorClosedTicket(false);
+    //   }
+    // };
+    setClosedTicketData("40"); // delete this after
 
-      } catch (err) {
-        setErrorClosedTicket(false);
-      }
-    };
 
-    fetchDataClosed();
+    // fetchDataClosed();
 
-    const fetchDataOpen = async () => {
-      try {
-        const response = await axios.post('/backend', {
-          // Replace with actual payload
-          params: { /* ... */ }
-        });
-        setOpenTicketData(response.data.stats);
-        setOpenTicketData("21"); // delete this after
+    // const fetchDataOpen = async () => {
+    //   try {
+    //     const response = await axios.post('/backend', {
+    //       // Replace with actual payload
+    //       params: { /* ... */ }
+    //     });
+    //     setOpenTicketData(response.data.stats);
+    //     setOpenTicketData("21"); // delete this after
+    //
+    //   } catch (err) {
+    //     setErrorOpenTicket('Failed to fetch data');
+    //   }
+    // };
 
-      } catch (err) {
-        setErrorOpenTicket('Failed to fetch data');
-      }
-    };
+    setOpenTicketData("21"); // delete this after
 
-    fetchDataOpen();
+
+    // fetchDataOpen();
   }, []);
 
   return (

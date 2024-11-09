@@ -82,10 +82,10 @@ const VerticalMenu = ({ scrollMenu }) => {
         <MenuSection label={t("spareParts")}/>
 
         <SubMenu label={t("spareParts")} icon={<i className='tabler-settings-plus' />}>
-          <MenuItem href={`/categories`} button={"secondary"}>
+          <MenuItem href={`/spare-parts/categories`} button={"secondary"}>
             {t("categories")}
           </MenuItem>
-          <MenuItem href='/yacht/someting'  button={"secondary"}>
+          <MenuItem href='/spare-parts/spare-parts'  button={"secondary"}>
             {t("spareParts")}
           </MenuItem>
 

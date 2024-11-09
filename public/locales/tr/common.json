@@ -33,7 +33,9 @@
   "createNewModel": "Yeni Model Oluştur",
   "deleteModel": "Modeli Sil",
   "deleteModelMessage": " modelini silmek istediğinizden emin misiniz?",
-  "brandID": "Marka ID"
+  "brandID": "Marka ID",
+  "selectBrand": "Marka Seçiniz"
+
 
 
 }

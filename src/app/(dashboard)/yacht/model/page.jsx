@@ -10,11 +10,12 @@ import useApi from "@/api_helper/useApi";
 import * as https from "https";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
-import {Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
+import {Dialog, DialogActions, DialogContent, DialogTitle, Select} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import {useTranslation} from "react-i18next";
 import secureLocalStorage from "react-secure-storage";
 import Box from "@mui/material/Box";
+import MenuItem from "@mui/material/MenuItem";
 
 
 export default function Page() {
@@ -32,6 +33,7 @@ export default function Page() {
   const [inputValue, setInputValue] = useState('');
   const [idValue, setIdValue] = useState('');
   const { t, i18n } = useTranslation('common');
+  const [options, setOptions] = useState([]); // Options for the Select component
 
 
   const fetchData = async (id, name) => {
@@ -50,9 +52,32 @@ export default function Page() {
     }
   };
 
+  const fetchSelect = async (id, name) => {
+    try {
+      const response = await axios.get('http://localhost:7153/api/YachtBrands',
+        {
+          headers: {
+            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+          },
+        });
+      const optionsData = response.data.data.map(item => ({
+        label: item.name,
+        value: item.id,
+      }));
+      setOptions(optionsData);
+
+
+    } catch (err) {
+      // setErrorClosedTicket(false);
+    }
+  };
+
+
 
   useEffect(() => {
     fetchData();
+    fetchSelect();
+
     // console.log(data)
   }, []);
 
@@ -109,10 +134,6 @@ export default function Page() {
   ];
 
   const handleEdit = (id, name, brandId) => {
-    console.log('Edit ID: name: brandID: ', id);
-    console.log('Edit ID: name: brandID: ', name);
-    console.log('Edit ID: name: brandID: ', brandId);
-
     setIsEdit(true);
     setName(name);
     setEditID(id);
@@ -127,47 +148,7 @@ export default function Page() {
     setNameDel(name);
     setRemoveID(id);
     //delete logic here
-    console.log('Delete ID:', id);
   };
-
-  // const rows =  [
-  //   {
-  //     "id": 1,
-  //     "name": "Aquila",
-  //     "createdDate": "2024-10-22T17:03:27.497487",
-  //     "updatedDate": "2024-10-22T17:08:04.755234"
-  //   },
-  //   {
-  //     "id": 2,
-  //     "name": "Azimut",
-  //     "createdDate": "2024-10-22T17:03:59.189454",
-  //     "updatedDate": "2024-10-22T17:03:59.189456"
-  //   },
-  //   {
-  //     "id": 4,
-  //     "name": "Ferretti",
-  //     "createdDate": "2024-10-22T17:04:22.121183",
-  //     "updatedDate": "2024-10-22T17:04:22.121184"
-  //   },
-  //   {
-  //     "id": 6,
-  //     "name": "Princess",
-  //     "createdDate": "2024-10-22T17:07:41.375176",
-  //     "updatedDate": "2024-10-22T17:07:41.375178"
-  //   },
-  //   {
-  //     "id": 3,
-  //     "name": "Sunseeker",
-  //     "createdDate": "2024-10-22T17:04:11.172213",
-  //     "updatedDate": "2024-10-22T17:04:11.172214"
-  //   },
-  //   {
-  //     "id": 7,
-  //     "name": "testBrand",
-  //     "createdDate": "2024-11-03T23:27:53.910182",
-  //     "updatedDate": "2024-11-03T23:27:53.910184"
-  //   }
-  // ]
 
   const handleOpen = () => {
     setOpen(true);
@@ -194,7 +175,6 @@ export default function Page() {
         "name": inputValue,
         "yachtBrandId": idValue
       }
-      console.log(params);
       const editModel = async () => {
         try {
           const response = await axios.put('http://localhost:7153/api/YachtModels/Update', params,
@@ -264,34 +244,59 @@ export default function Page() {
     handleDelClose();
   };
 
+  const handleChange = (e) => {
+    setIdValue(e.target.value);
+  };
+
   return (
     <>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>{t("createNewModel")}</DialogTitle>
         <DialogContent>
-          <Box display="flex" gap={2}>
-            <TextField
-              autoFocus
+          <Box display="flex" sx={{ alignItems: 'baseline' }}  gap={2}>
+              <TextField
+                autoFocus
+                margin="dense"
+                label={t("name")}
+                type="text"
+                fullWidth
+
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                sx = {{ flex: 2 }}
+              />
+
+            {/*<TextField*/}
+            {/*  autoFocus*/}
+            {/*  margin="dense"*/}
+            {/*  label={t("brandID")}*/}
+            {/*  type="number"*/}
+            {/*  fullWidth*/}
+            {/*  variant="outlined"*/}
+            {/*  value={idValue}*/}
+            {/*  onChange={(e) => setIdValue(e.target.value)}*/}
+            {/*  sx = {{ flex: 1 }}*/}
+            {/*/>*/}
+            <Select
               margin="dense"
-              label={t("name")}
-              type="text"
               fullWidth
               variant="outlined"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              sx = {{ flex: 2 }}
-            />
-            <TextField
-              autoFocus
-              margin="dense"
-              label={t("brandID")}
-              type="number"
-              fullWidth
-              variant="outlined"
+              className="p-0"
               value={idValue}
-              onChange={(e) => setIdValue(e.target.value)}
-              sx = {{ flex: 1 }}
-            />
+              onChange={(e) => handleChange(e)}
+              // onChange={handleChange}
+              displayEmpty
+              sx={{ flex: 1 }}
+            >
+              <MenuItem value="" disabled>
+                {t("selectBrand")}
+              </MenuItem>
+              {options.map((option) => (
+                <MenuItem key={option.value} value={option.value}>
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Select>
           </Box>
 
         </DialogContent>
