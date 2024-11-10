@@ -13,7 +13,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControl,
+  FormControl, FormHelperText,
   InputLabel,
   Select,
   Tab,
@@ -33,6 +33,20 @@ export default function Page() {
   const [removeID, setRemoveID] = useState('');
   const [rows, setRows] = useState([]);
   const [inputValue, setInputValue] = useState('');
+
+  const [errors, setErrors] = useState({
+    companyId: "",
+    username: "",
+    password: "",
+    name: "",
+    surname: "",
+    title: "",
+    phone: "",
+    groupId: "",
+    photoUrl: "",
+    notificationToken: "",
+    email: "",
+  });
 
   const [params, setParams] = useState({
     "companyId": null,
@@ -63,6 +77,24 @@ export default function Page() {
       "email": "",
     }
     setParams(param => ({
+      ...param,
+      ...clearValues
+    }))
+
+    clearValues = {
+      companyId: "",
+      username: "",
+      password: "",
+      name: "",
+      surname: "",
+      title: "",
+      phone: "",
+      groupId: "",
+      photoUrl: "",
+      notificationToken: "",
+      email: "",
+    }
+    setErrors(param => ({
       ...param,
       ...clearValues
     }))
@@ -221,42 +253,96 @@ export default function Page() {
   };
 
   const handleSave = () => {
-    if (isEdit) {
-      const editUser = async () => {
-        try {
-          const response = await axios.put('http://localhost:7153/api/Users/Update', params,
-            {
-              headers: {
-                Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-              },
-            });
+    event.preventDefault();
+    let newErrors = {};
 
-        } catch (err) {
-          // setErrorClosedTicket(false);
-        }
-      };
-
-      editUser();
+    // Validate required fields
+    if (params.username === '') {
+      newErrors.username = 'Username is required';
     }
-    else {
-      const createUser = async () => {
-        try {
-          const response = await axios.post('http://localhost:7153/api/Users', params,
-            {
-              headers: {
-                Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-              },
-            });
 
-        } catch (err) {
-          // setErrorClosedTicket(false);
-        }
-      };
-
-      createUser();
+    if (params.password === '') {
+      newErrors.password = 'Password is required';
     }
-    setTimeout(() => { fetchData(); }, 2000)
-    handleClose();
+
+    if (params.name === '') {
+      newErrors.name = 'Name is required';
+    }
+
+    if (params.surname === '') {
+      newErrors.surname = 'Surname is required';
+    }
+
+    if (params.title === '') {
+      newErrors.title = 'Title is required';
+    }
+
+    if (params.phone === '') {
+      newErrors.phone = 'Phone is required';
+    }
+
+    if (params.photoUrl === '') {
+      newErrors.photoUrl = 'PhotoUrl is required';
+    }
+
+    if (params.notificationToken === '') {
+      newErrors.notificationToken = 'Notification Token is required';
+    }
+
+    if (params.email === '') {
+      newErrors.email = 'Email is required';
+    }
+
+    if (params.companyId === '' || params.companyId === null) {
+      newErrors.companyId = 'Company is required';
+    }
+
+    if (params.groupId === '' || params.groupId === null) {
+      newErrors.groupId = 'Brand is required';
+    }
+
+
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      if (isEdit) {
+        const editUser = async () => {
+          try {
+            const response = await axios.put('http://localhost:7153/api/Users/Update', params,
+              {
+                headers: {
+                  Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+                },
+              });
+
+          } catch (err) {
+            // setErrorClosedTicket(false);
+          }
+        };
+
+        editUser();
+      }
+      else {
+        const createUser = async () => {
+          try {
+            const response = await axios.post('http://localhost:7153/api/Users', params,
+              {
+                headers: {
+                  Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+                },
+              });
+
+          } catch (err) {
+            // setErrorClosedTicket(false);
+          }
+        };
+
+        createUser();
+      }
+      setTimeout(() => { fetchData(); }, 2000)
+      handleClose();
+    }
+
   };
 
   const handleDelClose = () => {
@@ -302,84 +388,96 @@ export default function Page() {
       <Dialog open={open} onClose={handleClose}>
         {isEdit ? <DialogTitle>{t("editUser")}</DialogTitle> :  <DialogTitle>{t("createNewUser")}</DialogTitle>}
 
-        <DialogContent className={"pt-3"} sx={{ minWidth: "500px", maxWidth: "800px" }}>
-              <Grid container spacing={4} >
-                { Object.keys(params).map(key => (
-                    key === "groupId" ? (
-                        <Grid item xs={12} sm={6} key={key}>
-                          <FormControl fullWidth variant="outlined">
-                            <InputLabel>{t("selectGroup")}</InputLabel>
-                            <Select
-                              margin="dense"
-                              key={key}
-                              label={t("selectGroup")}
-                              fullWidth
-                              variant="outlined"
-                              value={params[key] || "" }
-                              onChange={(e) => handleInputChange(key, e.target.value)}
-                              displayEmpty
-                            >
-                              {/*<MenuItem value="" disabled>{t("selectGroup")}</MenuItem>*/}
-                              {optionsGroup.map(option => (
-                                <MenuItem key={option.value} value={option.value}>
-                                  {option.label}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                          </FormControl>
+        <form
+          noValidate
+          autoComplete="off"
+          onSubmit={handleSave}
+          className="flex flex-col gap-5"
+        >
+          <DialogContent className={"pt-3"} sx={{ minWidth: "500px", maxWidth: "800px" }}>
+            <Grid container spacing={4} >
+              { Object.keys(params).map(key => (
+                key === "groupId" ? (
+                    <Grid item xs={12} sm={6} key={key}>
+                      <FormControl fullWidth variant="outlined" error={!!errors.groupId}>
+                        <InputLabel>{t("selectGroup")}</InputLabel>
+                        <Select
+                          margin="dense"
+                          key={key}
+                          label={t("selectGroup")}
+                          fullWidth
+                          variant="outlined"
+                          value={params[key] || "" }
+                          onChange={(e) => handleInputChange(key, e.target.value)}
+                          displayEmpty
+                        >
+                          {/*<MenuItem value="" disabled>{t("selectGroup")}</MenuItem>*/}
+                          {optionsGroup.map(option => (
+                            <MenuItem key={option.value} value={option.value}>
+                              {option.label}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        <FormHelperText>{t(errors.groupId)}</FormHelperText>
+                      </FormControl>
 
 
-                        </Grid>
+                    </Grid>
 
-                      ) :
-                      key === "companyId" ? (
-                          <Grid item xs={12} sm={6} key={key}>
-                            <FormControl fullWidth variant="outlined">
-                              <InputLabel>{t("selectCompany")}</InputLabel>
-                              <Select
-                                key={key}
-                                fullWidth
-                                variant="outlined"
-                                label={t("selectCompany")}
-                                value={params[key]|| "" }
-                                onChange={(e) => handleInputChange(key, e.target.value)}
-                                displayEmpty
-                              >
-                                {/*<MenuItem value="" disabled>{t("selectCompany")}</MenuItem>*/}
-                                {optionsCompany.map(option => (
-                                  <MenuItem key={option.value} value={option.value}>
-                                    {option.label}
-                                  </MenuItem>
-                                ))}
-                              </Select>
-                            </FormControl>
-                          </Grid>
-                        ): (
-                          <Grid item xs={12} sm={6} key={key}>
-                            { key !== "id" &&
-                              <TextField
-                                key={key}
-                                fullWidth
-                                variant="outlined"
-                                label={t(key)}
-                                type={typeof params[key] === "string" ? "text" : "number"}
-                                value={params[key]}
-                                onChange={(e) => handleInputChange(key, e.target.value)}
-                              />
-                            }
-                          </Grid>
-                        )
-                  ))}
-              </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="secondary">
-            {t("cancel")}
-          </Button>
-          <Button onClick={handleSave} color="primary">
-            {isEdit ? t("edit") : t("create")}
-          </Button>
-        </DialogActions>
+                  ) :
+                  key === "companyId" ? (
+                    <Grid item xs={12} sm={6} key={key}>
+                      <FormControl fullWidth variant="outlined" error={!!errors.companyId}>
+                        <InputLabel>{t("selectCompany")}</InputLabel>
+                        <Select
+                          key={key}
+                          fullWidth
+                          variant="outlined"
+                          label={t("selectCompany")}
+                          value={params[key]|| "" }
+                          onChange={(e) => handleInputChange(key, e.target.value)}
+                          displayEmpty
+                        >
+                          {/*<MenuItem value="" disabled>{t("selectCompany")}</MenuItem>*/}
+                          {optionsCompany.map(option => (
+                            <MenuItem key={option.value} value={option.value}>
+                              {option.label}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                        <FormHelperText>{t(errors.companyId)}</FormHelperText>
+                      </FormControl>
+                    </Grid>
+                  ): (
+                    <Grid item xs={12} sm={6} key={key}>
+                      { key !== "id" &&
+                        <TextField
+                          key={key}
+                          fullWidth
+                          variant="outlined"
+                          label={t(key)}
+                          error={!!errors[key]}
+                          helperText={t(errors[key])}
+                          type={typeof params[key] === "string" ? "text" : "number"}
+                          value={params[key]}
+                          onChange={(e) => handleInputChange(key, e.target.value)}
+                        />
+                      }
+                    </Grid>
+                  )
+              ))}
+            </Grid>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="secondary">
+              {t("cancel")}
+            </Button>
+            <Button onClick={handleSave} color="primary">
+              {isEdit ? t("edit") : t("create")}
+            </Button>
+          </DialogActions>
+        </form>
+
       </Dialog>
       <Dialog open={openDeleteModal} onClose={handleDelClose}>
         <DialogTitle>{t("deleteUser")}</DialogTitle>

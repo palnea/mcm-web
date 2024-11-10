@@ -45,12 +45,12 @@ export default function Page() {
   const [options, setOptions] = useState([]); // Options for the Select component
   const [errors, setErrors] = useState({
     name: '',
-    brandId: '',
+    accessoryCategoryId: '',
   });
 
   const fetchData = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/YachtModels',
+      const response = await axios.get('http://localhost:7153/api/AccessorySubCategories',
         {
           headers: {
             Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -66,7 +66,7 @@ export default function Page() {
 
   const fetchSelect = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/YachtBrands',
+      const response = await axios.get('http://localhost:7153/api/AccessoryCategories',
         {
           headers: {
             Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -124,7 +124,7 @@ export default function Page() {
             size="small"
             color={'primary'}
             // startIcon={<i className='tabler-pencil m-0' />}
-            onClick={() => handleEdit(row.id,  row.name, row.yachtBrandId)}
+            onClick={() => handleEdit(row.id,  row.name, row.accessoryCategoryId)}
           >
             <i className='tabler-pencil' />
           </IconButton>
@@ -135,7 +135,7 @@ export default function Page() {
             color={'error'}
             size="small"
             // startIcon={<i className='tabler-trash' />}
-            onClick={() => handleDelete(row.id, row.name, row.yachtBrandId)}
+            onClick={() => handleDelete(row.id, row.name, row.accessoryCategoryId)}
           >
             <i className='tabler-trash' />
           </IconButton>
@@ -179,7 +179,7 @@ export default function Page() {
     setRemoveID("");
     const clearValues = {
       name: '',
-      brandId: '',
+      accessoryCategoryId: '',
     }
     setErrors(param => ({
       ...param,
@@ -197,7 +197,7 @@ export default function Page() {
       newErrors.name = 'Name is required';
     }
     if (idValue === '') {
-      newErrors.brandId = 'Brand is required';
+      newErrors.accessoryCategoryId = 'Accessory Category is required';
     }
 
     setErrors(newErrors);
@@ -208,11 +208,11 @@ export default function Page() {
         const params = {
           "id": editID,
           "name": inputValue,
-          "yachtBrandId": idValue
+          "accessoryCategoryId": idValue
         }
         const editModel = async () => {
           try {
-            response = await axios.put('http://localhost:7153/api/YachtModels/Update', params,
+            response = await axios.put('http://localhost:7153/api/AccessorySubCategories/Update', params,
               {
                 headers: {
                   Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -229,12 +229,12 @@ export default function Page() {
       else {
         const params = {
           "name": inputValue,
-          "yachtBrandId":idValue
+          "accessoryCategoryId":idValue
 
         }
         const createModel = async () => {
           try {
-            const response = await axios.post('http://localhost:7153/api/YachtModels', params,
+            const response = await axios.post('http://localhost:7153/api/AccessorySubCategories', params,
               {
                 headers: {
                   Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -267,7 +267,7 @@ export default function Page() {
   const handleDelSave = () => {
     const deleteBrand = async () => {
       try {
-        const response = await axios.get('http://localhost:7153/api/YachtModels/Remove/' + removeID,
+        const response = await axios.get('http://localhost:7153/api/AccessorySubCategories/Remove/' + removeID,
           {
             headers: {
               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -292,14 +292,14 @@ export default function Page() {
   return (
     <>
       <Dialog open={open} onClose={handleClose}>
-        {isEdit ? <DialogTitle>{t("editModel")}</DialogTitle> :  <DialogTitle>{t("createNewModel")}</DialogTitle>}
+        {isEdit ? <DialogTitle>{t("editAccessorySubCategory")}</DialogTitle> :  <DialogTitle>{t("createNewAccessorySubCategory")}</DialogTitle>}
         <form
           noValidate
           autoComplete="off"
           onSubmit={handleSave}
           className="flex flex-col gap-5"
         >
-          <DialogContent>
+          <DialogContent sx={{ minWidth: "500px", maxWidth: "800px" }}>
             <Box display="flex" sx={{ alignItems: 'baseline' }}  gap={2}>
               <TextField
                 autoFocus
@@ -312,15 +312,15 @@ export default function Page() {
                 onChange={(e) => setInputValue(e.target.value)}
                 sx = {{ flex: 1 }}
               />
-              <FormControl variant="outlined"  error={!!errors.brandId}   sx={{ flex: 1 }}>
-                <InputLabel>{t("selectBrand")}</InputLabel>
+              <FormControl variant="outlined"  error={!!errors.accessoryCategoryId}   sx={{ flex: 1 }}>
+                <InputLabel>{t("selectAccessoryCategory")}</InputLabel>
                 <Select
                   margin="dense"
                   fullWidth
                   variant="outlined"
                   className="p-0"
                   value={idValue}
-                  label={t("selectBrand")}
+                  label={t("selectAccessoryCategory")}
                   // helperText={t(errors.brandId)} // Display the error message
                   onChange={(e) => handleChange(e)}
                   displayEmpty
@@ -332,7 +332,7 @@ export default function Page() {
                     </MenuItem>
                   ))}
                 </Select>
-                <FormHelperText>{t(errors.brandId)}</FormHelperText>
+                <FormHelperText>{t(errors.accessoryCategoryId)}</FormHelperText>
               </FormControl>
 
             </Box>
@@ -350,11 +350,11 @@ export default function Page() {
 
       </Dialog>
       <Dialog open={openDeleteModal} onClose={handleDelClose}>
-        <DialogTitle>{t("deleteModel")}</DialogTitle>
+        <DialogTitle>{t("deleteAccessorySubCategory")}</DialogTitle>
         <DialogContent>
           {i18n.language==='en' ?
-            <Typography component='div'>{t('deleteModelMessage') }<Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box>?</Typography>
-            : <Typography> <Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box> {t('deleteBrandMessage') }</Typography>}
+            <Typography component='div'>{t('deleteAccessorySubCategoryMessage') }<Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box>?</Typography>
+            : <Typography> <Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box> {t('deleteAccessorySubCategoryMessage') }</Typography>}
 
         </DialogContent>
         <DialogActions>
@@ -368,7 +368,7 @@ export default function Page() {
       </Dialog>
       <Grid container spacing={6}>
         <Grid item xs={12} sm={6} md={6} lg={6}>
-          <Typography variant='h4'>{t("modelOps")}</Typography>
+          <Typography variant='h4'>{t("accessorySubCategoryOps")}</Typography>
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <Card>

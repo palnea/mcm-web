@@ -14,7 +14,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControl,
+  FormControl, FormHelperText,
   InputLabel,
   Select,
   Tab,
@@ -32,6 +32,21 @@ export default function Page() {
   const [removeID, setRemoveID] = useState('');
   const [rows, setRows] = useState([]);
   const [inputValue, setInputValue] = useState('');
+  const [errors, setErrors] = useState({
+    name: "",
+    isOpenTicket: "",
+    isCloseTicket:"",
+    isAssignOwn: "",
+    isAssignAnyone: "",
+    isAddProcess:"" ,
+    isTransferAssign:"" ,
+    isManageInventory: "",
+    isManagePart: "",
+    isManageUser: "",
+    isManageGroup: "",
+    isManageFault: "",
+    isAcceptProcess: ""
+  });
 
   const [params, setParams] = useState({
     "name": "",
@@ -66,6 +81,26 @@ export default function Page() {
       "isAcceptProcess": false
     }
     setParams(param => ({
+      ...param,
+      ...clearValues
+    }))
+
+    clearValues = {
+      name: "",
+      isOpenTicket: "",
+      isCloseTicket:"",
+      isAssignOwn: "",
+      isAssignAnyone: "",
+      isAddProcess:"" ,
+      isTransferAssign:"" ,
+      isManageInventory: "",
+      isManagePart: "",
+      isManageUser: "",
+      isManageGroup: "",
+      isManageFault: "",
+      isAcceptProcess: ""
+    }
+    setErrors(param => ({
       ...param,
       ...clearValues
     }))
@@ -177,42 +212,103 @@ export default function Page() {
   };
 
   const handleSave = () => {
-    if (isEdit) {
-      const editGroup = async () => {
-        try {
-          const response = await axios.put('http://localhost:7153/api/Groups/Update', params,
-            {
-              headers: {
-                Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-              },
-            });
+    event.preventDefault();
+    let newErrors = {};
 
-        } catch (err) {
-          // setErrorClosedTicket(false);
-        }
-      };
-
-      editGroup();
+    // Validate required fields
+    if (params.name === '') {
+      newErrors.name = 'Name is required';
     }
-    else {
-      const createGroup = async () => {
-        try {
-          const response = await axios.post('http://localhost:7153/api/Groups', params,
-            {
-              headers: {
-                Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-              },
-            });
 
-        } catch (err) {
-          // setErrorClosedTicket(false);
-        }
-      };
-
-      createGroup();
+    if (params.isOpenTicket === '' || params.isOpenTicket === null) {
+      newErrors.isOpenTicket = 'isOpenTicket is required';
     }
-    setTimeout(() => { fetchData(); }, 2000)
-    handleClose();
+
+    if (params.isCloseTicket === '' || params.isCloseTicket === null) {
+      newErrors.isCloseTicket = 'isCloseTicket is required';
+    }
+
+    if (params.isAssignOwn === '' || params.isAssignOwn === null) {
+      newErrors.isAssignOwn = 'isAssignOwn is required';
+    }
+
+    if (params.isAssignAnyone === '' || params.isAssignAnyone === null) {
+      newErrors.isAssignAnyone = 'isAssignAnyone is required';
+    }
+
+    if (params.isAddProcess === '' || params.isAddProcess === null) {
+      newErrors.isAddProcess = 'isAddProcess is required';
+    }
+
+    if (params.isTransferAssign === '' || params.isTransferAssign === null) {
+      newErrors.isTransferAssign = 'isTransferAssign is required';
+    }
+
+    if (params.isManageInventory === '' || params.isManageInventory === null) {
+      newErrors.isManageInventory = 'isManageInventory is required';
+    }
+
+    if (params.isManagePart === '' || params.isManagePart === null) {
+      newErrors.isManagePart = 'isManagePart is required';
+    }
+
+    if (params.isManageUser === '' || params.isManageUser === null) {
+      newErrors.isManageUser = 'isManageUser is required';
+    }
+
+    if (params.isManageGroup === '' || params.isManageGroup === null) {
+      newErrors.isManageGroup = 'isManageGroup is required';
+    }
+
+    if (params.isManageFault === '' || params.isManageFault === null) {
+      newErrors.isManageFault = 'isManageFault is required';
+    }
+
+    if (params.isAcceptProcess === '' || params.isAcceptProcess === null) {
+      newErrors.isAcceptProcess = 'isAcceptProcess is required';
+    }
+
+
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length === 0) {
+      if (isEdit) {
+        const editGroup = async () => {
+          try {
+            const response = await axios.put('http://localhost:7153/api/Groups/Update', params,
+              {
+                headers: {
+                  Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+                },
+              });
+
+          } catch (err) {
+            // setErrorClosedTicket(false);
+          }
+        };
+
+        editGroup();
+      }
+      else {
+        const createGroup = async () => {
+          try {
+            const response = await axios.post('http://localhost:7153/api/Groups', params,
+              {
+                headers: {
+                  Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+                },
+              });
+
+          } catch (err) {
+            // setErrorClosedTicket(false);
+          }
+        };
+
+        createGroup();
+      }
+      setTimeout(() => { fetchData(); }, 2000)
+      handleClose();
+    }
+
   };
 
   const handleDelClose = () => {
@@ -256,12 +352,18 @@ export default function Page() {
     <>
       <Dialog open={open} onClose={handleClose}>
         {isEdit ? <DialogTitle>{t("editUserGroup")}</DialogTitle> :  <DialogTitle>{t("createNewUserGroup")}</DialogTitle>}
-        <DialogContent className={"pt-3"} sx={{ minWidth: "500px", maxWidth: "800px" }}>
-          <Grid container spacing={4} >
-            { Object.keys(params).map(key => (
-              key !== "name"  && key !== "id" ? (
+        <form
+          noValidate
+          autoComplete="off"
+          onSubmit={handleSave}
+          className="flex flex-col gap-5"
+        >
+          <DialogContent className={"pt-3"} sx={{ minWidth: "500px", maxWidth: "800px" }}>
+            <Grid container spacing={4} >
+              { Object.keys(params).map(key => (
+                key !== "name"  && key !== "id" ? (
                   <Grid item xs={12} sm={6} key={key}>
-                    <FormControl fullWidth variant="outlined">
+                    <FormControl fullWidth variant="outlined" error={!!errors[key]}>
                       <InputLabel>{t(key)}</InputLabel>
                       <Select
                         margin="dense"
@@ -277,7 +379,7 @@ export default function Page() {
                         <MenuItem value="true">{t("True")}</MenuItem>
                         <MenuItem value="false">{t("False")}</MenuItem>
                       </Select>
-
+                      <FormHelperText>{t(errors[key])}</FormHelperText>
                     </FormControl>
 
                   </Grid>
@@ -290,6 +392,8 @@ export default function Page() {
                         fullWidth
                         variant="outlined"
                         label={t(key)}
+                        error={!!errors[key]}
+                        helperText={t(errors[key])}
                         type={typeof params[key] === "string" ? "text" : "number"}
                         value={params[key]}
                         onChange={(e) => handleInputChange(key, e.target.value)}
@@ -297,17 +401,19 @@ export default function Page() {
                     }
                   </Grid>
                 )
-            ))}
-          </Grid>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="secondary">
-            {t("cancel")}
-          </Button>
-          <Button onClick={handleSave} color="primary">
-            {isEdit ? t("edit") : t("create")}
-          </Button>
-        </DialogActions>
+              ))}
+            </Grid>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="secondary">
+              {t("cancel")}
+            </Button>
+            <Button onClick={handleSave} color="primary">
+              {isEdit ? t("edit") : t("create")}
+            </Button>
+          </DialogActions>
+        </form>
+
       </Dialog>
       <Dialog open={openDeleteModal} onClose={handleDelClose}>
         <DialogTitle>{t("deleteUserGroup")}</DialogTitle>

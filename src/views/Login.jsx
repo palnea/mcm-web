@@ -34,6 +34,7 @@ import axios from "axios";
 import secureLocalStorage from "react-secure-storage";
 import {useTranslation} from "react-i18next";
 import LanguageSelector from "@components/LanguageDropdown/LanguageSelector";
+import { jwtDecode } from "jwt-decode";
 
 // Styled Custom Components
 const LoginIllustration = styled('img')(({ theme }) => ({
@@ -104,21 +105,77 @@ const LoginV2 = ({ mode }) => {
 
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [errors, setErrors] = useState({});
+  const [generalError, setGeneralError] = useState(''); // New state for general error
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    let response;
-    const params = {
-      "username": username,
-      "password": password
-    }
+
+  const getUser = async (id) => {
     try {
-      response = await axios.post('http://localhost:7153/api/Users/Login', params, {});
-      secureLocalStorage.setItem('accessToken', response.data.data.accessToken);
-      router.push('/dashboard');
+      const response = await axios.get('http://localhost:7153/api/Users/GetWithDetails/' + id, {
+        headers: {
+          Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+        },
+      });
+      if ( 200 <= response.status && response.status < 300) {
+        secureLocalStorage.setItem('user', response.data.data);
+        //buraya kullancinin diger bilgileri de alinabilir policy vs
+      }
+
     } catch (error){
       console.error('Error logging in:', error);
     }
+  };
+
+  const validateForm = () => {
+    let formErrors = {};
+    if (!username) formErrors.username = 'Username is required';
+    if (!password) formErrors.password = 'Password is required';
+    setErrors(formErrors);
+    return Object.keys(formErrors).length === 0; // Returns true if no errors
+  };
+
+
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (validateForm()) {
+      let response;
+      const params = {
+        "username": username,
+        "password": password
+      }
+      try {
+        response = await axios.post('http://localhost:7153/api/Users/Login', params, {});
+        if ( 200 <= response.status && response.status < 300) {
+          if (response.data && response.data.data.accessToken){
+            secureLocalStorage.setItem('accessToken', response.data.data.accessToken);
+            const decoded = jwtDecode(response.data.data.accessToken);
+            await getUser(decoded.sub);
+            router.push('/dashboard');
+          }else {
+            setGeneralError('Invalid username or password');
+            // Automatically hide the error after 5 seconds
+            setTimeout(() => {
+              setGeneralError('');
+            }, 5000); // 5000ms = 5 seconds
+          }
+        }else {
+          setGeneralError('Invalid username or password');
+          // Automatically hide the error after 5 seconds
+          setTimeout(() => {
+            setGeneralError('');
+          }, 5000); // 5000ms = 5 seconds
+        }
+
+      } catch (error){
+        setGeneralError('Invalid username or password');
+        // Automatically hide the error after 5 seconds
+        setTimeout(() => {
+          setGeneralError('');
+        }, 5000); // 5000ms = 5 seconds
+      }
+    }
+
   };
 
   const handleClickShowPassword = () => setIsPasswordShown(show => !show)
@@ -176,6 +233,8 @@ const LoginV2 = ({ mode }) => {
               placeholder={t('enterYourUsername')}
               value={username}
               onChange={e => setUsername(e.target.value)}
+              error={!!errors.username}
+              helperText={t(errors.username)}
             />
             <CustomTextField
               fullWidth
@@ -184,6 +243,8 @@ const LoginV2 = ({ mode }) => {
               id='outlined-adornment-password'
               type={isPasswordShown ? 'text' : 'password'}
               value={password}
+              error={!!errors.password}
+              helperText={t(errors.password)}
               onChange={e => setPassword(e.target.value)}
               InputProps={{
                 endAdornment: (
@@ -195,6 +256,24 @@ const LoginV2 = ({ mode }) => {
                 )
               }}
             />
+            {/* Display error message below the form if there's a general error */}
+            {generalError && (
+              <Typography
+                variant="body2"
+                sx={{
+                  backgroundColor: 'rgb(255, 186, 186)', // Red background
+                  color: 'white', // White text color
+                  padding: 2, // Padding around the error message
+                  borderRadius: 0.5, // Rounded corners
+                  marginTop: 2,
+                  fontWeight: 'bold',
+                  border: '1px solid rgb(239,124,124)', // Border color with slight opacity
+                  borderedDarkIllustration: '1px solid red', // Red border
+                }}
+              >
+                {t(generalError)}
+              </Typography>
+            )}
             <Button fullWidth variant='contained' type='submit'>
               {t('login')}
             </Button>

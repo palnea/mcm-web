@@ -35,68 +35,34 @@ export default function Page() {
   const [editID, setEditID] = useState('');
   const [removeID, setRemoveID] = useState('');
   const [rows, setRows] = useState([]);
-  const [inputValue, setInputValue] = useState('');
+  // const [inputValue, setInputValue] = useState('');
 
   const [errors, setErrors] = useState({
     name: '',
-    userId: '',
+    companyId: '',
     yachtBrandId: '',
-    yachtModelId: '',
+    accessoryCategoryId: '',
+    accessorySubCategoryId: '',
   });
 
-  const [noteErrors, setNoteErrors] = useState({
-    name: '',
-  });
 
   const [params, setParams] = useState({
     "name": "",
-    "officialNumber": "",
-    "userId": null,
+    "companyId": null,
     "yachtBrandId": null,
-    "yachtModelId": null,
-    // "shipType": "",
-    // "methodOfPropulsion": "",
-    // "salesStatus": "",
-    "expiryDate": "",
-    "imoNumber": "",
-    "radioCallSign": "",
-    "registeredLength": null,
-    "overallLength": null,
-    "depth": null,
-    "breadth": null,
-    "grossTonnage": null,
-    "netTonnage": null,
-    "yearOfBuild": null,
-    "hin": "",
-    "port": "",
-    "engineMakeAndModel": "",
-    "enginePower": null
+    "accessoryCategoryId": null,
+    "accessorySubCategoryId": null,
+    "description": "",
   });
 
   const clearParams = () => {
     let clearValues = {
       "name": "",
-      "officialNumber": "",
-      "userId": null,
+      "description": "",
+      "companyId": null,
       "yachtBrandId": null,
-      "yachtModelId": null,
-      // "shipType": "",
-      // "methodOfPropulsion": "",
-      // "salesStatus": "",
-      "expiryDate": "",
-      "imoNumber": "",
-      "radioCallSign": "",
-      "registeredLength": null,
-      "overallLength": null,
-      "depth": null,
-      "breadth": null,
-      "grossTonnage": null,
-      "netTonnage": null,
-      "yearOfBuild": null,
-      "hin": "",
-      "port": "",
-      "engineMakeAndModel": "",
-      "enginePower": null
+      "accessoryCategoryId": null,
+      "accessorySubCategoryId": null,
     }
     setParams(param => ({
       ...param,
@@ -105,9 +71,10 @@ export default function Page() {
 
     clearValues = {
       name: '',
-      userId: '',
+      companyId: '',
       yachtBrandId: '',
-      yachtModelId: '',
+      accessoryCategoryId: '',
+      accessorySubCategoryId: '',
     }
     setErrors(param => ({
       ...param,
@@ -124,15 +91,16 @@ export default function Page() {
   const [isEdit, setIsEdit] = useState(false);
   const { t, i18n } = useTranslation('common');
   const [optionsBrands, setOptionsBrands] = useState([]); // Options for the Select component
-  const [optionsModels, setOptionsModels] = useState([]); // Options for the Select component
-  const [optionsUsers, setOptionsUsers] = useState([]); // Options for the Select component
+  const [optionsCompany, setOptionsCompany] = useState([]); // Options for the Select component
+  const [optionsCategory, setOptionsCategory] = useState([]); // Options for the Select component
+  const [optionsSubCategory, setOptionsSubCategory] = useState([]); // Options for the Select component
   const [activeTab, setActiveTab] = useState(0);  // 0 for yacht fields tab, 1 for notes tab
   const [notes, setNotes] = useState( []);
 
 
   const fetchData = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/Yachts/GetAllWithDetails',
+      const response = await axios.get('http://localhost:7153/api/Accessories',
         {
           headers: {
             Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -164,9 +132,9 @@ export default function Page() {
     }
   };
 
-  const fetchSelectModel = async (id, name) => {
+  const fetchSelectComapny = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/YachtModels',
+      const response = await axios.get('http://localhost:7153/api/Companies',
         {
           headers: {
             Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -176,41 +144,45 @@ export default function Page() {
         label: item.name,
         value: item.id,
       }));
-      setOptionsModels(optionsData);
+      setOptionsCompany(optionsData);
 
     } catch (err) {
       // setErrorClosedTicket(false);
     }
   };
 
-  const fetchSelectUser = async (id, name) => {
+  const fetchSelectAccessoryCategories = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/Users',
+      const response = await axios.get('http://localhost:7153/api/AccessoryCategories',
         {
           headers: {
             Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
           },
         });
       const optionsData = response.data.data.map(item => ({
-        label: item.username,
+        label: item.name,
         value: item.id,
       }));
-      setOptionsUsers(optionsData);
+      setOptionsCategory(optionsData);
 
     } catch (err) {
       // setErrorClosedTicket(false);
     }
   };
 
-  const getYachtNoteByID = async (id) => {
+  const fetchSelectAccessorySubCategories = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/YachtNotes/GetByYachtId/' + id,
+      const response = await axios.get('http://localhost:7153/api/AccessorySubCategories',
         {
           headers: {
             Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
           },
         });
-      setNotes(response.data.data);
+      const optionsData = response.data.data.map(item => ({
+        label: item.name,
+        value: item.id,
+      }));
+      setOptionsSubCategory(optionsData);
 
     } catch (err) {
       // setErrorClosedTicket(false);
@@ -220,26 +192,16 @@ export default function Page() {
   useEffect(() => {
     fetchData();
     fetchSelectBrand();
-    fetchSelectModel();
-    fetchSelectUser();
+    fetchSelectAccessorySubCategories();
+    fetchSelectAccessoryCategories();
+    fetchSelectComapny();
 
   }, []);
 
   const columns = [
     { id: "id", label: "id" },
     { id: "name", label: "name" },
-    { id: "port", label: "port" },
-    { id: "depth", label: "depth" },
-    { id: "breadth", label: "breadth" },
-    { id: "grossTonnage", label: "grossTonnage" },
-    { id: "netTonnage", label: "netTonnage" },
-    { id: "yearOfBuild", label: "yearOfBuild" },
-
-    { id: "expiryDate", label: "expiryDate",
-      render: (row) => {
-        const date = new Date(row.expiryDate);
-        return date.toLocaleDateString();
-      }},
+    { id: "description", label: "description" },
     { id: "createdDate", label: "createdDate",
       render: (row) => {
         const date = new Date(row.createdDate);
@@ -271,13 +233,6 @@ export default function Page() {
           >
             <i className='tabler-trash' />
           </IconButton>
-          <IconButton
-            size="small"
-            color={'secondary'}
-            onClick={() => handleNote(row.id)}
-          >
-            <i className='tabler-notes' />
-          </IconButton>
         </>
       ),
     },
@@ -286,8 +241,7 @@ export default function Page() {
   const handleEdit = (row) => {
     setIsEdit(true);
     setParams(row);
-    getYachtNoteByID(row.id);
-    removeKeysWithFilter(["user", "yachtModel", "yachtBrand", "shipType", "methodOfPropulsion", "salesStatus", "yachtNotes", "createdDate",  "updatedDate"]);  // Pass an array of keys to remove
+    removeKeysWithFilter([ "createdDate",  "updatedDate"]);  // Pass an array of keys to remove
     handleOpen();
   };
 
@@ -298,10 +252,6 @@ export default function Page() {
     setRemoveID(id);
   };
 
-  const handleNote = (id) => {
-    handleOpenNoteModal(true);
-    setId(id);
-  };
 
   const handleOpen = () => {
     setOpen(true);
@@ -311,13 +261,10 @@ export default function Page() {
     setOpenDeleteModal(true);
   };
 
-  const handleOpenNoteModal = () => {
-    setOpenNotesModal(true);
-  };
+
   const handleClose = () => {
     setOpen(false);
     setIsEdit(false);
-    setInputValue(''); // Reset the input when closing
     setActiveTab(0);
     clearParams()
   };
@@ -341,16 +288,19 @@ export default function Page() {
       newErrors.name = 'Name is required';
     }
 
-    if (params.userId === '' || params.userId === null) {
-      newErrors.userId = 'User is required';
+    if (params.companyId === '' || params.companyId === null) {
+      newErrors.companyId = 'Company is required';
     }
 
     if (params.yachtBrandId === '' || params.yachtBrandId === null) {
       newErrors.yachtBrandId = 'Brand is required';
     }
 
-    if (params.yachtModelId === '' || params.yachtModelId === null) {
-      newErrors.yachtModelId = 'Model is required';
+    if (params.accessoryCategoryId === '' || params.accessoryCategoryId === null) {
+      newErrors.accessoryCategoryId = 'Accessory Category is required';
+    }
+    if (params.accessorySubCategoryId === '' || params.accessorySubCategoryId === null) {
+      newErrors.accessorySubCategoryId = 'Accessory Sub Category is required';
     }
 
     setErrors(newErrors);
@@ -358,7 +308,7 @@ export default function Page() {
       if (isEdit) {
         const editModel = async () => {
           try {
-            const response = await axios.put('http://localhost:7153/api/Yachts/Update', params,
+            const response = await axios.put('http://localhost:7153/api/Accessories/Update', params,
               {
                 headers: {
                   Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -375,7 +325,7 @@ export default function Page() {
       else {
         const createYacht = async () => {
           try {
-            const response = await axios.post('http://localhost:7153/api/Yachts', params,
+            const response = await axios.post('http://localhost:7153/api/Accessories', params,
               {
                 headers: {
                   Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -396,68 +346,16 @@ export default function Page() {
 
   };
 
-  const handleNotesSave = () => {
-    event.preventDefault();
-    let newErrors = {};
-
-    // Validate required fields
-    if (inputValue === '') {
-      newErrors.name = 'Name is required';
-    }
-
-    setNoteErrors(newErrors);
-
-    if (Object.keys(newErrors).length === 0) {
-      const createNote = async () => {
-        const notes = {
-          "name": inputValue,
-          "yachtId": id
-        }
-        try {
-          const response = await axios.post('http://localhost:7153/api/YachtNotes', notes,
-            {
-              headers: {
-                Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-              },
-            });
-
-        } catch (err) {
-          // setErrorClosedTicket(false);
-        }
-      };
-
-      createNote();
-
-      setTimeout(() => { fetchData(); }, 2000)
-
-      handleNotesClose();
-    }
-
-
-  };
-
   const handleDelClose = () => {
     setOpenDeleteModal(false);
     setNameDel(''); // Reset the input when closing
   };
 
-  const handleNotesClose = () => {
-    setOpenNotesModal(false);
-    setInputValue(''); // Reset the input when closing
-    const clearValues = {
-      name: '',
-    }
-    setNoteErrors(param => ({
-      ...param,
-      ...clearValues
-    }))
-    // setNameDel(''); // Reset the input when closing
-  };
 
   const handleDelSave = () => {
     const deleteYacht = async () => {
       try {
-        const response = await axios.get('http://localhost:7153/api/Yachts/Remove/' + removeID,
+        const response = await axios.get('http://localhost:7153/api/Accessories/Remove/' + removeID,
           {
             headers: {
               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -487,72 +385,10 @@ export default function Page() {
     }
   };
 
-  const handleTabChange = (event, newTab) => {
-    setActiveTab(newTab);
-  };
-
-  const handleNoteChange = (index, newName) => {
-    const updatedNotes = [...notes];
-    updatedNotes[index].name = newName;  // Update the specific note's name
-    setNotes(updatedNotes);
-
-
-  };
-
-  const handleDeleteNote = (note_id) => {
-    const deleteNote = async () => {
-      try {
-        const response = await axios.get('http://localhost:7153/api/YachtNotes/Remove/' + note_id,
-          {
-            headers: {
-              Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-            },
-          });
-
-      } catch (err) {
-        // setErrorClosedTicket(false);
-      }
-    };
-
-    deleteNote();
-    setTimeout(() => { getYachtNoteByID(id); }, 2000)
-
-  };
-
-  const handleUpdateNote = (note_id) => {
-    for (let i = 0; i < notes.length; i++) {
-      if (notes[i].id === note_id) {
-        const param = {
-          "id": notes[i].id,
-          "name": notes[i].name,
-          "yachtId": notes[i].yachtId
-        }
-        const updateNote = async () => {
-          try {
-            const response = await axios.put('http://localhost:7153/api/YachtNotes/Update', param,
-              {
-                headers: {
-                  Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-                },
-              });
-
-          } catch (err) {
-            // setErrorClosedTicket(false);
-          }
-        };
-
-        updateNote();
-      }
-    }
-
-    setTimeout(() => { getYachtNoteByID(id); }, 2000)
-
-  };
-
   return (
     <>
       <Dialog open={open} onClose={handleClose}>
-        {isEdit ? <DialogTitle>{t("editYacht")}</DialogTitle> :  <DialogTitle>{t("createNewYacht")}</DialogTitle>}
+        {isEdit ? <DialogTitle>{t("editAccessory")}</DialogTitle> :  <DialogTitle>{t("createNewAccessory")}</DialogTitle>}
         <form
           noValidate
           autoComplete="off"
@@ -560,19 +396,7 @@ export default function Page() {
           className="flex flex-col gap-5"
         >
           <DialogContent className={"pt-3"} sx={{ minWidth: "500px", maxWidth: "800px" }}>
-            {isEdit &&
-              <Box className={"mb-3"}>
 
-                <Grid container spacing={4} >
-                  <Tabs value={activeTab} onChange={handleTabChange} aria-label="Edit Yacht Tabs">
-                    <Tab label={t("yachtFields")} />
-                    <Tab label={t("yachtNotes")} />
-                  </Tabs>
-                </Grid>
-              </Box>
-            }
-
-            {activeTab === 0   &&
               <Grid container spacing={4} >
                 { Object.keys(params).map(key => (
                   key === "yachtBrandId" ? (
@@ -586,7 +410,6 @@ export default function Page() {
                             label={t("selectBrand")}
                             variant="outlined"
                             value={params[key] || "" }
-
                             onChange={(e) => handleInputChange(key, e.target.value)}
                             displayEmpty
                           >
@@ -604,21 +427,21 @@ export default function Page() {
                       </Grid>
 
                     ) :
-                    key === "yachtModelId" ? (
+                    key === "companyId" ? (
                         <Grid item xs={12} sm={6} key={key}>
                           <FormControl fullWidth variant="outlined" error={!!errors[key]}>
-                            <InputLabel>{t("selectModel")}</InputLabel>
+                            <InputLabel>{t("selectCompany")}</InputLabel>
                             <Select
                               key={key}
                               fullWidth
                               variant="outlined"
                               value={params[key]|| "" }
-                              label={t("selectModel")}
+                              label={t("selectCompany")}
                               onChange={(e) => handleInputChange(key, e.target.value)}
                               displayEmpty
                             >
                               {/*<MenuItem value="" disabled>{t("selectModel")}</MenuItem>*/}
-                              {optionsModels.map(option => (
+                              {optionsCompany.map(option => (
                                 <MenuItem key={option.value} value={option.value}>
                                   {option.label}
                                 </MenuItem>
@@ -630,21 +453,21 @@ export default function Page() {
                         </Grid>
 
                       ):
-                      key === "userId" ? (
+                      key === "accessoryCategoryId" ? (
                         <Grid item xs={12} sm={6} key={key}>
                           <FormControl fullWidth variant="outlined" error={!!errors[key]}>
-                            <InputLabel>{t("selectUsers")}</InputLabel>
+                            <InputLabel>{t("selectAccessoryCategory")}</InputLabel>
                             <Select
                               key={key}
                               fullWidth
-                              label={t("selectUsers")}
+                              label={t("selectAccessoryCategory")}
                               variant="outlined"
                               value={params[key]|| "" }
                               onChange={(e) => handleInputChange(key, e.target.value)}
                               displayEmpty
                             >
                               {/*<MenuItem value="" disabled>{t("selectUsers")}</MenuItem>*/}
-                              {optionsUsers.map(option => (
+                              {optionsCategory.map(option => (
                                 <MenuItem key={option.value} value={option.value}>
                                   {option.label}
                                 </MenuItem>
@@ -655,7 +478,32 @@ export default function Page() {
 
                         </Grid>
 
-                      ) : (
+                      ) : key === "accessorySubCategoryId" ? (
+                          <Grid item xs={12} sm={6} key={key}>
+                            <FormControl fullWidth variant="outlined" error={!!errors[key]}>
+                              <InputLabel>{t("selectAccessorySubCategory")}</InputLabel>
+                              <Select
+                                key={key}
+                                fullWidth
+                                label={t("selectAccessorySubCategory")}
+                                variant="outlined"
+                                value={params[key]|| "" }
+                                onChange={(e) => handleInputChange(key, e.target.value)}
+                                displayEmpty
+                              >
+                                {/*<MenuItem value="" disabled>{t("selectUsers")}</MenuItem>*/}
+                                {optionsSubCategory.map(option => (
+                                  <MenuItem key={option.value} value={option.value}>
+                                    {option.label}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                              <FormHelperText>{t(errors[key])}</FormHelperText>
+                            </FormControl>
+
+                          </Grid>
+
+                        ) : (
                         <Grid item xs={12} sm={6} key={key}>
                           {key === "expiryDate"  ?
                             <TextField
@@ -674,6 +522,8 @@ export default function Page() {
                               fullWidth
                               variant="outlined"
                               label={t(key)}
+                              multiline  // Makes the field a textarea
+                              rows={key === "description" ? 4 : 1}
                               type={typeof params[key] === "string" ? "text" : "number"}
                               value={params[key]}
                               error={key === "name" ? !!errors[key]: false} // If there's an error, show it
@@ -685,60 +535,26 @@ export default function Page() {
                       )
                 ))}
               </Grid>
-            }
-
-            {activeTab === 1 &&
-              notes.map((note, index) => (
-                <div>
-                  <Divider flexItem={true}/>
-                  <Box className={"mb-3 flex"} sx={{ alignItems: 'flex-end' , justifyContent: "space-between"}}>
-                    <Grid item xs={10} sm={6} key={index} className={"me-8"}>
-                      <TextField
-                        variant="outlined"
-                        // label={`Note ${index + 1} Name`}
-                        label={t("name")}
-                        value={note.name}
-                        className={"ms-2 mt-4"}
-                        onChange={(e) => handleNoteChange(index, e.target.value)}
-
-                      />
-
-                    </Grid>
-                    <Grid item xs={4} sm={6} key={index + "buttonsUpdate"} className={"ms-8"}>
-                      <Button onClick={(e) => handleUpdateNote(note.id)} color="success" key={index + "update"}>
-                        {t("update")}
-                      </Button>
-                      <Button onClick={(e) => handleDeleteNote(note.id)} color="error" key={index + "delete"}>
-                        {t("delete")}
-                      </Button>
-                    </Grid>
-                  </Box>
-                  <Divider flexItem={true}/>
-                </div>
-              ))
-            }
           </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="secondary">
+              {t("cancel")}
+            </Button>
+            <Button onClick={handleSave} color="primary">
+              {isEdit ? t("edit") : t("create")}
+            </Button>
+          </DialogActions>
 
-          {activeTab === 0 &&
-            <DialogActions>
-              <Button onClick={handleClose} color="secondary">
-                {t("cancel")}
-              </Button>
-              <Button onClick={handleSave} color="primary">
-                {isEdit ? t("edit") : t("create")}
-              </Button>
-            </DialogActions>
-          }
         </form>
 
 
       </Dialog>
       <Dialog open={openDeleteModal} onClose={handleDelClose}>
-        <DialogTitle>{t("deleteYacht")}</DialogTitle>
+        <DialogTitle>{t("deleteAccessory")}</DialogTitle>
         <DialogContent>
           {i18n.language==='en' ?
-            <Typography component='div'>{t('deleteYachtMessage') }<Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box>?</Typography>
-            : <Typography> <Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box> {t('deleteYachtMessage') }</Typography>}
+            <Typography component='div'>{t('deleteAccessoryMessage') }<Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box>?</Typography>
+            : <Typography> <Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box> {t('deleteAccessoryMessage') }</Typography>}
 
         </DialogContent>
         <DialogActions>
@@ -750,44 +566,9 @@ export default function Page() {
           </Button>
         </DialogActions>
       </Dialog>
-      <Dialog open={openNotesModal} onClose={handleNotesClose} fullWidth>
-        <DialogTitle>{t("createNote")}</DialogTitle>
-        <form
-          noValidate
-          autoComplete="off"
-          onSubmit={handleNotesSave}
-          className="flex flex-col gap-5"
-        >
-          <DialogContent>
-            <TextField
-              autoFocus
-              margin="dense"
-              label={t("name")}
-              multiline  // Makes the field a textarea
-              rows={4}  // Adjusts the number of visible rows (height)
-              type="text"
-              fullWidth
-              error={!!noteErrors.name} // If there's an error, show it
-              helperText={t(noteErrors.name)} // Display the error message
-              variant="outlined"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={handleNotesClose} color="secondary">
-              {t("cancel")}
-            </Button>
-            <Button onClick={handleNotesSave} color="primary">
-              {t("create")}
-            </Button>
-          </DialogActions>
-        </form>
-
-      </Dialog>
       <Grid container spacing={6}>
         <Grid item xs={12} sm={6} md={6} lg={6}>
-          <Typography variant='h4'>{t("yachtOps")}</Typography>
+          <Typography variant='h4'>{t("accessoryOps")}</Typography>
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <Card>

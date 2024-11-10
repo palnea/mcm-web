@@ -15,7 +15,7 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  FormControl,
+  FormControl, FormHelperText,
   InputLabel,
   Select,
   Tab,
@@ -39,10 +39,21 @@ export default function Page() {
 
   const [params, setParams] = useState({
     "name": "",
-    "description": "",
     "companyId": null,
     "yachtBrandId": null,
     "sparePartCategoryId": null,
+    "description": "",
+  });
+
+  const [errors, setErrors] = useState({
+    name: '',
+    companyId: '',
+    yachtBrandId: '',
+    sparePartCategoryId: '',
+  });
+
+  const [partErrors, setPartErrors] = useState({
+    name: '',
   });
 
   const clearParams = () => {
@@ -54,6 +65,17 @@ export default function Page() {
       "sparePartCategoryId": null,
     }
     setParams(param => ({
+      ...param,
+      ...clearValues
+    }))
+
+     clearValues = {
+       name: '',
+       companyId: '',
+       yachtBrandId: '',
+       sparePartCategoryId: '',
+    }
+    setErrors(param => ({
       ...param,
       ...clearValues
     }))
@@ -74,12 +96,13 @@ export default function Page() {
 
   const fetchData = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/SpareParts',
+      const response = await axios.get('http://localhost:7153/api/SpareParts/GetAllWithDetails',
         {
           headers: {
             Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
           },
         });
+      console.log(response.data.data);
       setRows(response.data.data);
 
 
@@ -178,6 +201,7 @@ export default function Page() {
   const columns = [
     { id: "id", label: "id" },
     { id: "name", label: "name" },
+    { id: "description", label: "description" },
     { id: "createdDate", label: "createdDate",
       render: (row) => {
         const date = new Date(row.createdDate);
@@ -270,67 +294,104 @@ export default function Page() {
   };
 
   const handleSave = () => {
-    if (isEdit) {
-      const editModel = async () => {
-        try {
-          const response = await axios.put('http://localhost:7153/api/SpareParts/Update', params,
-            {
-              headers: {
-                Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-              },
-            });
+    event.preventDefault();
+    let newErrors = {};
 
-        } catch (err) {
-          // setErrorClosedTicket(false);
-        }
-      };
-
-      editModel();
+    // Validate required fields
+    if (params.name === '') {
+      newErrors.name = 'Name is required';
     }
-    else {
-      const createSparePart = async () => {
-        try {
-          const response = await axios.post('http://localhost:7153/api/SpareParts', params,
-            {
-              headers: {
-                Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-              },
-            });
 
-        } catch (err) {
-          // setErrorClosedTicket(false);
-        }
-      };
-
-      createSparePart();
+    if (params.companyId === '' || params.companyId === null) {
+      newErrors.companyId = 'Company is required';
     }
-    setTimeout(() => { fetchData(); }, 2000)
 
-    handleClose();
+    if (params.yachtBrandId === '' || params.yachtBrandId === null) {
+      newErrors.yachtBrandId = 'Brand is required';
+    }
+
+    if (params.sparePartCategoryId === '' || params.sparePartCategoryId === null) {
+      newErrors.sparePartCategoryId = 'Spare part category is required';
+    }
+
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length === 0) {
+      if (isEdit) {
+        const editModel = async () => {
+          try {
+            const response = await axios.put('http://localhost:7153/api/SpareParts/Update', params,
+              {
+                headers: {
+                  Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+                },
+              });
+
+          } catch (err) {
+            // setErrorClosedTicket(false);
+          }
+        };
+
+        editModel();
+      }
+      else {
+        const createSparePart = async () => {
+          try {
+            const response = await axios.post('http://localhost:7153/api/SpareParts', params,
+              {
+                headers: {
+                  Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+                },
+              });
+
+          } catch (err) {
+            // setErrorClosedTicket(false);
+          }
+        };
+
+        createSparePart();
+      }
+      setTimeout(() => { fetchData(); }, 2000)
+
+      handleClose();
+    }
+
   };
 
   const handlePartCodesSave = () => {
-    const createPartCode = async () => {
-      const partCodes = {
-        "name": inputValue,
-        "sparePartId": id
-      }
-      try {
-        const response = await axios.post('http://localhost:7153/api/SparePartCodes', partCodes,
-          {
-            headers: {
-              Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-            },
-          });
+    event.preventDefault();
+    let newErrors = {};
 
-      } catch (err) {
-        // setErrorClosedTicket(false);
-      }
-    };
+    // Validate required fields
+    if (inputValue === '') {
+      newErrors.name = 'Name is required';
+    }
 
-    createPartCode();
-    setTimeout(() => { fetchData(); }, 2000)
-    handlePartCodeClose();
+    setPartErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      const createPartCode = async () => {
+        const partCodes = {
+          "name": inputValue,
+          "sparePartId": id
+        }
+        try {
+          const response = await axios.post('http://localhost:7153/api/SparePartCodes', partCodes,
+            {
+              headers: {
+                Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+              },
+            });
+
+        } catch (err) {
+          // setErrorClosedTicket(false);
+        }
+      };
+
+      createPartCode();
+      setTimeout(() => { fetchData(); }, 2000)
+      handlePartCodeClose();
+    }
+
   };
 
   const handleDelClose = () => {
@@ -440,176 +501,190 @@ export default function Page() {
       <Dialog open={open} onClose={handleClose}>
         {isEdit ? <DialogTitle>{t("editSparePart")}</DialogTitle> :  <DialogTitle>{t("createNewSparePart")}</DialogTitle>}
 
-        <DialogContent className={"pt-3"} sx={{ minWidth: "500px", maxWidth: "800px" }}>
-          {isEdit &&
-            <Box className={"mb-3"}>
-              <Grid container spacing={4} >
-                <Tabs value={activeTab} onChange={handleTabChange}>
-                  <Tab label={t("spareParts")} />
-                  <Tab label={t("partCodes")} />
-                </Tabs>
-              </Grid>
-            </Box>
-          }
-          {activeTab === 0   &&
-            <Grid container spacing={4} >
-              { Object.keys(params).map(key => (
-                key === "yachtBrandId" ? (
-                    <Grid item xs={12} sm={6} key={key}>
-                      <FormControl fullWidth variant="outlined">
-                        <InputLabel>{t("selectBrand")}</InputLabel>
-                        <Select
-                          margin="dense"
-                          key={key}
-                          fullWidth
-                          label={t("selectBrand")}
-                          variant="outlined"
-                          value={params[key] || "" }
-                          onChange={(e) => handleInputChange(key, e.target.value)}
-                          displayEmpty
-                        >
-                          {/*<MenuItem value="" disabled>{t("selectBrand")}</MenuItem>*/}
-                          {optionsBrands.map(option => (
-                            <MenuItem key={option.value} value={option.value}>
-                              {option.label}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                      </FormControl>
-
-
-                    </Grid>
-
-                  ) :
-                  key === "sparePartCategoryId" ? (
-                      <Grid item xs={12} sm={6} key={key}>
-                        <FormControl fullWidth variant="outlined">
-                          <InputLabel>{t("selectSparePartCategory")}</InputLabel>
-                          <Select
-                            key={key}
-                            fullWidth
-                            label={t("selectSparePartCategory")}
-                            variant="outlined"
-                            value={params[key]|| "" }
-                            onChange={(e) => handleInputChange(key, e.target.value)}
-                            displayEmpty
-                          >
-                            {/*<MenuItem value="" disabled>{t("selectSparePartCategory")}</MenuItem>*/}
-                            {optionsSparePartCategories.map(option => (
-                              <MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </Grid>
-                    ):
-                    key === "companyId" ? (
-                      <Grid item xs={12} sm={6} key={key}>
-                        <FormControl fullWidth variant="outlined">
-                          <InputLabel>{t("selectCompany")}</InputLabel>
-                          <Select
-                            key={key}
-                            fullWidth
-                            label={t("selectCompany")}
-                            variant="outlined"
-                            value={params[key]|| "" }
-                            onChange={(e) => handleInputChange(key, e.target.value)}
-                            displayEmpty
-                          >
-                            {/*<MenuItem value="" disabled>{t("selectCompany")}</MenuItem>*/}
-                            {optionsCompanies.map(option => (
-                              <MenuItem key={option.value} value={option.value}>
-                                {option.label}
-                              </MenuItem>
-                            ))}
-                          </Select>
-                        </FormControl>
-                      </Grid>
-
-                    ) : (
-                      <Grid item xs={12} sm={6} key={key}>
-                        {key === "expiryDate"  ?
-                          <TextField
-                            key={key}
-                            fullWidth
-                            type="date"  // Setting type to "date"
-                            InputLabelProps={{ shrink: true }}
-                            value={params[key].slice(0, 10)}  // Format date for display
-                            variant="outlined"
-                            label={t(key)}
-                            onChange={(e) => handleInputChange(key, e.target.value)}
-                          />
-                          : key !== "id" &&
-                          <TextField
-                            key={key}
-                            fullWidth
-                            variant="outlined"
-                            label={t(key)}
-                            type={typeof params[key] === "string" ? "text" : "number"}
-                            value={params[key]}
-                            onChange={(e) => handleInputChange(key, e.target.value)}
-                          />
-                        }
-                      </Grid>
-                    )
-              ))}
-            </Grid>
-          }
-
-          {activeTab === 1 &&
-            PartCodes.map((PartCode, index) => (
-              <div>
-                <Divider flexItem={true}/>
-                <Box className={"mb-3 flex"} sx={{ alignItems: 'flex-end' , justifyContent: "space-between"}}>
-                  <Grid item xs={10} sm={6} key={index} className={"me-8"}>
-                    <TextField
-                      variant="outlined"
-                      // label={`PartCode ${index + 1} Name`}
-                      label={t("partCodeName")}
-                      value={PartCode.name}
-                      className={"ms-2 mt-4"}
-                      onChange={(e) => handlePartCodeChange(index, e.target.value)}
-
-                    />
-
-                  </Grid>
-                  <Grid item xs={4} sm={6} key={index + "buttonsUpdate"} className={"ms-8"}>
-                    <Button onClick={(e) => handleUpdatePartCode(PartCode.id)} color="success" key={index + "update"}>
-                      {t("update")}
-                    </Button>
-                    <Button onClick={(e) => handleDeletePartCode(PartCode.id)} color="error" key={index + "delete"}>
-                      {t("delete")}
-                    </Button>
-                  </Grid>
-                </Box>
-                <Divider flexItem={true}/>
-              </div>
-            ))
-          }
-          {PartCodes.length === 0 && activeTab === 1 &&
-            <div>
-              <Box className={"mb-3 flex"} sx={{ alignItems: 'flex-end' , justifyContent: "space-between"}}>
-                <Grid item xs={10} sm={6} className={"me-8"}>
-                  <Typography>{t('thereAreNoPartCode')}</Typography>
-
-
+        <form
+          noValidate
+          autoComplete="off"
+          onSubmit={handleSave}
+          className="flex flex-col gap-5"
+        >
+          <DialogContent className={"pt-3"} sx={{ minWidth: "500px", maxWidth: "800px" }}>
+            {isEdit &&
+              <Box className={"mb-3"}>
+                <Grid container spacing={4} >
+                  <Tabs value={activeTab} onChange={handleTabChange}>
+                    <Tab label={t("spareParts")} />
+                    <Tab label={t("partCodes")} />
+                  </Tabs>
                 </Grid>
               </Box>
-            </div>
-          }
-        </DialogContent>
+            }
+            {activeTab === 0   &&
+              <Grid container spacing={4} >
+                { Object.keys(params).map(key => (
+                  key === "yachtBrandId" ? (
+                      <Grid item xs={12} sm={6} key={key}>
+                        <FormControl fullWidth variant="outlined" error={!!errors[key]}>
+                          <InputLabel>{t("selectBrand")}</InputLabel>
+                          <Select
+                            margin="dense"
+                            key={key}
+                            fullWidth
+                            label={t("selectBrand")}
+                            variant="outlined"
+                            value={params[key] || "" }
+                            onChange={(e) => handleInputChange(key, e.target.value)}
+                            displayEmpty
+                          >
+                            {/*<MenuItem value="" disabled>{t("selectBrand")}</MenuItem>*/}
+                            {optionsBrands.map(option => (
+                              <MenuItem key={option.value} value={option.value}>
+                                {option.label}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                          <FormHelperText>{t(errors[key])}</FormHelperText>
+                        </FormControl>
 
-        {activeTab === 0 &&
-          <DialogActions>
-            <Button onClick={handleClose} color="secondary">
-              {t("cancel")}
-            </Button>
-            <Button onClick={handleSave} color="primary">
-              {isEdit ? t("edit") : t("create")}
-            </Button>
-          </DialogActions>
-        }
+
+                      </Grid>
+
+                    ) :
+                    key === "sparePartCategoryId" ? (
+                        <Grid item xs={12} sm={6} key={key}>
+                          <FormControl fullWidth variant="outlined" error={!!errors[key]}>
+                            <InputLabel>{t("selectSparePartCategory")}</InputLabel>
+                            <Select
+                              key={key}
+                              fullWidth
+                              label={t("selectSparePartCategory")}
+                              variant="outlined"
+                              value={params[key]|| "" }
+                              onChange={(e) => handleInputChange(key, e.target.value)}
+                              displayEmpty
+                            >
+                              {/*<MenuItem value="" disabled>{t("selectSparePartCategory")}</MenuItem>*/}
+                              {optionsSparePartCategories.map(option => (
+                                <MenuItem key={option.value} value={option.value}>
+                                  {option.label}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                            <FormHelperText>{t(errors[key])}</FormHelperText>
+                          </FormControl>
+                        </Grid>
+                      ):
+                      key === "companyId" ? (
+                        <Grid item xs={12} sm={6} key={key}>
+                          <FormControl fullWidth variant="outlined" error={!!errors[key]}>
+                            <InputLabel>{t("selectCompany")}</InputLabel>
+                            <Select
+                              key={key}
+                              fullWidth
+                              label={t("selectCompany")}
+                              variant="outlined"
+                              value={params[key]|| "" }
+                              onChange={(e) => handleInputChange(key, e.target.value)}
+                              displayEmpty
+                            >
+                              {/*<MenuItem value="" disabled>{t("selectCompany")}</MenuItem>*/}
+                              {optionsCompanies.map(option => (
+                                <MenuItem key={option.value} value={option.value}>
+                                  {option.label}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                            <FormHelperText>{t(errors[key])}</FormHelperText>
+                          </FormControl>
+                        </Grid>
+
+                      ) : (
+                        <Grid item xs={12} sm={6} key={key}>
+                          {key === "description"  ?
+                            <TextField
+                              key={key}
+                              fullWidth
+                              multiline  // Makes the field a textarea
+                              rows={4}  // Adjusts the number of visible rows (height)
+                              InputLabelProps={{ shrink: true }}
+                              value={params[key].slice(0, 10)}  // Format date for display
+                              variant="outlined"
+                              label={t(key)}
+                              onChange={(e) => handleInputChange(key, e.target.value)}
+                            />
+                            : key !== "id" &&
+                            <TextField
+                              key={key}
+                              fullWidth
+                              variant="outlined"
+                              label={t(key)}
+                              type={typeof params[key] === "string" ? "text" : "number"}
+                              value={params[key]}
+                              error={key === "name" ? !!errors[key]: false} // If there's an error, show it
+                              helperText={t(errors[key])} // Display the error message
+                              onChange={(e) => handleInputChange(key, e.target.value)}
+                            />
+                          }
+                        </Grid>
+                      )
+                ))}
+              </Grid>
+            }
+
+            {activeTab === 1 &&
+              PartCodes.map((PartCode, index) => (
+                <div>
+                  <Divider flexItem={true}/>
+                  <Box className={"mb-3 flex"} sx={{ alignItems: 'flex-end' , justifyContent: "space-between"}}>
+                    <Grid item xs={10} sm={6} key={index} className={"me-8"}>
+                      <TextField
+                        variant="outlined"
+                        // label={`PartCode ${index + 1} Name`}
+                        label={t("partCodeName")}
+                        value={PartCode.name}
+                        className={"ms-2 mt-4"}
+                        onChange={(e) => handlePartCodeChange(index, e.target.value)}
+
+                      />
+
+                    </Grid>
+                    <Grid item xs={4} sm={6} key={index + "buttonsUpdate"} className={"ms-8"}>
+                      <Button onClick={(e) => handleUpdatePartCode(PartCode.id)} color="success" key={index + "update"}>
+                        {t("update")}
+                      </Button>
+                      <Button onClick={(e) => handleDeletePartCode(PartCode.id)} color="error" key={index + "delete"}>
+                        {t("delete")}
+                      </Button>
+                    </Grid>
+                  </Box>
+                  <Divider flexItem={true}/>
+                </div>
+              ))
+            }
+            {PartCodes.length === 0 && activeTab === 1 &&
+              <div>
+                <Box className={"mb-3 flex"} sx={{ alignItems: 'flex-end' , justifyContent: "space-between"}}>
+                  <Grid item xs={10} sm={6} className={"me-8"}>
+                    <Typography>{t('thereAreNoPartCode')}</Typography>
+
+
+                  </Grid>
+                </Box>
+              </div>
+            }
+          </DialogContent>
+
+          {activeTab === 0 &&
+            <DialogActions>
+              <Button onClick={handleClose} color="secondary">
+                {t("cancel")}
+              </Button>
+              <Button onClick={handleSave} color="primary">
+                {isEdit ? t("edit") : t("create")}
+              </Button>
+            </DialogActions>
+          }
+        </form>
+
 
       </Dialog>
       <Dialog open={openDeleteModal} onClose={handleDelClose}>
@@ -631,26 +706,36 @@ export default function Page() {
       </Dialog>
       <Dialog open={openPartCodeModal} onClose={handlePartCodeClose} fullWidth>
         <DialogTitle>{t("createPartCode")}</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label={t("name")}
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handlePartCodeClose} color="secondary">
-            {t("cancel")}
-          </Button>
-          <Button onClick={handlePartCodesSave} color="primary">
-            {t("create")}
-          </Button>
-        </DialogActions>
+        <form
+          noValidate
+          autoComplete="off"
+          onSubmit={handlePartCodesSave}
+          className="flex flex-col gap-5"
+        >
+          <DialogContent>
+            <TextField
+              autoFocus
+              margin="dense"
+              label={t("name")}
+              type="text"
+              fullWidth
+              error={!!partErrors.name} // If there's an error, show it
+              helperText={t(partErrors.name)} // Display the error message
+              variant="outlined"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handlePartCodeClose} color="secondary">
+              {t("cancel")}
+            </Button>
+            <Button onClick={handlePartCodesSave} color="primary">
+              {t("create")}
+            </Button>
+          </DialogActions>
+        </form>
+
       </Dialog>
       <Grid container spacing={6}>
         <Grid item xs={12} sm={6} md={6} lg={6}>

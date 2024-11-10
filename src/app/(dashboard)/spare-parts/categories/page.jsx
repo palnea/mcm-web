@@ -30,7 +30,9 @@ export default function Page() {
   const [isEdit, setIsEdit] = useState(false);
   const [inputValue, setInputValue] = useState('');
   const { t, i18n } = useTranslation('common');
-
+  const [errors, setErrors] = useState({
+    name: '',
+  });
 
   const fetchData = async (id, name) => {
     try {
@@ -127,53 +129,73 @@ export default function Page() {
     setInputValue(''); // Reset the input when closing
     setEditID("");
     setRemoveID("");
+    const clearValues = {
+      name: '',
+    }
+    setErrors(param => ({
+      ...param,
+      ...clearValues
+    }))
   };
 
   const handleSave = () => {
-    if (isEdit) {
-      const params = {
-        "id": editID,
-        "name": inputValue
-      }
-      const editSparePartCategories = async () => {
-        try {
-          const response = await axios.put('http://localhost:7153/api/SparePartCategories/Update', params,
-            {
-              headers: {
-                Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-              },
-            });
+    event.preventDefault();
+    let newErrors = {};
 
-        } catch (err) {
-          // setErrorClosedTicket(false);
-        }
-      };
-
-      editSparePartCategories();
+    // Validate required fields
+    if (inputValue === '') {
+      newErrors.name = 'Name is required';
     }
-    else {
-      const params = {
-        "name": inputValue
-      }
-      const createSparePartCategories = async () => {
-        try {
-          const response = await axios.post('http://localhost:7153/api/SparePartCategories', params,
-            {
-              headers: {
-                Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-              },
-            });
 
-        } catch (err) {
-          // setErrorClosedTicket(false);
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length === 0) {
+
+      if (isEdit) {
+        const params = {
+          "id": editID,
+          "name": inputValue
         }
-      };
+        const editSparePartCategories = async () => {
+          try {
+            const response = await axios.put('http://localhost:7153/api/SparePartCategories/Update', params,
+              {
+                headers: {
+                  Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+                },
+              });
 
-      createSparePartCategories();
+          } catch (err) {
+            // setErrorClosedTicket(false);
+          }
+        };
+
+        editSparePartCategories();
+      }
+      else {
+        const params = {
+          "name": inputValue
+        }
+        const createSparePartCategories = async () => {
+          try {
+            const response = await axios.post('http://localhost:7153/api/SparePartCategories', params,
+              {
+                headers: {
+                  Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+                },
+              });
+
+          } catch (err) {
+            // setErrorClosedTicket(false);
+          }
+        };
+
+        createSparePartCategories();
+      }
+      setTimeout(() => { fetchData(); }, 2000)
+
+      handleClose();
     }
-    setTimeout(() => { fetchData(); }, 2000)
 
-    handleClose();
   };
 
   const handleDelClose = () => {
@@ -205,27 +227,35 @@ export default function Page() {
     <>
       <Dialog open={open} onClose={handleClose}>
         {isEdit ? <DialogTitle>{t("editNewSparePartCategories")}</DialogTitle> :  <DialogTitle>{t("createNewSparePartCategories")}</DialogTitle>}
-
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            label={t("name")}
-            type="text"
-            fullWidth
-            variant="outlined"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="secondary">
-            {t("cancel")}
-          </Button>
-          <Button onClick={handleSave} color="primary">
-            {isEdit ? t("edit") : t("create")}
-          </Button>
-        </DialogActions>
+        <form
+          noValidate
+          autoComplete="off"
+          onSubmit={handleSave}
+          className="flex flex-col gap-5"
+        >
+          <DialogContent>
+            <TextField
+              autoFocus
+              margin="dense"
+              label={t("name")}
+              type="text"
+              fullWidth
+              variant="outlined"
+              error={!!errors.name} // If there's an error, show it
+              helperText={t(errors.name)} // Display the error message
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="secondary">
+              {t("cancel")}
+            </Button>
+            <Button onClick={handleSave} color="primary">
+              {isEdit ? t("edit") : t("create")}
+            </Button>
+          </DialogActions>
+        </form>
       </Dialog>
       <Dialog open={openDeleteModal} onClose={handleDelClose}>
         <DialogTitle>{t("deleteSparePartCategories")}</DialogTitle>

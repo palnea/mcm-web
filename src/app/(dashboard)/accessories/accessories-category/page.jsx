@@ -10,21 +10,11 @@ import useApi from "@/api_helper/useApi";
 import * as https from "https";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
-import {
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  FormHelperText,
-  InputLabel,
-  Select
-} from "@mui/material";
+import {Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import {useTranslation} from "react-i18next";
 import secureLocalStorage from "react-secure-storage";
 import Box from "@mui/material/Box";
-import MenuItem from "@mui/material/MenuItem";
 
 
 export default function Page() {
@@ -32,7 +22,6 @@ export default function Page() {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
   const [editID, setEditID] = useState('');
-  const [brandId, setBrandID] = useState('');
   const [removeID, setRemoveID] = useState('');
   const [rows, setRows] = useState([]);
 
@@ -40,17 +29,14 @@ export default function Page() {
   const [nameDel, setNameDel] = useState('');
   const [isEdit, setIsEdit] = useState(false);
   const [inputValue, setInputValue] = useState('');
-  const [idValue, setIdValue] = useState('');
   const { t, i18n } = useTranslation('common');
-  const [options, setOptions] = useState([]); // Options for the Select component
   const [errors, setErrors] = useState({
     name: '',
-    brandId: '',
   });
 
   const fetchData = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/YachtModels',
+      const response = await axios.get('http://localhost:7153/api/AccessoryCategories',
         {
           headers: {
             Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -58,47 +44,21 @@ export default function Page() {
         });
       setRows(response.data.data);
 
-
     } catch (err) {
       // setErrorClosedTicket(false);
     }
   };
 
-  const fetchSelect = async (id, name) => {
-    try {
-      const response = await axios.get('http://localhost:7153/api/YachtBrands',
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
-      const optionsData = response.data.data.map(item => ({
-        label: item.name,
-        value: item.id,
-      }));
-      setOptions(optionsData);
-
-
-    } catch (err) {
-      // setErrorClosedTicket(false);
-    }
-  };
-
-
-  useEffect(() => {
-    fetchData();
-    fetchSelect();
-
-    // console.log(data)
-  }, []);
+   useEffect(() => {
+     fetchData();
+   }, []);
 
 
   useEffect(() => {
     if (isEdit) {
       setInputValue(name);
-      setIdValue(brandId);
     }
-  }, [isEdit, name, brandId ]);
+  }, [isEdit, name]);
 
   const columns = [
     { id: "id", label: "id" },
@@ -123,19 +83,14 @@ export default function Page() {
           <IconButton
             size="small"
             color={'primary'}
-            // startIcon={<i className='tabler-pencil m-0' />}
-            onClick={() => handleEdit(row.id,  row.name, row.yachtBrandId)}
+            onClick={() => handleEdit(row.id,  row.name)}
           >
             <i className='tabler-pencil' />
           </IconButton>
-
-
-
           <IconButton
             color={'error'}
             size="small"
-            // startIcon={<i className='tabler-trash' />}
-            onClick={() => handleDelete(row.id, row.name, row.yachtBrandId)}
+            onClick={() => handleDelete(row.id, row.name)}
           >
             <i className='tabler-trash' />
           </IconButton>
@@ -144,21 +99,18 @@ export default function Page() {
     },
   ];
 
-  const handleEdit = (id, name, brandId) => {
+  const handleEdit = (id, name) => {
     setIsEdit(true);
     setName(name);
-    setEditID(id);
-    setBrandID(brandId);
+    setEditID(id)
     handleOpen();
-    //edit logic here
   };
 
 
   const handleDelete = (id, name) => {
-    handleOpenDeleteModal(true);
+     handleOpenDeleteModal(true);
     setNameDel(name);
     setRemoveID(id);
-    //delete logic here
   };
 
   const handleOpen = () => {
@@ -173,13 +125,10 @@ export default function Page() {
     setOpen(false);
     setIsEdit(false);
     setInputValue(''); // Reset the input when closing
-    setIdValue("")
     setEditID("");
-    setBrandID("");
     setRemoveID("");
     const clearValues = {
       name: '',
-      brandId: '',
     }
     setErrors(param => ({
       ...param,
@@ -189,30 +138,26 @@ export default function Page() {
 
   const handleSave = () => {
     event.preventDefault();
-
     let newErrors = {};
 
     // Validate required fields
     if (inputValue === '') {
       newErrors.name = 'Name is required';
     }
-    if (idValue === '') {
-      newErrors.brandId = 'Brand is required';
-    }
 
     setErrors(newErrors);
 
+
+    // Set the errors state
     if (Object.keys(newErrors).length === 0) {
-      let response = '';
       if (isEdit) {
         const params = {
           "id": editID,
-          "name": inputValue,
-          "yachtBrandId": idValue
+          "name": inputValue
         }
-        const editModel = async () => {
+        const editBrand = async () => {
           try {
-            response = await axios.put('http://localhost:7153/api/YachtModels/Update', params,
+            const response = await axios.put('http://localhost:7153/api/AccessoryCategories/Update', params,
               {
                 headers: {
                   Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -224,17 +169,15 @@ export default function Page() {
           }
         };
 
-        editModel();
+        editBrand();
       }
       else {
         const params = {
-          "name": inputValue,
-          "yachtBrandId":idValue
-
+          "name": inputValue
         }
-        const createModel = async () => {
+        const createBrand = async () => {
           try {
-            const response = await axios.post('http://localhost:7153/api/YachtModels', params,
+            const response = await axios.post('http://localhost:7153/api/AccessoryCategories', params,
               {
                 headers: {
                   Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -246,16 +189,12 @@ export default function Page() {
           }
         };
 
-        createModel();
+        createBrand();
       }
       setTimeout(() => { fetchData(); }, 2000)
-      // if ( 200 <= response.status && response.status < 300){
-      //   handleClose();
-      // }
-      handleClose()
 
+      handleClose();
     }
-
 
   };
 
@@ -267,7 +206,7 @@ export default function Page() {
   const handleDelSave = () => {
     const deleteBrand = async () => {
       try {
-        const response = await axios.get('http://localhost:7153/api/YachtModels/Remove/' + removeID,
+        const response = await axios.get('http://localhost:7153/api/AccessoryCategories/Remove/' + removeID,
           {
             headers: {
               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -285,14 +224,10 @@ export default function Page() {
     handleDelClose();
   };
 
-  const handleChange = (e) => {
-    setIdValue(e.target.value);
-  };
-
   return (
     <>
       <Dialog open={open} onClose={handleClose}>
-        {isEdit ? <DialogTitle>{t("editModel")}</DialogTitle> :  <DialogTitle>{t("createNewModel")}</DialogTitle>}
+        {isEdit ? <DialogTitle>{t("editAccessoryCategory")}</DialogTitle> :  <DialogTitle>{t("createAccessoryNewCategory")}</DialogTitle>}
         <form
           noValidate
           autoComplete="off"
@@ -300,43 +235,18 @@ export default function Page() {
           className="flex flex-col gap-5"
         >
           <DialogContent>
-            <Box display="flex" sx={{ alignItems: 'baseline' }}  gap={2}>
-              <TextField
-                autoFocus
-                margin="dense"
-                label={t("name")}
-                type="text"
-                value={inputValue}
-                error={!!errors.name} // If there's an error, show it
-                helperText={t(errors.name)} // Display the error message
-                onChange={(e) => setInputValue(e.target.value)}
-                sx = {{ flex: 1 }}
-              />
-              <FormControl variant="outlined"  error={!!errors.brandId}   sx={{ flex: 1 }}>
-                <InputLabel>{t("selectBrand")}</InputLabel>
-                <Select
-                  margin="dense"
-                  fullWidth
-                  variant="outlined"
-                  className="p-0"
-                  value={idValue}
-                  label={t("selectBrand")}
-                  // helperText={t(errors.brandId)} // Display the error message
-                  onChange={(e) => handleChange(e)}
-                  displayEmpty
-
-                >
-                  {options.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-                <FormHelperText>{t(errors.brandId)}</FormHelperText>
-              </FormControl>
-
-            </Box>
-
+            <TextField
+              autoFocus
+              margin="dense"
+              label={t("name")}
+              type="text"
+              fullWidth
+              variant="outlined"
+              value={inputValue}
+              error={!!errors.name} // If there's an error, show it
+              helperText={t(errors.name)} // Display the error message
+              onChange={(e) => setInputValue(e.target.value)}
+            />
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose} color="secondary">
@@ -350,11 +260,11 @@ export default function Page() {
 
       </Dialog>
       <Dialog open={openDeleteModal} onClose={handleDelClose}>
-        <DialogTitle>{t("deleteModel")}</DialogTitle>
+        <DialogTitle>{t("deleteAccessoryCategory")}</DialogTitle>
         <DialogContent>
           {i18n.language==='en' ?
-            <Typography component='div'>{t('deleteModelMessage') }<Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box>?</Typography>
-            : <Typography> <Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box> {t('deleteBrandMessage') }</Typography>}
+            <Typography component='div'>{t('deleteAccessoryCategoryMessage') }<Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box>?</Typography>
+            : <Typography> <Box fontWeight='fontWeightBold' display='inline'>{nameDel}</Box> {t('deleteAccessoryCategoryMessage') }</Typography>}
 
         </DialogContent>
         <DialogActions>
@@ -368,7 +278,7 @@ export default function Page() {
       </Dialog>
       <Grid container spacing={6}>
         <Grid item xs={12} sm={6} md={6} lg={6}>
-          <Typography variant='h4'>{t("modelOps")}</Typography>
+          <Typography variant='h4'>{t("accessoryCategoryOps")}</Typography>
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <Card>
@@ -377,14 +287,10 @@ export default function Page() {
                 <i className='tabler-plus' />
               </IconButton>
             </div>
-
             <CustomTable rows={rows} columns={columns} />
-
           </Card>
         </Grid>
       </Grid>
-
     </>
-
   )
 }

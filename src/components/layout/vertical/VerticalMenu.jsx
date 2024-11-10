@@ -75,12 +75,22 @@ const VerticalMenu = ({ scrollMenu }) => {
             {t("yahcts")}
           </MenuItem>
         </SubMenu>
-
-        <MenuItem href='/yacht-accessories' icon={<i className='tabler-playlist-add' />} button={"secondary"}>
-          {t("yahctAccessories")}
-        </MenuItem>
+        <MenuSection label={t("accessories")}/>
+        <SubMenu label={t("accessoriesCategory")} icon={<i className='tabler-device-ipad-horizontal-plus' />}>
+          <MenuItem href={`/accessories/accessories-category`} button={"secondary"}>
+            {t("accessoriesCategory")}
+          </MenuItem>
+          <MenuItem href='/accessories/accessories-subcategory'  button={"secondary"}>
+            {t("accessoriesSubcategory")}
+          </MenuItem>
+          <MenuItem href='/accessories/accessories'  button={"secondary"}>
+            {t("accessories")}
+          </MenuItem>
+        </SubMenu>
+        {/*<MenuItem href='/yacht-accessories' icon={<i className='tabler-playlist-add' />} button={"secondary"}>*/}
+        {/*  {t("yahctAccessories")}*/}
+        {/*</MenuItem>*/}
         <MenuSection label={t("spareParts")}/>
-
         <SubMenu label={t("spareParts")} icon={<i className='tabler-settings-plus' />}>
           <MenuItem href={`/spare-parts/categories`} button={"secondary"}>
             {t("categories")}

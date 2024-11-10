@@ -15,6 +15,9 @@ import themeConfig from '@configs/themeConfig'
 // Hook Imports
 import useVerticalNav from '@menu/hooks/useVerticalNav'
 import { useSettings } from '@core/hooks/useSettings'
+import Image from "next/image";
+
+// import logo from "../../../public/images/logo/mcm_logo_1.jpeg";
 
 const LogoText = styled.span`
   color: ${({ color }) => color ?? 'var(--mui-palette-text-primary)'};
@@ -57,7 +60,14 @@ const Logo = ({ color }) => {
 
   return (
     <div className='flex items-center'>
-      <VuexyLogo className='text-2xl text-primary' />
+      {/*<VuexyLogo className='text-2xl text-primary' />*/}
+      <Image
+        src="/images/logo/mcm_logo_2.jpeg"
+        alt={""}
+        width={45}
+        height={40}
+        priority
+      />
       <LogoText
         color={color}
         ref={logoTextRef}

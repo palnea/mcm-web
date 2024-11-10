@@ -23,6 +23,7 @@ import secureLocalStorage from "react-secure-storage";
 
 // Hook Imports
 import { useSettings } from '@core/hooks/useSettings'
+import {useTranslation} from "react-i18next";
 
 
 // Styled component for badge content
@@ -45,6 +46,7 @@ const UserDropdown = () => {
   // Hooks
   const router = useRouter()
   const { settings } = useSettings()
+  const { t, i18n } = useTranslation('common');
 
   const handleDropdownOpen = () => {
     !open ? setOpen(true) : setOpen(false)
@@ -65,6 +67,7 @@ const UserDropdown = () => {
   const handleUserLogout = async () => {
     // Redirect to login page
     secureLocalStorage.removeItem("accessToken");
+    secureLocalStorage.removeItem("user");
     router.push('/login')
   }
 
@@ -107,9 +110,9 @@ const UserDropdown = () => {
                     <Avatar alt='John Doe' src='/images/avatars/1.png' />
                     <div className='flex items-start flex-col'>
                       <Typography className='font-medium' color='text.primary'>
-                        John Doe
+                        {secureLocalStorage.getItem("user") ? secureLocalStorage.getItem("user").username : "John Doe"}
                       </Typography>
-                      <Typography variant='caption'>admin@vuexy.com</Typography>
+                      <Typography variant='caption'>{secureLocalStorage.getItem("user") ? secureLocalStorage.getItem("user").email : "test@example.com"}</Typography>
                     </div>
                   </div>
                   <Divider className='mlb-1' />
@@ -139,7 +142,7 @@ const UserDropdown = () => {
                       onClick={handleUserLogout}
                       sx={{ '& .MuiButton-endIcon': { marginInlineStart: 1.5 } }}
                     >
-                      Logout
+                      {t("logout")}
                     </Button>
                   </div>
                 </MenuList>

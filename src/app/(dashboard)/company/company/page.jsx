@@ -34,7 +34,10 @@ export default function Page() {
   const [idValue, setIdValue] = useState('');
   const { t, i18n } = useTranslation('common');
   const [options, setOptions] = useState([]); // Options for the Select component
-
+  const [errors, setErrors] = useState({
+    name: '',
+    imgUrl: '',
+  });
 
   const fetchData = async (id, name) => {
     try {
@@ -136,56 +139,81 @@ export default function Page() {
     setEditID("");
     setBrandID("");
     setRemoveID("");
+    const clearValues = {
+      name: '',
+      imgUrl: '',
+    }
+    setErrors(param => ({
+      ...param,
+      ...clearValues
+    }))
   };
 
   const handleSave = () => {
-    if (isEdit) {
-      const params = {
-        "id": editID,
-        "name": inputValue,
-        "imgUrl": inputIMGValue
-      }
-      const editModel = async () => {
-        try {
-          const response = await axios.put('http://localhost:7153/api/Companies/Update', params,
-            {
-              headers: {
-                Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-              },
-            });
+    event.preventDefault();
+    let newErrors = {};
 
-        } catch (err) {
-          // setErrorClosedTicket(false);
-        }
-      };
-
-      editModel();
+    // Validate required fields
+    if (inputValue === '') {
+      newErrors.name = 'Name is required';
     }
-    else {
-      const params = {
-        "name": inputValue,
-        "imgUrl":inputIMGValue
 
-      }
-      const createModel = async () => {
-        try {
-          const response = await axios.post('http://localhost:7153/api/Companies', params,
-            {
-              headers: {
-                Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-              },
-            });
-
-        } catch (err) {
-          // setErrorClosedTicket(false);
-        }
-      };
-
-      createModel();
+    if (inputIMGValue === '') {
+      newErrors.imgUrl = 'Image Url is required';
     }
-    setTimeout(() => { fetchData(); }, 2000)
 
-    handleClose();
+    setErrors(newErrors);
+
+    if (Object.keys(newErrors).length === 0) {
+      if (isEdit) {
+        const params = {
+          "id": editID,
+          "name": inputValue,
+          "imgUrl": inputIMGValue
+        }
+        const editModel = async () => {
+          try {
+            const response = await axios.put('http://localhost:7153/api/Companies/Update', params,
+              {
+                headers: {
+                  Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+                },
+              });
+
+          } catch (err) {
+            // setErrorClosedTicket(false);
+          }
+        };
+
+        editModel();
+      }
+      else {
+        const params = {
+          "name": inputValue,
+          "imgUrl":inputIMGValue
+
+        }
+        const createModel = async () => {
+          try {
+            const response = await axios.post('http://localhost:7153/api/Companies', params,
+              {
+                headers: {
+                  Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+                },
+              });
+
+          } catch (err) {
+            // setErrorClosedTicket(false);
+          }
+        };
+
+        createModel();
+      }
+      setTimeout(() => { fetchData(); }, 2000)
+
+      handleClose();
+    }
+
   };
 
   const handleDelClose = () => {
@@ -222,40 +250,52 @@ export default function Page() {
     <>
       <Dialog open={open} onClose={handleClose}>
         {isEdit ? <DialogTitle>{t("editCompany")}</DialogTitle> :  <DialogTitle>{t("createNewCompany")}</DialogTitle>}
-        <DialogContent>
-          <Box display="flex" sx={{ alignItems: 'baseline' }}  gap={2}>
-            <TextField
-              autoFocus
-              margin="dense"
-              label={t("name")}
-              type="text"
-              fullWidth
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              sx = {{ flex: 2 }}
-            />
-            <TextField
-              autoFocus
-              margin="dense"
-              label={t("imgUrl")}
-              type="text"
-              fullWidth
-              value={inputIMGValue}
-              onChange={(e) => setInputIMGValue(e.target.value)}
-              sx = {{ flex: 2 }}
-            />
+        <form
+          noValidate
+          autoComplete="off"
+          onSubmit={handleSave}
+          className="flex flex-col gap-5"
+        >
+          <DialogContent>
+            <Box display="flex" sx={{ alignItems: 'baseline' }}  gap={2}>
+              <TextField
+                autoFocus
+                margin="dense"
+                label={t("name")}
+                type="text"
+                fullWidth
+                value={inputValue}
+                error={!!errors.name} // If there's an error, show it
+                helperText={t(errors.name)}
+                onChange={(e) => setInputValue(e.target.value)}
+                sx = {{ flex: 2 }}
+              />
+              <TextField
+                autoFocus
+                margin="dense"
+                label={t("imgUrl")}
+                type="text"
+                fullWidth
+                value={inputIMGValue}
+                error={!!errors.imgUrl} // If there's an error, show it
+                helperText={t(errors.imgUrl)}
+                onChange={(e) => setInputIMGValue(e.target.value)}
+                sx = {{ flex: 2 }}
+              />
 
-          </Box>
+            </Box>
 
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="secondary">
-            {t("cancel")}
-          </Button>
-          <Button onClick={handleSave} color="primary">
-            {isEdit ? t("edit") : t("create")}
-          </Button>
-        </DialogActions>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} color="secondary">
+              {t("cancel")}
+            </Button>
+            <Button onClick={handleSave} color="primary">
+              {isEdit ? t("edit") : t("create")}
+            </Button>
+          </DialogActions>
+        </form>
+
       </Dialog>
       <Dialog open={openDeleteModal} onClose={handleDelClose}>
         <DialogTitle>{t("deleteCompany")}</DialogTitle>
