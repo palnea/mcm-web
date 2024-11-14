@@ -9,6 +9,7 @@ import * as https from "https";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import {
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -25,7 +26,8 @@ import secureLocalStorage from "react-secure-storage";
 import Box from "@mui/material/Box";
 import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
-
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Page() {
 
@@ -33,6 +35,7 @@ export default function Page() {
   const [removeID, setRemoveID] = useState('');
   const [rows, setRows] = useState([]);
   const [inputValue, setInputValue] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const [errors, setErrors] = useState({
     companyId: "",
@@ -81,7 +84,7 @@ export default function Page() {
       ...clearValues
     }))
 
-    clearValues = {
+    let clearValues2 = {
       companyId: "",
       username: "",
       password: "",
@@ -96,7 +99,7 @@ export default function Page() {
     }
     setErrors(param => ({
       ...param,
-      ...clearValues
+      ...clearValues2
     }))
   }
 
@@ -239,6 +242,8 @@ export default function Page() {
     setOpen(false);
     setIsEdit(false);
     setInputValue(''); // Reset the input when closing
+    removeKeysWithFilter([ "id"]);
+
     clearParams()
   };
 
@@ -255,6 +260,7 @@ export default function Page() {
   const handleSave = () => {
     event.preventDefault();
     let newErrors = {};
+    let is_successful = false;
 
     // Validate required fields
     if (params.username === '') {
@@ -305,42 +311,71 @@ export default function Page() {
     setErrors(newErrors);
 
     if (Object.keys(newErrors).length === 0) {
-      if (isEdit) {
-        const editUser = async () => {
-          try {
-            const response = await axios.put('http://localhost:7153/api/Users/Update', params,
-              {
-                headers: {
-                  Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-                },
-              });
+      // if (isEdit) {
+      //   const editUser = async () => {
+      //     try {
+      //       const response = await axios.put('http://localhost:7153/api/Users/Update', params,
+      //         {
+      //           headers: {
+      //             Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+      //           },
+      //         });
+      //
+      //     } catch (err) {
+      //       // setErrorClosedTicket(false);
+      //     }
+      //   };
+      //
+      //   editUser();
+      // }
+      // else {
+      //   const createUser = async () => {
+      //     try {
+      //       const response = await axios.post('http://localhost:7153/api/Users', params,
+      //         {
+      //           headers: {
+      //             Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+      //           },
+      //         });
+      //
+      //     } catch (err) {
+      //       // setErrorClosedTicket(false);
+      //     }
+      //   };
+      //
+      //   createUser();
+      // }
+      // setTimeout(() => { fetchData(); }, 2000)
+      // handleClose();
+      setLoading(true);
+      const saveBrand = async () => {
+        try {
+          const response = isEdit
+            ? await axios.put('http://localhost:7153/api/Users/Update', params, {
+              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
+            })
+            : await axios.post('http://localhost:7153/api/Users', params, {
+              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
+            });
 
-          } catch (err) {
-            // setErrorClosedTicket(false);
+          if (response.status >= 200 && response.status < 300) {
+            is_successful = true;
           }
-        };
+        } catch (err) {
+          console.error("Error:", err);
+          toast.error(t("An error occurred. Please try again."));
+        } finally {
+          setTimeout(() => setLoading(false), 800);
+        }
+      };
+      saveBrand().then(() => {
+        if (is_successful) {
+          setTimeout(() => handleClose(), 800);
+          setTimeout(() => toast.success(isEdit ? t('User updated successfully!') : t('User created successfully!')), 800);
 
-        editUser();
-      }
-      else {
-        const createUser = async () => {
-          try {
-            const response = await axios.post('http://localhost:7153/api/Users', params,
-              {
-                headers: {
-                  Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-                },
-              });
-
-          } catch (err) {
-            // setErrorClosedTicket(false);
-          }
-        };
-
-        createUser();
-      }
-      setTimeout(() => { fetchData(); }, 2000)
-      handleClose();
+          setTimeout(fetchData, 500); // Fetch updated data after closing
+        }
+      });
     }
 
   };
@@ -351,6 +386,8 @@ export default function Page() {
   };
 
   const handleDelSave = () => {
+    setLoading(true);
+    let is_successful = false;
     const deleteUser = async () => {
       try {
         const response = await axios.get('http://localhost:7153/api/Users/Remove/' + removeID,
@@ -359,15 +396,25 @@ export default function Page() {
               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
             },
           });
+        if (response.status >= 200 && response.status < 300) {
+          is_successful = true;
+        }
 
       } catch (err) {
-        // setErrorClosedTicket(false);
+        console.error("Error:", err);
+        toast.error(t("An error occurred. Please try again."));
+      }finally {
+        setTimeout(() => setLoading(false), 800);
       }
     };
+    deleteUser().then(() => {
+      if (is_successful) {
+        setTimeout(() => handleDelClose(), 800);
+        setTimeout(() => toast.success(t('User deleted successfully!')), 800);
 
-    deleteUser();
-    setTimeout(() => { fetchData(); }, 2000)
-    handleDelClose();
+        setTimeout(fetchData, 500); // Fetch updated data after closing
+      }
+    });
   };
 
   const handleInputChange = (key, value) => {
@@ -385,6 +432,7 @@ export default function Page() {
 
   return (
     <>
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} closeOnClick pauseOnHover />
       <Dialog open={open} onClose={handleClose}>
         {isEdit ? <DialogTitle>{t("editUser")}</DialogTitle> :  <DialogTitle>{t("createNewUser")}</DialogTitle>}
 
@@ -473,7 +521,8 @@ export default function Page() {
               {t("cancel")}
             </Button>
             <Button onClick={handleSave} color="primary">
-              {isEdit ? t("edit") : t("create")}
+              {loading ? <CircularProgress size={24} />
+                : isEdit ? t("edit") : t("create")}
             </Button>
           </DialogActions>
         </form>
@@ -492,7 +541,7 @@ export default function Page() {
             {t("cancel")}
           </Button>
           <Button onClick={handleDelSave} color="primary">
-            {t("delete")}
+            {loading ? <CircularProgress size={24} /> : t("delete")}
           </Button>
         </DialogActions>
       </Dialog>

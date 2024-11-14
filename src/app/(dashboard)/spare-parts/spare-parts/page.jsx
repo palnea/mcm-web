@@ -11,6 +11,7 @@ import * as https from "https";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import {
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -28,6 +29,8 @@ import Box from "@mui/material/Box";
 import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
 
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Page() {
 
@@ -36,6 +39,7 @@ export default function Page() {
   const [removeID, setRemoveID] = useState('');
   const [rows, setRows] = useState([]);
   const [inputValue, setInputValue] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const [params, setParams] = useState({
     "name": "",
@@ -69,7 +73,7 @@ export default function Page() {
       ...clearValues
     }))
 
-     clearValues = {
+     let clearValues2 = {
        name: '',
        companyId: '',
        yachtBrandId: '',
@@ -77,7 +81,7 @@ export default function Page() {
     }
     setErrors(param => ({
       ...param,
-      ...clearValues
+      ...clearValues2
     }))
   }
 
@@ -93,6 +97,9 @@ export default function Page() {
   const [optionsCompanies, setOptionsCompanies] = useState([]); // Options for the Select component
   const [activeTab, setActiveTab] = useState(0);  // 0 for yacht fields tab, 1 for PartCodes tab
   const [PartCodes, setPartCodes] = useState( []);
+  const [PartCodesLoad, setPartCodesLoad] = useState( []);
+  const [PartCodesLoadEdit, setPartCodesLoadEdit] = useState( []);
+
 
   const fetchData = async (id, name) => {
     try {
@@ -280,6 +287,8 @@ export default function Page() {
     setIsEdit(false);
     setInputValue(''); // Reset the input when closing
     setActiveTab(0);
+    removeKeysWithFilter([ "id"]);
+
     clearParams()
   };
 
@@ -296,6 +305,7 @@ export default function Page() {
   const handleSave = () => {
     event.preventDefault();
     let newErrors = {};
+    let is_successful = false;
 
     // Validate required fields
     if (params.name === '') {
@@ -316,51 +326,82 @@ export default function Page() {
 
     setErrors(newErrors);
     if (Object.keys(newErrors).length === 0) {
-      if (isEdit) {
-        const editModel = async () => {
-          try {
-            const response = await axios.put('http://localhost:7153/api/SpareParts/Update', params,
-              {
-                headers: {
-                  Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-                },
-              });
+      setLoading(true);
+      const saveBrand = async () => {
+        try {
+          const response = isEdit
+            ? await axios.put('http://localhost:7153/api/SpareParts/Update', params, {
+              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
+            })
+            : await axios.post('http://localhost:7153/api/SpareParts', params, {
+              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
+            });
 
-          } catch (err) {
-            // setErrorClosedTicket(false);
+          if (response.status >= 200 && response.status < 300) {
+            is_successful = true;
           }
-        };
+        } catch (err) {
+          console.error("Error:", err);
+          toast.error(t("An error occurred. Please try again."));
+        } finally {
+          setTimeout(() => setLoading(false), 800);
+        }
+      };
+      saveBrand().then(() => {
+        if (is_successful) {
+          setTimeout(() => handleClose(), 800);
+          setTimeout(() => toast.success(isEdit ? t('Spare Part updated successfully!') : t('Spare Part created successfully!')), 800);
 
-        editModel();
-      }
-      else {
-        const createSparePart = async () => {
-          try {
-            const response = await axios.post('http://localhost:7153/api/SpareParts', params,
-              {
-                headers: {
-                  Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-                },
-              });
-
-          } catch (err) {
-            // setErrorClosedTicket(false);
-          }
-        };
-
-        createSparePart();
-      }
-      setTimeout(() => { fetchData(); }, 2000)
-
-      handleClose();
+          setTimeout(fetchData, 500); // Fetch updated data after closing
+        }
+      });
     }
+    // if (Object.keys(newErrors).length === 0) {
+    //   if (isEdit) {
+    //     const editModel = async () => {
+    //       try {
+    //         const response = await axios.put('http://localhost:7153/api/SpareParts/Update', params,
+    //           {
+    //             headers: {
+    //               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+    //             },
+    //           });
+    //
+    //       } catch (err) {
+    //         // setErrorClosedTicket(false);
+    //       }
+    //     };
+    //
+    //     editModel();
+    //   }
+    //   else {
+    //     const createSparePart = async () => {
+    //       try {
+    //         const response = await axios.post('http://localhost:7153/api/SpareParts', params,
+    //           {
+    //             headers: {
+    //               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+    //             },
+    //           });
+    //
+    //       } catch (err) {
+    //         // setErrorClosedTicket(false);
+    //       }
+    //     };
+    //
+    //     createSparePart();
+    //   }
+    //   setTimeout(() => { fetchData(); }, 2000)
+    //
+    //   handleClose();
+    // }
 
   };
 
   const handlePartCodesSave = () => {
     event.preventDefault();
     let newErrors = {};
-
+    let is_successful = false;
     // Validate required fields
     if (inputValue === '') {
       newErrors.name = 'Name is required';
@@ -368,30 +409,61 @@ export default function Page() {
 
     setPartErrors(newErrors);
 
+    // if (Object.keys(newErrors).length === 0) {
+    //   const createPartCode = async () => {
+    //     const partCodes = {
+    //       "name": inputValue,
+    //       "sparePartId": id
+    //     }
+    //     try {
+    //       const response = await axios.post('http://localhost:7153/api/SparePartCodes', partCodes,
+    //         {
+    //           headers: {
+    //             Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+    //           },
+    //         });
+    //
+    //     } catch (err) {
+    //       // setErrorClosedTicket(false);
+    //     }
+    //   };
+    //
+    //   createPartCode();
+    //   setTimeout(() => { fetchData(); }, 2000)
+    //   handlePartCodeClose();
+    // }
     if (Object.keys(newErrors).length === 0) {
-      const createPartCode = async () => {
-        const partCodes = {
+      setLoading(true);
+      const partCodes = {
           "name": inputValue,
           "sparePartId": id
         }
+
+      const saveBrand = async () => {
         try {
-          const response = await axios.post('http://localhost:7153/api/SparePartCodes', partCodes,
-            {
-              headers: {
-                Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-              },
+          const response = await axios.post('http://localhost:7153/api/SparePartCodes', partCodes, {
+              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
             });
 
+          if (response.status >= 200 && response.status < 300) {
+            is_successful = true;
+          }
         } catch (err) {
-          // setErrorClosedTicket(false);
+          console.error("Error:", err);
+          toast.error(t("An error occurred. Please try again."));
+        } finally {
+          setTimeout(() => setLoading(false), 800);
         }
       };
+      saveBrand().then(() => {
+        if (is_successful) {
+          setTimeout(() => handlePartCodeClose(), 800);
+          setTimeout(() => toast.success(t('Spare Part Code created successfully!')), 800);
 
-      createPartCode();
-      setTimeout(() => { fetchData(); }, 2000)
-      handlePartCodeClose();
+          setTimeout(fetchData, 500); // Fetch updated data after closing
+        }
+      });
     }
-
   };
 
   const handleDelClose = () => {
@@ -405,6 +477,8 @@ export default function Page() {
   };
 
   const handleDelSave = () => {
+    setLoading(true);
+    let is_successful = false;
     const deleteSparePart = async () => {
       try {
         const response = await axios.get('http://localhost:7153/api/SpareParts/Remove/' + removeID,
@@ -413,15 +487,25 @@ export default function Page() {
               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
             },
           });
+        if (response.status >= 200 && response.status < 300) {
+          is_successful = true;
+        }
 
       } catch (err) {
-        // setErrorClosedTicket(false);
+        console.error("Error:", err);
+        toast.error(t("An error occurred. Please try again."));
+      }finally {
+        setTimeout(() => setLoading(false), 800);
       }
     };
+    deleteSparePart().then(() => {
+      if (is_successful) {
+        setTimeout(() => handleDelClose(), 800);
+        setTimeout(() => toast.success(t('Spare Part deleted successfully!')), 800);
 
-    deleteSparePart();
-    setTimeout(() => { fetchData(); }, 2000)
-    handleDelClose();
+        setTimeout(fetchData, 500); // Fetch updated data after closing
+      }
+    });
   };
 
   const handleInputChange = (key, value) => {
@@ -449,6 +533,8 @@ export default function Page() {
   };
 
   const handleDeletePartCode = (partCode_id) => {
+    setPartCodesLoad({ ...PartCodesLoad, [partCode_id]: true });
+    let is_successful = false;
     const deletePartCode = async () => {
       try {
         const response = await axios.get('http://localhost:7153/api/SparePartCodes/Remove/' + partCode_id,
@@ -457,18 +543,32 @@ export default function Page() {
               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
             },
           });
+        if (response.status >= 200 && response.status < 300) {
+          is_successful = true;
+        }
 
       } catch (err) {
-        // setErrorClosedTicket(false);
+        console.error("Error:", err);
+        // toast.error(t("An error occurred. Please try again."));
+      }finally {
+        setTimeout(() => setPartCodesLoad({ ...PartCodesLoad, [partCode_id]: false }), 800);
       }
     };
+    deletePartCode().then(() => {
+      if (is_successful) {
+        // setTimeout(() => toast.success(t('Accessory category deleted successfully!')), 800);
 
-    deletePartCode();
-    setTimeout(() => { getPartCodeByID(id); }, 2000)
+        setTimeout( () => { getPartCodeByID(id); }, 500); // Fetch updated data after closing
+      }
+    });
+    // deletePartCode();
+    // setTimeout(() => { getPartCodeByID(id); }, 2000)
 
   };
 
   const handleUpdatePartCode = (PartCode_id) => {
+    setPartCodesLoadEdit({ ...PartCodesLoad, [PartCode_id]: true });
+    let is_successful = false;
     for (let i = 0; i < PartCodes.length; i++) {
       if (PartCodes[i].id === PartCode_id) {
         const param = {
@@ -484,20 +584,32 @@ export default function Page() {
                   Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
                 },
               });
+            if (response.status >= 200 && response.status < 300) {
+              is_successful = true;
+            }
 
           } catch (err) {
-            // setErrorClosedTicket(false);
+            console.error("Error:", err);
+            // toast.error(t("An error occurred. Please try again."));
+          }finally {
+            setTimeout(() => setPartCodesLoadEdit({ ...PartCodesLoad, [PartCode_id]: false }), 800);
           }
         };
-        updatePartCode();
+        updatePartCode().then(() => {
+          if (is_successful) {
+            // setTimeout(() => toast.success(t('Accessory category deleted successfully!')), 800);
+            setTimeout( () => { getPartCodeByID(id); }, 500); // Fetch updated data after closing
+          }
+        });
       }
     }
-    setTimeout(() => { getPartCodeByID(id); }, 2000)
 
   };
 
   return (
     <>
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} closeOnClick pauseOnHover />
+
       <Dialog open={open} onClose={handleClose}>
         {isEdit ? <DialogTitle>{t("editSparePart")}</DialogTitle> :  <DialogTitle>{t("createNewSparePart")}</DialogTitle>}
 
@@ -631,7 +743,7 @@ export default function Page() {
             }
 
             {activeTab === 1 &&
-              PartCodes.map((PartCode, index) => (
+              PartCodes && PartCodes.map((PartCode, index) => (
                 <div>
                   <Divider flexItem={true}/>
                   <Box className={"mb-3 flex"} sx={{ alignItems: 'flex-end' , justifyContent: "space-between"}}>
@@ -649,10 +761,11 @@ export default function Page() {
                     </Grid>
                     <Grid item xs={4} sm={6} key={index + "buttonsUpdate"} className={"ms-8"}>
                       <Button onClick={(e) => handleUpdatePartCode(PartCode.id)} color="success" key={index + "update"}>
-                        {t("update")}
+                        {PartCodesLoadEdit[PartCode.id] ? <CircularProgress size={24} /> : t("update")}
                       </Button>
                       <Button onClick={(e) => handleDeletePartCode(PartCode.id)} color="error" key={index + "delete"}>
-                        {t("delete")}
+                        {PartCodesLoad[PartCode.id] ? <CircularProgress size={24} /> : t("delete")}
+
                       </Button>
                     </Grid>
                   </Box>
@@ -660,7 +773,7 @@ export default function Page() {
                 </div>
               ))
             }
-            {PartCodes.length === 0 && activeTab === 1 &&
+            {PartCodes && PartCodes.length === 0 && activeTab === 1 &&
               <div>
                 <Box className={"mb-3 flex"} sx={{ alignItems: 'flex-end' , justifyContent: "space-between"}}>
                   <Grid item xs={10} sm={6} className={"me-8"}>
@@ -679,7 +792,8 @@ export default function Page() {
                 {t("cancel")}
               </Button>
               <Button onClick={handleSave} color="primary">
-                {isEdit ? t("edit") : t("create")}
+                {loading ? <CircularProgress size={24} />
+                  : isEdit ? t("edit") : t("create")}
               </Button>
             </DialogActions>
           }
@@ -700,7 +814,7 @@ export default function Page() {
             {t("cancel")}
           </Button>
           <Button onClick={handleDelSave} color="primary">
-            {t("delete")}
+            {loading ? <CircularProgress size={24} /> : t("delete")}
           </Button>
         </DialogActions>
       </Dialog>
@@ -731,7 +845,8 @@ export default function Page() {
               {t("cancel")}
             </Button>
             <Button onClick={handlePartCodesSave} color="primary">
-              {t("create")}
+              {loading ? <CircularProgress size={24} /> : t("create")}
+              {/*{t("create")}*/}
             </Button>
           </DialogActions>
         </form>

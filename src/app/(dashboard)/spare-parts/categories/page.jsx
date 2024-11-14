@@ -10,11 +10,13 @@ import useApi from "@/api_helper/useApi";
 import * as https from "https";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
-import {Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
+import {CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import {useTranslation} from "react-i18next";
 import secureLocalStorage from "react-secure-storage";
 import Box from "@mui/material/Box";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 export default function Page() {
@@ -24,6 +26,7 @@ export default function Page() {
   const [editID, setEditID] = useState('');
   const [removeID, setRemoveID] = useState('');
   const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [nameDel, setNameDel] = useState('');
@@ -148,53 +151,89 @@ export default function Page() {
     }
 
     setErrors(newErrors);
+    let is_successful = false;
     if (Object.keys(newErrors).length === 0) {
+      setLoading(true);
+      const params = isEdit
+        ? { "id": editID, "name": inputValue }
+        : { "name": inputValue };
 
-      if (isEdit) {
-        const params = {
-          "id": editID,
-          "name": inputValue
-        }
-        const editSparePartCategories = async () => {
-          try {
-            const response = await axios.put('http://localhost:7153/api/SparePartCategories/Update', params,
-              {
-                headers: {
-                  Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-                },
-              });
+      const saveBrand = async () => {
+        try {
+          const response = isEdit
+            ? await axios.put('http://localhost:7153/api/SparePartCategories/Update', params, {
+              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
+            })
+            : await axios.post('http://localhost:7153/api/SparePartCategories', params, {
+              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
+            });
 
-          } catch (err) {
-            // setErrorClosedTicket(false);
+          if (response.status >= 200 && response.status < 300) {
+            is_successful = true;
           }
-        };
-
-        editSparePartCategories();
-      }
-      else {
-        const params = {
-          "name": inputValue
+        } catch (err) {
+          console.error("Error:", err);
+          toast.error(t("An error occurred. Please try again."));
+        } finally {
+          setTimeout(() => setLoading(false), 800);
         }
-        const createSparePartCategories = async () => {
-          try {
-            const response = await axios.post('http://localhost:7153/api/SparePartCategories', params,
-              {
-                headers: {
-                  Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-                },
-              });
+      };
+      saveBrand().then(() => {
+        if (is_successful) {
+          setTimeout(() => handleClose(), 800);
+          setTimeout(() => toast.success(isEdit ? t('Spare part category updated successfully!') : t('Spare part category created successfully!')), 800);
 
-          } catch (err) {
-            // setErrorClosedTicket(false);
-          }
-        };
-
-        createSparePartCategories();
-      }
-      setTimeout(() => { fetchData(); }, 2000)
-
-      handleClose();
+          setTimeout(fetchData, 500); // Fetch updated data after closing
+        }
+      });
     }
+    // if (Object.keys(newErrors).length === 0) {
+    //
+    //   if (isEdit) {
+    //     const params = {
+    //       "id": editID,
+    //       "name": inputValue
+    //     }
+    //     const editSparePartCategories = async () => {
+    //       try {
+    //         const response = await axios.put('http://localhost:7153/api/SparePartCategories/Update', params,
+    //           {
+    //             headers: {
+    //               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+    //             },
+    //           });
+    //
+    //       } catch (err) {
+    //         // setErrorClosedTicket(false);
+    //       }
+    //     };
+    //
+    //     editSparePartCategories();
+    //   }
+    //   else {
+    //     const params = {
+    //       "name": inputValue
+    //     }
+    //     const createSparePartCategories = async () => {
+    //       try {
+    //         const response = await axios.post('http://localhost:7153/api/SparePartCategories', params,
+    //           {
+    //             headers: {
+    //               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+    //             },
+    //           });
+    //
+    //       } catch (err) {
+    //         // setErrorClosedTicket(false);
+    //       }
+    //     };
+    //
+    //     createSparePartCategories();
+    //   }
+    //   setTimeout(() => { fetchData(); }, 2000)
+    //
+    //   handleClose();
+    // }
 
   };
 
@@ -204,6 +243,8 @@ export default function Page() {
   };
 
   const handleDelSave = () => {
+    setLoading(true);
+    let is_successful = false;
     const deleteSparePartCategories = async () => {
       try {
         const response = await axios.get('http://localhost:7153/api/SparePartCategories/Remove/' + removeID,
@@ -212,19 +253,30 @@ export default function Page() {
               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
             },
           });
-
+        if (response.status >= 200 && response.status < 300) {
+          is_successful = true;
+        }
       } catch (err) {
-        // setErrorClosedTicket(false);
+        console.error("Error:", err);
+        toast.error(t("An error occurred. Please try again."));
+      }finally {
+        setTimeout(() => setLoading(false), 800);
       }
     };
+    deleteSparePartCategories().then(() => {
+      if (is_successful) {
+        setTimeout(() => handleDelClose(), 800);
+        setTimeout(() => toast.success(t('Spare part category deleted successfully!')), 800);
 
-    deleteSparePartCategories();
-    setTimeout(() => { fetchData(); }, 2000)
-    handleDelClose();
+        setTimeout(fetchData, 500); // Fetch updated data after closing
+      }
+    });
   };
 
   return (
     <>
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} closeOnClick pauseOnHover />
+
       <Dialog open={open} onClose={handleClose}>
         {isEdit ? <DialogTitle>{t("editNewSparePartCategories")}</DialogTitle> :  <DialogTitle>{t("createNewSparePartCategories")}</DialogTitle>}
         <form
@@ -252,7 +304,8 @@ export default function Page() {
               {t("cancel")}
             </Button>
             <Button onClick={handleSave} color="primary">
-              {isEdit ? t("edit") : t("create")}
+              {loading ? <CircularProgress size={24} />
+                : isEdit ? t("edit") : t("create")}
             </Button>
           </DialogActions>
         </form>
@@ -270,7 +323,7 @@ export default function Page() {
             {t("cancel")}
           </Button>
           <Button onClick={handleDelSave} color="primary">
-            {t("delete")}
+            {loading ? <CircularProgress size={24} /> : t("delete")}
           </Button>
         </DialogActions>
       </Dialog>

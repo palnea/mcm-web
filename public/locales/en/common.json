@@ -170,6 +170,50 @@
   "isManageUser is required": "Can Manage User is required",
   "isManageGroup is required": "Can Manage Group is required",
   "isManageFault is required": "Can Manage Fault is required",
-  "isAcceptProcess is required": "Can Accept Process is required"
+  "isAcceptProcess is required": "Can Accept Process is required",
+  "noNotes": "No yatch notes to display",
+  "An error occurred. Please try again.": "An error occurred. Please try again.",
+  "Accessory category updated successfully!": "Accessory category updated successfully!",
+  "Accessory category created successfully!": "Accessory category created successfully!",
+  "Accessory category deleted successfully!": "Accessory category deleted successfully!",
+  "Accessory subcategory updated successfully!": "Accessory subcategory updated successfully!",
+  "Accessory subcategory created successfully!": "Accessory subcategory created successfully!",
+  "Accessory subcategory deleted successfully!": "Accessory subcategory deleted successfully!",
+  "Accessory updated successfully!": "Accessory updated successfully!",
+  "Accessory created successfully!": "Accessory created successfully!",
+  "Accessory deleted successfully!": "Accessory deleted successfully!",
+  "Company updated successfully!": "Comapny updated successfully!",
+  "Company created successfully!": "Comapny created successfully!",
+  "Company deleted successfully!": "Comapny deleted successfully!",
+  "Spare part category updated successfully!": "Spare part category updated successfully!",
+  "Spare part category created successfully!": "Spare part category created successfully!",
+  "Spare part category deleted successfully!": "Spare part category deleted successfully!",
+  "Spare Part deleted successfully!": "Spare Part deleted successfully!",
+  "Spare Part Code created successfully!": "Spare Part Code created successfully!",
+  "Spare Part updated successfully!": "Spare Part updated successfully!",
+  "Spare Part created successfully!": "Spare Part created successfully!",
+  "User updated successfully!": "User updated successfully!",
+  "User created successfully!": "User created successfully!",
+  "User deleted successfully!": "User deleted successfully!",
+  "User group updated successfully!": "User group updated successfully!",
+  "User group created successfully!": "User group created successfully!",
+  "User group deleted successfully!": "User group deleted successfully!",
+  "Brand deleted successfully!": "Brand deleted successfully!",
+  "Brand created successfully!": "Brand created successfully!",
+  "Brand updated successfully!": "Brand updated successfully!",
+  "Model deleted successfully!": "Model deleted successfully!",
+  "Model created successfully!": "Model created successfully!",
+  "Model updated successfully!": "Model updated successfully!",
+  "Yacht deleted successfully!": "Yacht deleted successfully!",
+  "Yacht created successfully!": "Yacht created successfully!",
+  "Yacht updated successfully!": "Yacht updated successfully!",
+  "Yacht note created successfully!": "Yacht note created successfully!"
+
+
+
+
+
+
+
 
 }

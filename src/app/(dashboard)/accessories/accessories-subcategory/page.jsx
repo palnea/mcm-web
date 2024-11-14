@@ -11,6 +11,7 @@ import * as https from "https";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import {
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -25,6 +26,7 @@ import {useTranslation} from "react-i18next";
 import secureLocalStorage from "react-secure-storage";
 import Box from "@mui/material/Box";
 import MenuItem from "@mui/material/MenuItem";
+import {toast, ToastContainer} from "react-toastify";
 
 
 export default function Page() {
@@ -35,6 +37,7 @@ export default function Page() {
   const [brandId, setBrandID] = useState('');
   const [removeID, setRemoveID] = useState('');
   const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [nameDel, setNameDel] = useState('');
@@ -189,7 +192,7 @@ export default function Page() {
 
   const handleSave = () => {
     event.preventDefault();
-
+    let is_successful = false;
     let newErrors = {};
 
     // Validate required fields
@@ -201,60 +204,93 @@ export default function Page() {
     }
 
     setErrors(newErrors);
-
     if (Object.keys(newErrors).length === 0) {
-      let response = '';
-      if (isEdit) {
-        const params = {
-          "id": editID,
-          "name": inputValue,
-          "accessoryCategoryId": idValue
-        }
-        const editModel = async () => {
-          try {
-            response = await axios.put('http://localhost:7153/api/AccessorySubCategories/Update', params,
-              {
-                headers: {
-                  Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-                },
-              });
+      setLoading(true);
+      const params = isEdit
+        ? {"id": editID, "name": inputValue, "accessoryCategoryId": idValue}
+        : {"name": inputValue, "accessoryCategoryId": idValue};
 
-          } catch (err) {
-            // setErrorClosedTicket(false);
+      const saveBrand = async () => {
+        try {
+          const response = isEdit
+            ? await axios.put('http://localhost:7153/api/AccessorySubCategories/Update', params, {
+              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
+            })
+            : await axios.post('http://localhost:7153/api/AccessorySubCategories', params, {
+              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
+            });
+
+          if (response.status >= 200 && response.status < 300) {
+            is_successful = true;
           }
-        };
-
-        editModel();
-      }
-      else {
-        const params = {
-          "name": inputValue,
-          "accessoryCategoryId":idValue
-
+        } catch (err) {
+          console.error("Error:", err);
+          toast.error(t("An error occurred. Please try again."));
+        } finally {
+          setTimeout(() => setLoading(false), 800);
         }
-        const createModel = async () => {
-          try {
-            const response = await axios.post('http://localhost:7153/api/AccessorySubCategories', params,
-              {
-                headers: {
-                  Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-                },
-              });
+      };
+      saveBrand().then(() => {
+        if (is_successful) {
+          setTimeout(() => handleClose(), 800);
+          setTimeout(() => toast.success(isEdit ? t('Accessory subcategory updated successfully!') : t('Accessory subcategory created successfully!')), 800);
 
-          } catch (err) {
-            // setErrorClosedTicket(false);
-          }
-        };
-
-        createModel();
-      }
-      setTimeout(() => { fetchData(); }, 2000)
-      // if ( 200 <= response.status && response.status < 300){
-      //   handleClose();
-      // }
-      handleClose()
-
+          setTimeout(fetchData, 500); // Fetch updated data after closing
+        }
+      });
     }
+    // if (Object.keys(newErrors).length === 0) {
+    //   if (isEdit) {
+    //     const params = {
+    //       "id": editID,
+    //       "name": inputValue,
+    //       "accessoryCategoryId": idValue
+    //     }
+    //     const editModel = async () => {
+    //       try {
+    //         const response = await axios.put('http://localhost:7153/api/AccessorySubCategories/Update', params,
+    //           {
+    //             headers: {
+    //               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+    //             },
+    //           });
+    //
+    //       } catch (err) {
+    //         // setErrorClosedTicket(false);
+    //       }
+    //     };
+    //
+    //     editModel();
+    //   }
+    //   else {
+    //     const params = {
+    //       "name": inputValue,
+    //       "accessoryCategoryId":idValue
+    //
+    //     }
+    //     const createModel = async () => {
+    //       try {
+    //         const response = await axios.post('http://localhost:7153/api/AccessorySubCategories', params,
+    //           {
+    //             headers: {
+    //               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+    //             },
+    //           });
+    //
+    //       } catch (err) {
+    //         // setErrorClosedTicket(false);
+    //       }
+    //     };
+    //
+    //     createModel();
+    //   }
+    //   setTimeout(() => { fetchData(); }, 2000)
+    //   // if ( 200 <= response.status && response.status < 300){
+    //   //   handleClose();
+    //   // }
+    //   handleClose()
+    //
+    // }
 
 
   };
@@ -265,6 +301,8 @@ export default function Page() {
   };
 
   const handleDelSave = () => {
+    let is_successful = false;
+    setLoading(true);
     const deleteBrand = async () => {
       try {
         const response = await axios.get('http://localhost:7153/api/AccessorySubCategories/Remove/' + removeID,
@@ -273,16 +311,25 @@ export default function Page() {
               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
             },
           });
+        if (response.status >= 200 && response.status < 300) {
+          is_successful = true;
+        }
 
       } catch (err) {
-        // setErrorClosedTicket(false);
+        console.error("Error:", err);
+        toast.error(t("An error occurred. Please try again."));
+      }finally {
+        setTimeout(() => setLoading(false), 800);
       }
     };
+    deleteBrand().then(() => {
+      if (is_successful) {
+        setTimeout(() => handleDelClose(), 800);
+        setTimeout(() => toast.success(t('Accessory subcategory deleted successfully!')), 800);
 
-    deleteBrand();
-    setTimeout(() => { fetchData(); }, 2000)
-    // Add logic here to save the new item (e.g., send to backend)
-    handleDelClose();
+        setTimeout(fetchData, 500); // Fetch updated data after closing
+      }
+    });
   };
 
   const handleChange = (e) => {
@@ -291,6 +338,8 @@ export default function Page() {
 
   return (
     <>
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} closeOnClick pauseOnHover />
+
       <Dialog open={open} onClose={handleClose}>
         {isEdit ? <DialogTitle>{t("editAccessorySubCategory")}</DialogTitle> :  <DialogTitle>{t("createNewAccessorySubCategory")}</DialogTitle>}
         <form
@@ -343,7 +392,8 @@ export default function Page() {
               {t("cancel")}
             </Button>
             <Button onClick={handleSave} color="primary">
-              {isEdit ? t("edit") : t("create")}
+              {loading ? <CircularProgress size={24} />
+                : isEdit ? t("edit") : t("create")}
             </Button>
           </DialogActions>
         </form>
@@ -362,7 +412,7 @@ export default function Page() {
             {t("cancel")}
           </Button>
           <Button onClick={handleDelSave} color="primary">
-            {t("delete")}
+            {loading ? <CircularProgress size={24} /> : t("delete")}
           </Button>
         </DialogActions>
       </Dialog>

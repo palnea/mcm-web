@@ -10,11 +10,13 @@ import useApi from "@/api_helper/useApi";
 import * as https from "https";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
-import {Dialog, DialogActions, DialogContent, DialogTitle, Select} from "@mui/material";
+import {CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Select} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import {useTranslation} from "react-i18next";
 import secureLocalStorage from "react-secure-storage";
 import Box from "@mui/material/Box";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Page() {
 
@@ -25,6 +27,7 @@ export default function Page() {
   const [brandId, setBrandID] = useState('');
   const [removeID, setRemoveID] = useState('');
   const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [nameDel, setNameDel] = useState('');
@@ -32,12 +35,26 @@ export default function Page() {
   const [inputValue, setInputValue] = useState('');
   const [inputIMGValue, setInputIMGValue] = useState('');
   const [idValue, setIdValue] = useState('');
-  const { t, i18n } = useTranslation('common');
+  const {t, i18n} = useTranslation('common');
   const [options, setOptions] = useState([]); // Options for the Select component
   const [errors, setErrors] = useState({
     name: '',
-    imgUrl: '',
+    // imgUrl: '',
   });
+
+
+  const [media, setMedia] = useState({
+    FileUrl: '',
+    TicketId: '',
+    ProcessId: '',
+    InventoryId: '',
+    CompanyId: '',
+    UserId: '',
+    ControlId: '',
+    ControlType: '',
+    MediaFiles: [],
+  });
+
 
   const fetchData = async (id, name) => {
     try {
@@ -66,17 +83,20 @@ export default function Page() {
       setInputIMGValue(img);
       setIdValue(brandId);
     }
-  }, [isEdit, name, brandId, img ]);
+  }, [isEdit, name, brandId, img]);
 
   const columns = [
-    { id: "id", label: "id" },
-    { id: "name", label: "name" },
-    { id: "createdDate", label: "createdDate",
+    {id: "id", label: "id"},
+    {id: "name", label: "name"},
+    {
+      id: "createdDate", label: "createdDate",
       render: (row) => {
         const date = new Date(row.createdDate);
         return date.toLocaleDateString();
-      }},
-    { id: "updatedDate", label: "updatedDate",
+      }
+    },
+    {
+      id: "updatedDate", label: "updatedDate",
       render: (row) => {
         const date = new Date(row.updatedDate);
         return date.toLocaleDateString();
@@ -91,16 +111,16 @@ export default function Page() {
           <IconButton
             size="small"
             color={'primary'}
-            onClick={() => handleEdit(row.id,  row.name, row.imgUrl)}
+            onClick={() => handleEdit(row.id, row.name, row.imgUrl)}
           >
-            <i className='tabler-pencil' />
+            <i className='tabler-pencil'/>
           </IconButton>
           <IconButton
             color={'error'}
             size="small"
             onClick={() => handleDelete(row.id, row.name, row.imgUrl)}
           >
-            <i className='tabler-trash' />
+            <i className='tabler-trash'/>
           </IconButton>
         </>
       ),
@@ -141,7 +161,6 @@ export default function Page() {
     setRemoveID("");
     const clearValues = {
       name: '',
-      imgUrl: '',
     }
     setErrors(param => ({
       ...param,
@@ -158,61 +177,139 @@ export default function Page() {
       newErrors.name = 'Name is required';
     }
 
-    if (inputIMGValue === '') {
-      newErrors.imgUrl = 'Image Url is required';
-    }
+    // if (inputIMGValue === '') {
+    //   newErrors.imgUrl = 'Image Url is required';
+    // }
 
     setErrors(newErrors);
+    let is_successful = false;
 
     if (Object.keys(newErrors).length === 0) {
-      if (isEdit) {
-        const params = {
-          "id": editID,
-          "name": inputValue,
-          "imgUrl": inputIMGValue
-        }
-        const editModel = async () => {
-          try {
-            const response = await axios.put('http://localhost:7153/api/Companies/Update', params,
+      setLoading(true);
+      const params = isEdit
+        ? { "id": editID, "name": inputValue, "imgUrl": inputIMGValue }
+        : { "name": inputValue, "imgUrl": inputIMGValue };
+
+      const saveBrand = async () => {
+        try {
+          const response = isEdit
+            ? await axios.put('http://localhost:7153/api/Companies/Update', params, {
+              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
+            })
+            : await axios.post('http://localhost:7153/api/Companies', params, {
+              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
+            });
+
+          if (response.status >= 200 && response.status < 300) {
+            is_successful = true;
+            const companyId = response.data.data.id;
+            const paramMedia = {
+              FileUrl: media.FileUrl,
+              TicketId: '',
+              ProcessId: '',
+              InventoryId: '',
+              CompanyId: companyId,
+              UserId: '',
+              ControlId: '',
+              ControlType: '',
+              MediaFiles: media.MediaFiles,
+            }
+            console.log("media ", paramMedia);
+            const responseMedia = await axios.post('http://localhost:7153/api/MediaFiles', paramMedia,
               {
                 headers: {
                   Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
                 },
               });
 
-          } catch (err) {
-            // setErrorClosedTicket(false);
           }
-        };
-
-        editModel();
-      }
-      else {
-        const params = {
-          "name": inputValue,
-          "imgUrl":inputIMGValue
+        } catch (err) {
+          console.error("Error:", err);
+          toast.error(t("An error occurred. Please try again."));
+        } finally {
+          setTimeout(() => setLoading(false), 800);
 
         }
-        const createModel = async () => {
-          try {
-            const response = await axios.post('http://localhost:7153/api/Companies', params,
-              {
-                headers: {
-                  Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-                },
-              });
+      };
+      saveBrand().then(() => {
+        if (is_successful) {
+          setTimeout(() => handleClose(), 800);
+          setTimeout(() => toast.success(isEdit ? t('Company updated successfully!') : t('Company created successfully!')), 800);
 
-          } catch (err) {
-            // setErrorClosedTicket(false);
-          }
-        };
-
-        createModel();
-      }
-      setTimeout(() => { fetchData(); }, 2000)
-
-      handleClose();
+          setTimeout(fetchData, 500); // Fetch updated data after closing
+        }
+      });
     }
+
+    // if (Object.keys(newErrors).length === 0) {
+    //   if (isEdit) {
+    //     const params = {
+    //       "id": editID,
+    //       "name": inputValue,
+    //       "imgUrl": inputIMGValue
+    //     }
+    //     const editModel = async () => {
+    //       try {
+    //         const response = await axios.put('http://localhost:7153/api/Companies/Update', params,
+    //           {
+    //             headers: {
+    //               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+    //             },
+    //           });
+    //
+    //       } catch (err) {
+    //         // setErrorClosedTicket(false);
+    //       }
+    //     };
+    //
+    //     editModel();
+    //   } else {
+    //     const params = {
+    //       "name": inputValue,
+    //       "imgUrl": inputIMGValue
+    //
+    //     }
+    //     const createModel = async () => {
+    //       try {
+    //         const response = await axios.post('http://localhost:7153/api/Companies', params,
+    //           {
+    //             headers: {
+    //               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+    //             },
+    //           });
+    //         const companyId = response.data.data.id;
+    //         const paramMedia = {
+    //           FileUrl: media.FileUrl,
+    //           TicketId: '',
+    //           ProcessId: '',
+    //           InventoryId: '',
+    //           CompanyId: companyId,
+    //           UserId: '',
+    //           ControlId: '',
+    //           ControlType: '',
+    //           MediaFiles: media.MediaFiles,
+    //         }
+    //         console.log(paramMedia);
+    //         const responseMedia = await axios.post('http://localhost:7153/api/MediaFiles', paramMedia,
+    //           {
+    //             headers: {
+    //               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+    //             },
+    //           });
+    //
+    //       } catch (err) {
+    //         // setErrorClosedTicket(false);
+    //       }
+    //     };
+    //
+    //     createModel();
+    //   }
+    //   setTimeout(() => {
+    //     fetchData();
+    //   }, 2000)
+    //
+    //   handleClose();
+    // }
 
   };
 
@@ -222,6 +319,8 @@ export default function Page() {
   };
 
   const handleDelSave = () => {
+    setLoading(true);
+    let is_successful = false;
     const deleteBrand = async () => {
       try {
         const response = await axios.get('http://localhost:7153/api/Companies/Remove/' + removeID,
@@ -230,24 +329,46 @@ export default function Page() {
               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
             },
           });
+        if (response.status >= 200 && response.status < 300) {
+          is_successful = true;
+        }
 
-      } catch (err) {
-        // setErrorClosedTicket(false);
+      }  catch (err) {
+        console.error("Error:", err);
+        toast.error(t("An error occurred. Please try again."));
+      }finally {
+        setTimeout(() => setLoading(false), 800);
       }
     };
 
-    deleteBrand();
-    setTimeout(() => { fetchData(); }, 2000)
-    // Add logic here to save the new item (e.g., send to backend)
-    handleDelClose();
+    deleteBrand().then(() => {
+      if (is_successful) {
+        setTimeout(() => handleDelClose(), 800);
+        setTimeout(() => toast.success(t('Company deleted successfully!')), 800);
+
+        setTimeout(fetchData, 500); // Fetch updated data after closing
+      }
+    });
   };
 
   const handleChange = (e) => {
     setIdValue(e.target.value);
   };
 
+  const handleImgChange = (item) => {
+
+    setMedia(param => ({
+      ...param,
+      FileUrl: item.name,
+      MediaFiles: item,
+    }))
+  }
+
+
   return (
     <>
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} closeOnClick pauseOnHover />
+
       <Dialog open={open} onClose={handleClose}>
         {isEdit ? <DialogTitle>{t("editCompany")}</DialogTitle> :  <DialogTitle>{t("createNewCompany")}</DialogTitle>}
         <form
@@ -274,12 +395,12 @@ export default function Page() {
                 autoFocus
                 margin="dense"
                 label={t("imgUrl")}
-                type="text"
+                type="file"
                 fullWidth
                 value={inputIMGValue}
                 error={!!errors.imgUrl} // If there's an error, show it
                 helperText={t(errors.imgUrl)}
-                onChange={(e) => setInputIMGValue(e.target.value)}
+                onChange={(e) => handleImgChange(e.target.files[0])}
                 sx = {{ flex: 2 }}
               />
 
@@ -291,7 +412,8 @@ export default function Page() {
               {t("cancel")}
             </Button>
             <Button onClick={handleSave} color="primary">
-              {isEdit ? t("edit") : t("create")}
+              {loading ? <CircularProgress size={24} />
+                : isEdit ? t("edit") : t("create")}
             </Button>
           </DialogActions>
         </form>
@@ -310,7 +432,7 @@ export default function Page() {
             {t("cancel")}
           </Button>
           <Button onClick={handleDelSave} color="primary">
-            {t("delete")}
+            {loading ? <CircularProgress size={24} /> : t("delete")}
           </Button>
         </DialogActions>
       </Dialog>

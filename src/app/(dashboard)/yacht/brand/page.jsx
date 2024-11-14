@@ -10,12 +10,13 @@ import useApi from "@/api_helper/useApi";
 import * as https from "https";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
-import {Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
+import {CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle} from "@mui/material";
 import TextField from "@mui/material/TextField";
 import {useTranslation} from "react-i18next";
 import secureLocalStorage from "react-secure-storage";
 import Box from "@mui/material/Box";
-
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Page() {
 
@@ -24,6 +25,7 @@ export default function Page() {
   const [editID, setEditID] = useState('');
   const [removeID, setRemoveID] = useState('');
   const [rows, setRows] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [nameDel, setNameDel] = useState('');
@@ -139,6 +141,7 @@ export default function Page() {
   const handleSave = () => {
     event.preventDefault();
     let newErrors = {};
+    let is_successful = false;
 
     // Validate required fields
     if (inputValue === '') {
@@ -150,51 +153,85 @@ export default function Page() {
 
     // Set the errors state
     if (Object.keys(newErrors).length === 0) {
-      if (isEdit) {
-        const params = {
-          "id": editID,
-          "name": inputValue
-        }
-        const editBrand = async () => {
-          try {
-            const response = await axios.put('http://localhost:7153/api/YachtBrands/Update', params,
-              {
-                headers: {
-                  Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-                },
-              });
+      // if (isEdit) {
+      //   const params = {
+      //     "id": editID,
+      //     "name": inputValue
+      //   }
+      //   const editBrand = async () => {
+      //     try {
+      //       const response = await axios.put('http://localhost:7153/api/YachtBrands/Update', params,
+      //         {
+      //           headers: {
+      //             Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+      //           },
+      //         });
+      //
+      //     } catch (err) {
+      //       // setErrorClosedTicket(false);
+      //     }
+      //   };
+      //
+      //   editBrand();
+      // }
+      // else {
+      //   const params = {
+      //     "name": inputValue
+      //   }
+      //   const createBrand = async () => {
+      //     try {
+      //       const response = await axios.post('http://localhost:7153/api/YachtBrands', params,
+      //         {
+      //           headers: {
+      //             Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+      //           },
+      //         });
+      //
+      //     } catch (err) {
+      //       // setErrorClosedTicket(false);
+      //     }
+      //   };
+      //
+      //   createBrand();
+      // }
+      // setTimeout(() => { fetchData(); }, 2000)
+      //
+      // handleClose();
+      setLoading(true);
+      const params = isEdit
+        ? { "id": editID, "name": inputValue }
+        : { "name": inputValue };
 
-          } catch (err) {
-            // setErrorClosedTicket(false);
+      const saveBrand = async () => {
+        try {
+          const response = isEdit
+            ? await axios.put('http://localhost:7153/api/YachtBrands/Update', params, {
+              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
+            })
+            : await axios.post('http://localhost:7153/api/YachtBrands', params, {
+              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
+            });
+
+          if (response.status >= 200 && response.status < 300) {
+            is_successful = true;
           }
-        };
-
-        editBrand();
-      }
-      else {
-        const params = {
-          "name": inputValue
+        } catch (err) {
+          console.error("Error:", err);
+          toast.error(t("An error occurred. Please try again."));
+        } finally {
+          setTimeout(() => setLoading(false), 800);
         }
-        const createBrand = async () => {
-          try {
-            const response = await axios.post('http://localhost:7153/api/YachtBrands', params,
-              {
-                headers: {
-                  Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-                },
-              });
+      };
+      saveBrand().then(() => {
+        if (is_successful) {
+          setTimeout(() => handleClose(), 800);
+          setTimeout(() => toast.success(isEdit ? t('Brand updated successfully!') : t('Brand created successfully!')), 800);
 
-          } catch (err) {
-            // setErrorClosedTicket(false);
-          }
-        };
-
-        createBrand();
-      }
-      setTimeout(() => { fetchData(); }, 2000)
-
-      handleClose();
+          setTimeout(fetchData, 500); // Fetch updated data after closing
+        }
+      });
     }
+
 
   };
 
@@ -204,6 +241,8 @@ export default function Page() {
   };
 
   const handleDelSave = () => {
+    setLoading(true);
+    let is_successful = false;
     const deleteBrand = async () => {
       try {
         const response = await axios.get('http://localhost:7153/api/YachtBrands/Remove/' + removeID,
@@ -212,20 +251,33 @@ export default function Page() {
               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
             },
           });
+        if (response.status >= 200 && response.status < 300) {
+          is_successful = true;
+        }
 
       } catch (err) {
-        // setErrorClosedTicket(false);
+        console.error("Error:", err);
+        toast.error(t("An error occurred. Please try again."));
+      } finally {
+        setTimeout(() => setLoading(false), 800);
       }
-    };
 
-    deleteBrand();
-    setTimeout(() => { fetchData(); }, 2000)
-    // Add logic here to save the new item (e.g., send to backend)
-    handleDelClose();
+
+    }
+    deleteBrand().then(() => {
+      if (is_successful) {
+        setTimeout(() => handleDelClose(), 800);
+        setTimeout(() => toast.success(t('Brand deleted successfully!')), 800);
+
+        setTimeout(fetchData, 500); // Fetch updated data after closing
+      }
+    });
   };
 
   return (
     <>
+      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} closeOnClick pauseOnHover />
+
       <Dialog open={open} onClose={handleClose}>
         {isEdit ? <DialogTitle>{t("editBrand")}</DialogTitle> :  <DialogTitle>{t("createNewBrand")}</DialogTitle>}
         <form
@@ -253,7 +305,8 @@ export default function Page() {
               {t("cancel")}
             </Button>
             <Button onClick={handleSave} color="primary">
-              {isEdit ? t("edit") : t("create")}
+              {loading ? <CircularProgress size={24} />
+                : isEdit ? t("edit") : t("create")}
             </Button>
           </DialogActions>
         </form>
@@ -272,7 +325,7 @@ export default function Page() {
             {t("cancel")}
           </Button>
           <Button onClick={handleDelSave} color="primary">
-            {t("delete")}
+            {loading ? <CircularProgress size={24} /> : t("delete")}
           </Button>
         </DialogActions>
       </Dialog>
