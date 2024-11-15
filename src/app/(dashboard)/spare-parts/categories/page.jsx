@@ -83,6 +83,7 @@ export default function Page() {
     {
       id: 'actions',
       label: 'actions',
+      disableSorting: true,
       minWidth: 100,
       render: (row) => (
         <>

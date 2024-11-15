@@ -80,6 +80,7 @@ export default function Page() {
       id: 'actions',
       label: 'actions',
       minWidth: 100,
+      disableSorting: true,
       render: (row) => (
         <>
           <IconButton

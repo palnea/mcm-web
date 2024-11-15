@@ -17,6 +17,8 @@ import secureLocalStorage from "react-secure-storage";
 import Box from "@mui/material/Box";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { CloudUpload as CloudUploadIcon } from "@mui/icons-material";
+import InputAdornment from "@mui/material/InputAdornment";
 
 export default function Page() {
 
@@ -39,7 +41,7 @@ export default function Page() {
   const [options, setOptions] = useState([]); // Options for the Select component
   const [errors, setErrors] = useState({
     name: '',
-    // imgUrl: '',
+    imgUrl: '',
   });
 
 
@@ -105,6 +107,7 @@ export default function Page() {
     {
       id: 'actions',
       label: 'actions',
+      disableSorting: true,
       minWidth: 100,
       render: (row) => (
         <>
@@ -177,9 +180,9 @@ export default function Page() {
       newErrors.name = 'Name is required';
     }
 
-    // if (inputIMGValue === '') {
-    //   newErrors.imgUrl = 'Image Url is required';
-    // }
+    if (inputIMGValue === '') {
+      newErrors.imgUrl = 'Image Url is required';
+    }
 
     setErrors(newErrors);
     let is_successful = false;
@@ -192,6 +195,7 @@ export default function Page() {
 
       const saveBrand = async () => {
         try {
+          console.log(params)
           const response = isEdit
             ? await axios.put('http://localhost:7153/api/Companies/Update', params, {
               headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
@@ -200,31 +204,68 @@ export default function Page() {
               headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
             });
 
+          console.log(response)
+
+
           if (response.status >= 200 && response.status < 300) {
             is_successful = true;
             const companyId = response.data.data.id;
-            const paramMedia = {
-              FileUrl: media.FileUrl,
-              TicketId: '',
-              ProcessId: '',
-              InventoryId: '',
-              CompanyId: companyId,
-              UserId: '',
-              ControlId: '',
-              ControlType: '',
-              MediaFiles: media.MediaFiles,
-            }
-            console.log("media ", paramMedia);
-            const responseMedia = await axios.post('http://localhost:7153/api/MediaFiles', paramMedia,
-              {
-                headers: {
-                  Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-                },
+            // const paramMedia = {
+            //   FileUrl: media.FileUrl,
+            //   TicketId: '',
+            //   ProcessId: '',
+            //   InventoryId: '',
+            //   CompanyId: companyId,
+            //   UserId: '',
+            //   ControlId: '',
+            //   ControlType: '',
+            //   MediaFiles: media.MediaFiles,
+            // }
+
+            //id verilmeli herhalde ama mediafiledan gidip alınamiyor gibi (oyle olunca id veremiyorum)
+            // const paramMedia = isEdit
+            //   ? {
+            //     FileUrl: media.FileUrl,
+            //     TicketId: '',
+            //     ProcessId: '',
+            //     InventoryId: '',
+            //     CompanyId: companyId,
+            //     UserId: '',
+            //     ControlId: '',
+            //     ControlType: '',
+            //     MediaFiles: media.MediaFiles,
+            //   }
+            //   : {
+            //     FileUrl: media.FileUrl,
+            //     TicketId: '',
+            //     ProcessId: '',
+            //     InventoryId: '',
+            //     CompanyId: companyId,
+            //     UserId: '',
+            //     ControlId: '',
+            //     ControlType: '',
+            //     MediaFiles: media.MediaFiles,
+            //   };
+
+            const responseMedia = isEdit
+              ? await axios.put('http://localhost:7153/api/MediaFiles/Update', params, {
+                headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
+              })
+              : await axios.post('http://localhost:7153/api/MediaFiles', params, {
+                headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
               });
+
+            console.log("media ", paramMedia);
+            // const responseMedia = await axios.post('http://localhost:7153/api/MediaFiles', paramMedia,
+            //   {
+            //     headers: {
+            //       Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
+            //     },
+            //   });
 
           }
         } catch (err) {
-          console.error("Error:", err);
+          console.error("bruh");
           toast.error(t("An error occurred. Please try again."));
         } finally {
           setTimeout(() => setLoading(false), 800);
@@ -356,7 +397,8 @@ export default function Page() {
   };
 
   const handleImgChange = (item) => {
-
+    console.log(item)
+    setInputIMGValue(item.name);
     setMedia(param => ({
       ...param,
       FileUrl: item.name,
@@ -391,19 +433,60 @@ export default function Page() {
                 onChange={(e) => setInputValue(e.target.value)}
                 sx = {{ flex: 2 }}
               />
-              <TextField
-                autoFocus
-                margin="dense"
-                label={t("imgUrl")}
+              {/* Hidden Native File Input */}
+              <input
                 type="file"
-                fullWidth
-                value={inputIMGValue}
-                error={!!errors.imgUrl} // If there's an error, show it
-                helperText={t(errors.imgUrl)}
+                id="file-input"
+                style={{ display: "none" }}
                 onChange={(e) => handleImgChange(e.target.files[0])}
-                sx = {{ flex: 2 }}
               />
 
+              {/* TextField Styled Input with IconButton */}
+              {/*<TextField*/}
+              {/*  margin="dense"*/}
+              {/*  label={t("imgUrl")}*/}
+              {/*  fullWidth*/}
+              {/*  error={!!errors.imgUrl} // Error handling*/}
+              {/*  helperText={errors.imgUrl ? t(errors.imgUrl) : t(inputIMGValue?.name || "No file chosen")}*/}
+              {/*  InputProps={{*/}
+              {/*    readOnly: true, // Make it readonly so the user can't type*/}
+              {/*    endAdornment: (*/}
+              {/*      <InputAdornment position="end">*/}
+              {/*        <IconButton onClick={() => document.getElementById("file-input").click()} edge="end">*/}
+              {/*          <CloudUploadIcon />*/}
+              {/*        </IconButton>*/}
+              {/*      </InputAdornment>*/}
+              {/*    ),*/}
+              {/*  }}*/}
+              {/*  sx={{*/}
+              {/*    "& .MuiInputBase-root": {*/}
+              {/*      cursor: "pointer",*/}
+              {/*    },*/}
+              {/*    flex: 2*/}
+              {/*  }}*/}
+              {/*  onClick={() => document.getElementById("file-input").click()} // Trigger input on TextField click*/}
+              {/*/>*/}
+
+              <TextField
+                margin="dense"
+                label={t("imgUrl")}
+                fullWidth
+                sx = {{ flex: 2 }}
+                error={!!errors.imgUrl} // Error handling
+                helperText={errors.imgUrl ? t(errors.imgUrl) : ""}
+                value={inputIMGValue || ""} // Display the file name or empty string
+                InputProps={{
+                  readOnly: true, // Make it readonly so the user can't type
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => document.getElementById("file-input").click()} edge="end">
+                        <CloudUploadIcon />
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+                onClick={() => document.getElementById("file-input").click()} // Trigger input on TextField click
+              />
             </Box>
 
           </DialogContent>
