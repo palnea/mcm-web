@@ -6,7 +6,6 @@ import CustomTable from "../../../../components/Table/CustomTable";
 import Card from "@mui/material/Card";
 import React, {useEffect, useState} from "react";
 import axios from "axios";
-import useApi from "@/api_helper/useApi";
 import * as https from "https";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
