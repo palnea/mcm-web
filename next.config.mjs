@@ -3,24 +3,9 @@ import nextI18NextConfig from './next-i18next.config.js';
 
 const nextConfig = {
   ...nextI18NextConfig,
-  redirects: async () => {
-    return [
-      {
-        source: '/',
-        destination: '/login',
-        permanent: true,
-        locale: false
-      }
-    ]
-  },
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-      };
-    }
-    return config;
+  output: 'standalone',
+  experimental: {
+    appDir: true,
   },
 }
 
