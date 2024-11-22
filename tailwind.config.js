@@ -1,13 +1,16 @@
+import tailwindLogical from 'tailwindcss-logical';
+import coreTailwindPlugin from './src/@core/tailwind/plugin.js';
+
 const config = {
   content: ['./src/**/*.{js,ts,jsx,tsx,css}'],
   corePlugins: {
-    preflight: false
+    preflight: false,
   },
   important: '#__next',
-  plugins: [require('tailwindcss-logical'), require('./src/@core/tailwind/plugin')],
+  plugins: [tailwindLogical, coreTailwindPlugin],
   theme: {
-    extend: {}
-  }
-}
+    extend: {},
+  },
+};
 
-export default config
+export default config;
