@@ -18,7 +18,6 @@
     "@emotion/react": "11.11.4",
     "@emotion/styled": "11.11.5",
     "@floating-ui/react": "0.26.17",
-    "@iconify/react": "^5.0.2",
     "@mui/icons-material": "^6.1.6",
     "@mui/lab": "5.0.0-alpha.170",
     "@mui/material": "5.15.20",
@@ -43,6 +42,7 @@
   },
   "devDependencies": {
     "@iconify/json": "2.2.218",
+    "@iconify/react": "^5.0.2",
     "@iconify/tools": "4.0.4",
     "@iconify/utils": "2.1.24",
     "autoprefixer": "10.4.19",
