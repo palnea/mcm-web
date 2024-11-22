@@ -431,13 +431,6 @@
     "@iconify/types" "*"
     pathe "^1.1.2"
 
-"@iconify/react@^5.0.2":
-  version "5.0.2"
-  resolved "https://registry.yarnpkg.com/@iconify/react/-/react-5.0.2.tgz#03d6aa43ed22737451a5d087b00b26b3e6e6895a"
-  integrity sha512-wtmstbYlEbo4NDxFxBJkhkf9gJBDqMGr7FaqLrAUMneRV3Z+fVHLJjOhWbkAF8xDQNFC/wcTYdrWo1lnRhmagQ==
-  dependencies:
-    "@iconify/types" "^2.0.0"
-
 "@iconify/tools@4.0.4":
   version "4.0.4"
   resolved "https://registry.yarnpkg.com/@iconify/tools/-/tools-4.0.4.tgz#ae7d72609245b7caa4947b2f85d5a15a2340cb6c"

@@ -42,7 +42,6 @@
   },
   "devDependencies": {
     "@iconify/json": "2.2.218",
-    "@iconify/react": "^5.0.2",
     "@iconify/tools": "4.0.4",
     "@iconify/utils": "2.1.24",
     "autoprefixer": "10.4.19",
