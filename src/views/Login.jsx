@@ -6,8 +6,6 @@ import {useEffect, useState} from 'react'
 // Next Imports
 import { useRouter } from 'next/navigation'
 
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
-
 // MUI Imports
 import useMediaQuery from '@mui/material/useMediaQuery'
 import { styled, useTheme } from '@mui/material/styles'
@@ -59,15 +57,6 @@ const MaskImg = styled('img')({
   insetBlockEnd: 0,
   zIndex: -1
 })
-
-export async function getServerSideProps({ locale }) {
-  return {
-    props: {
-      ...(await serverSideTranslations(locale, ['common', 'footer'], null, ['en', 'tr'])),
-
-  },
-  };
-}
 
 const LoginV2 = ({ mode }) => {
   // States

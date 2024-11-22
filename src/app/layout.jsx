@@ -1,42 +1,19 @@
-"use client";
-// Third-party Imports
+'use client'
+
 import 'react-perfect-scrollbar/dist/css/styles.css'
-
-// Style Imports
 import '@/app/globals.css'
-
-// Generated Icon CSS Imports
 import '@assets/iconify-icons/generated-icons.css'
-import {useEffect} from "react";
-import {useRouter} from "next/navigation";
-import { appWithTranslation } from 'next-i18next';
-import Head from 'next/head';
 
-
-const RootLayout = ({ children }) => {
-  // Vars
-  const direction = 'ltr'
-
-  const router = useRouter();
-
-  useEffect(() => {
-    router.push('/login');
-  }, [router]);
-
+export default function RootLayout({ children }) {
   return (
-    <html id='__next' dir={direction}>
-      {/*<head>*/}
-      {/*  <link rel="icon" href="" type="image/png" />*/}
-      {/*  <title>MCM</title>*/}
-      {/*</head>*/}
-
+    <html id="__next">
       <head>
-        <link rel="icon"  href="/images/logo/favicon.png" type="image/png"/>
+        <link rel="icon" href="/images/logo/favicon.png" type="image/png" />
         <title>MCM</title>
       </head>
-      <body className='flex is-full min-bs-full flex-auto flex-col'>{children}</body>
+      <body className="flex is-full min-bs-full flex-auto flex-col">
+        {children}
+      </body>
     </html>
   )
 }
-
-export default appWithTranslation(RootLayout);
