@@ -132,12 +132,11 @@ const LoginV2 = ({ mode }) => {
         "password": password
       }
       try {
-        console.log('API Base URL:', process.env.NEXT_PUBLIC_APP_URL);
-
         response = await api.post('/Users/Login', params, {});
         if ( 200 <= response.status && response.status < 300) {
           if (response.data && response.data.data.accessToken){
             secureLocalStorage.setItem('accessToken', response.data.data.accessToken);
+            document.cookie = `authToken=${response.data.data.accessToken}; path=/; max-age=${60 * 60 * 24}; secure; SameSite=Strict;`;
             const decoded = jwtDecode(response.data.data.accessToken);
             await getUser(decoded.sub);
             router.push('/dashboard');
