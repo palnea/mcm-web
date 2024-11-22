@@ -5,7 +5,6 @@ import FormLayout from '@components/form/FormLayout'
 import CustomTable from "../../../../components/Table/CustomTable";
 import Card from "@mui/material/Card";
 import React, {useEffect, useState} from "react";
-import axios from "axios";
 import * as https from "https";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
@@ -29,6 +28,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import api from '../../../../api_helper/api';
 
 export default function Page() {
 
@@ -102,12 +102,7 @@ export default function Page() {
 
   const fetchData = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/Accessories',
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
+      const response = await api.get('/Accessories');
       setRows(response.data.data);
 
     } catch (err) {
@@ -117,12 +112,7 @@ export default function Page() {
 
   const fetchSelectBrand = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/YachtBrands',
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
+      const response = await api.get('/YachtBrands');
       const optionsData = [
         ...response.data.data.map(item => ({
           label: item.name,
@@ -139,12 +129,7 @@ export default function Page() {
 
   const fetchSelectComapny = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/Companies',
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
+      const response = await api.get('/Companies');
       const optionsData = response.data.data.map(item => ({
         label: item.name,
         value: item.id,
@@ -158,12 +143,7 @@ export default function Page() {
 
   const fetchSelectAccessoryCategories = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/AccessoryCategories',
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
+      const response = await api.get('/AccessoryCategories');
       const optionsData = response.data.data.map(item => ({
         label: item.name,
         value: item.id,
@@ -177,12 +157,7 @@ export default function Page() {
 
   const fetchSelectAccessorySubCategories = async (value) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/AccessorySubCategories/GetByCategoryId/' + value,
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
+      const response = await api.get('/AccessorySubCategories/GetByCategoryId/' + value);
       const optionsData = response.data.data.map(item => ({
         label: item.name,
         value: item.id,
@@ -318,12 +293,8 @@ export default function Page() {
         console.log("saveBrand", params);
         try {
           const response = isEdit
-            ? await axios.put('http://localhost:7153/api/Accessories/Update', params, {
-              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
-            })
-            : await axios.post('http://localhost:7153/api/Accessories', params, {
-              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
-            });
+            ? await api.put('/Accessories/Update', params)
+            : await api.post('/Accessories', params);
 
           if (response.status >= 200 && response.status < 300) {
             is_successful = true;
@@ -349,7 +320,7 @@ export default function Page() {
     //   if (isEdit) {
     //     const editModel = async () => {
     //       try {
-    //         const response = await axios.put('http://localhost:7153/api/Accessories/Update', params,
+    //         const response = await api.put('/Accessories/Update', params,
     //           {
     //             headers: {
     //               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -366,7 +337,7 @@ export default function Page() {
     //   else {
     //     const createYacht = async () => {
     //       try {
-    //         const response = await axios.post('http://localhost:7153/api/Accessories', params,
+    //         const response = await api.post('/Accessories', params,
     //           {
     //             headers: {
     //               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -398,12 +369,7 @@ export default function Page() {
     let is_successful = false;
     const deleteYacht = async () => {
       try {
-        const response = await axios.get('http://localhost:7153/api/Accessories/Remove/' + removeID,
-          {
-            headers: {
-              Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-            },
-          });
+        const response = await api.get('/Accessories/Remove/' + removeID);
         if (response.status >= 200 && response.status < 300) {
           is_successful = true;
         }

@@ -28,6 +28,7 @@ import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import api from '../../../../api_helper/api';
 
 export default function Page() {
 
@@ -115,12 +116,7 @@ export default function Page() {
 
   const fetchData = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/Users',
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
+      const response = await api.get('/Users');
       setRows(response.data.data);
 
     } catch (err) {
@@ -130,12 +126,7 @@ export default function Page() {
 
   const fetchSelectCompany = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/Companies',
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
+      const response = await api.get('/Companies');
       const optionsData = response.data.data.map(item => ({
         label: item.name,
         value: item.id,
@@ -149,12 +140,7 @@ export default function Page() {
 
   const fetchSelectGroup = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/Groups',
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
+      const response = await api.get('/Groups');
       const optionsData = response.data.data.map(item => ({
         label: item.name,
         value: item.id,
@@ -352,12 +338,8 @@ export default function Page() {
       const saveBrand = async () => {
         try {
           const response = isEdit
-            ? await axios.put('http://localhost:7153/api/Users/Update', params, {
-              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
-            })
-            : await axios.post('http://localhost:7153/api/Users', params, {
-              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
-            });
+            ? await api.put('/Users/Update', params)
+            : await api.post('/Users', params);
 
           if (response.status >= 200 && response.status < 300) {
             is_successful = true;
@@ -391,12 +373,7 @@ export default function Page() {
     let is_successful = false;
     const deleteUser = async () => {
       try {
-        const response = await axios.get('http://localhost:7153/api/Users/Remove/' + removeID,
-          {
-            headers: {
-              Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-            },
-          });
+        const response = await api.get('/Users/Remove/' + removeID);
         if (response.status >= 200 && response.status < 300) {
           is_successful = true;
         }

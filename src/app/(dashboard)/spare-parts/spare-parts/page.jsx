@@ -5,7 +5,6 @@ import FormLayout from '@components/form/FormLayout'
 import CustomTable from "../../../../components/Table/CustomTable";
 import Card from "@mui/material/Card";
 import React, {useEffect, useState} from "react";
-import axios from "axios";
 import * as https from "https";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
@@ -27,6 +26,7 @@ import secureLocalStorage from "react-secure-storage";
 import Box from "@mui/material/Box";
 import MenuItem from "@mui/material/MenuItem";
 import Divider from "@mui/material/Divider";
+import api from '../../../../api_helper/api';
 
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -102,13 +102,7 @@ export default function Page() {
 
   const fetchData = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/SpareParts/GetAllWithDetails',
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
-      console.log(response.data.data);
+      const response = await api.get('/SpareParts/GetAllWithDetails');
       setRows(response.data.data);
 
 
@@ -119,12 +113,7 @@ export default function Page() {
 
   const fetchSelectBrand = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/YachtBrands',
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
+      const response = await api.get('/YachtBrands');
       const optionsData = response.data.data.map(item => ({
         label: item.name,
         value: item.id,
@@ -139,12 +128,7 @@ export default function Page() {
 
   const fetchSelectCompany = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/Companies',
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
+      const response = await api.get('/Companies');
       const optionsData = response.data.data.map(item => ({
         label: item.name,
         value: item.id,
@@ -159,12 +143,7 @@ export default function Page() {
 
   const fetchSelectSparePartCategory = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/SparePartCategories',
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
+      const response = await api.get('/SparePartCategories');
       const optionsData = response.data.data.map(item => ({
         label: item.name,
         value: item.id,
@@ -179,12 +158,7 @@ export default function Page() {
 
   const getPartCodeByID = async (id) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/SparePartCodes/GetBySparePartId/' + id,
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
+      const response = await api.get('/SparePartCodes/GetBySparePartId/' + id);
 
       // console.log(response.data.data);
 
@@ -330,12 +304,8 @@ export default function Page() {
       const saveBrand = async () => {
         try {
           const response = isEdit
-            ? await axios.put('http://localhost:7153/api/SpareParts/Update', params, {
-              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
-            })
-            : await axios.post('http://localhost:7153/api/SpareParts', params, {
-              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
-            });
+            ? await api.put('/SpareParts/Update', params)
+            : await api.post('/SpareParts', params);
 
           if (response.status >= 200 && response.status < 300) {
             is_successful = true;
@@ -360,7 +330,7 @@ export default function Page() {
     //   if (isEdit) {
     //     const editModel = async () => {
     //       try {
-    //         const response = await axios.put('http://localhost:7153/api/SpareParts/Update', params,
+    //         const response = await api.put('/SpareParts/Update', params,
     //           {
     //             headers: {
     //               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -377,7 +347,7 @@ export default function Page() {
     //   else {
     //     const createSparePart = async () => {
     //       try {
-    //         const response = await axios.post('http://localhost:7153/api/SpareParts', params,
+    //         const response = await api.post('/SpareParts', params,
     //           {
     //             headers: {
     //               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -416,7 +386,7 @@ export default function Page() {
     //       "sparePartId": id
     //     }
     //     try {
-    //       const response = await axios.post('http://localhost:7153/api/SparePartCodes', partCodes,
+    //       const response = await api.post('/SparePartCodes', partCodes,
     //         {
     //           headers: {
     //             Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -441,9 +411,7 @@ export default function Page() {
 
       const saveBrand = async () => {
         try {
-          const response = await axios.post('http://localhost:7153/api/SparePartCodes', partCodes, {
-              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
-            });
+          const response = await api.post('/SparePartCodes', partCodes);
 
           if (response.status >= 200 && response.status < 300) {
             is_successful = true;
@@ -481,12 +449,7 @@ export default function Page() {
     let is_successful = false;
     const deleteSparePart = async () => {
       try {
-        const response = await axios.get('http://localhost:7153/api/SpareParts/Remove/' + removeID,
-          {
-            headers: {
-              Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-            },
-          });
+        const response = await api.get('/SpareParts/Remove/' + removeID);
         if (response.status >= 200 && response.status < 300) {
           is_successful = true;
         }
@@ -537,12 +500,7 @@ export default function Page() {
     let is_successful = false;
     const deletePartCode = async () => {
       try {
-        const response = await axios.get('http://localhost:7153/api/SparePartCodes/Remove/' + partCode_id,
-          {
-            headers: {
-              Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-            },
-          });
+        const response = await api.get('/SparePartCodes/Remove/' + partCode_id);
         if (response.status >= 200 && response.status < 300) {
           is_successful = true;
         }
@@ -578,12 +536,7 @@ export default function Page() {
         }
         const updatePartCode = async () => {
           try {
-            const response = await axios.put('http://localhost:7153/api/SparePartCodes/Update', param,
-              {
-                headers: {
-                  Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-                },
-              });
+            const response = await api.put('/SparePartCodes/Update', param);
             if (response.status >= 200 && response.status < 300) {
               is_successful = true;
             }

@@ -5,7 +5,6 @@ import FormLayout from '@components/form/FormLayout'
 import CustomTable from "../../../../components/Table/CustomTable";
 import Card from "@mui/material/Card";
 import React, {useEffect, useState} from "react";
-import axios from "axios";
 import * as https from "https";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
@@ -18,6 +17,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { CloudUpload as CloudUploadIcon } from "@mui/icons-material";
 import InputAdornment from "@mui/material/InputAdornment";
+import api from '../../../../api_helper/api';
 
 export default function Page() {
 
@@ -59,12 +59,7 @@ export default function Page() {
 
   const fetchData = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/Companies',
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
+      const response = await api.get('/Companies');
       setRows(response.data.data);
 
 
@@ -194,17 +189,9 @@ export default function Page() {
 
       const saveBrand = async () => {
         try {
-          console.log(params)
           const response = isEdit
-            ? await axios.put('http://localhost:7153/api/Companies/Update', params, {
-              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
-            })
-            : await axios.post('http://localhost:7153/api/Companies', params, {
-              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
-            });
-
-          console.log(response)
-
+            ? await api.put('/Companies/Update', params)
+            : await api.post('/Companies', params);
 
           if (response.status >= 200 && response.status < 300) {
             is_successful = true;
@@ -247,15 +234,11 @@ export default function Page() {
             //   };
 
             const responseMedia = isEdit
-              ? await axios.put('http://localhost:7153/api/MediaFiles/Update', params, {
-                headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
-              })
-              : await axios.post('http://localhost:7153/api/MediaFiles', params, {
-                headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
-              });
+              ? await api.put('/MediaFiles/Update', params)
+              : await api.post('/MediaFiles', params);
 
             console.log("media ", paramMedia);
-            // const responseMedia = await axios.post('http://localhost:7153/api/MediaFiles', paramMedia,
+            // const responseMedia = await api.post('/MediaFiles', paramMedia,
             //   {
             //     headers: {
             //       Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -290,7 +273,7 @@ export default function Page() {
     //     }
     //     const editModel = async () => {
     //       try {
-    //         const response = await axios.put('http://localhost:7153/api/Companies/Update', params,
+    //         const response = await api.put('/Companies/Update', params,
     //           {
     //             headers: {
     //               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -311,7 +294,7 @@ export default function Page() {
     //     }
     //     const createModel = async () => {
     //       try {
-    //         const response = await axios.post('http://localhost:7153/api/Companies', params,
+    //         const response = await api.post('/Companies', params,
     //           {
     //             headers: {
     //               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -330,7 +313,7 @@ export default function Page() {
     //           MediaFiles: media.MediaFiles,
     //         }
     //         console.log(paramMedia);
-    //         const responseMedia = await axios.post('http://localhost:7153/api/MediaFiles', paramMedia,
+    //         const responseMedia = await api.post('/MediaFiles', paramMedia,
     //           {
     //             headers: {
     //               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -363,12 +346,7 @@ export default function Page() {
     let is_successful = false;
     const deleteBrand = async () => {
       try {
-        const response = await axios.get('http://localhost:7153/api/Companies/Remove/' + removeID,
-          {
-            headers: {
-              Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-            },
-          });
+        const response = await api.get('/Companies/Remove/' + removeID);
         if (response.status >= 200 && response.status < 300) {
           is_successful = true;
         }

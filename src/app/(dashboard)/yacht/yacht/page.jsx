@@ -5,7 +5,7 @@ import FormLayout from '@components/form/FormLayout'
 import CustomTable from "../../../../components/Table/CustomTable";
 import Card from "@mui/material/Card";
 import React, {useEffect, useState} from "react";
-import axios from "axios";
+import api from '../../../../api_helper/api';
 import * as https from "https";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
@@ -141,12 +141,7 @@ export default function Page() {
 
   const fetchData = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/Yachts/GetAllWithDetails',
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
+      const response = await api.get('/Yachts/GetAllWithDetails');
       setRows(response.data.data);
 
     } catch (err) {
@@ -156,12 +151,7 @@ export default function Page() {
 
   const fetchSelectBrand = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/YachtBrands',
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
+      const response = await api.get('/YachtBrands');
       const optionsData = response.data.data.map(item => ({
         label: item.name,
         value: item.id,
@@ -175,12 +165,7 @@ export default function Page() {
 
   const fetchSelectModel = async (value) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/YachtModels/GetByYachtBrandId/' + value,
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
+      const response = await api.get('/YachtModels/GetByYachtBrandId/' + value);
       const optionsData = response.data.data.map(item => ({
         label: item.name,
         value: item.id,
@@ -194,12 +179,7 @@ export default function Page() {
 
   const fetchSelectUser = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/Users',
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
+      const response = await api.get('/Users');
       const optionsData = response.data.data.map(item => ({
         label: item.username,
         value: item.id,
@@ -213,12 +193,7 @@ export default function Page() {
 
   const fetchSelectGroups = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/Groups',
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
+      const response = await api.get('/Groups');
       const optionsData = response.data.data.map(item => ({
         label: item.name,
         value: item.id,
@@ -232,12 +207,7 @@ export default function Page() {
 
   const getYachtNoteByID = async (id) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/YachtNotes/GetByYachtId/' + id,
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
+      const response = await api.get('/YachtNotes/GetByYachtId/' + id);
       setNotes(response.data.data);
 
     } catch (err) {
@@ -442,12 +412,8 @@ export default function Page() {
       const saveBrand = async () => {
         try {
           const response = isEdit
-            ? await axios.put('http://localhost:7153/api/Yachts/Update', params, {
-              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
-            })
-            : await axios.post('http://localhost:7153/api/Yachts', params, {
-              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
-            });
+            ? await api.put('/Yachts/Update', params)
+            : await api.post('/Yachts', params);
 
           if (response.status >= 200 && response.status < 300) {
             is_successful = true;
@@ -492,12 +458,7 @@ export default function Page() {
           "yachtId": id
         }
         try {
-          const response = await axios.post('http://localhost:7153/api/YachtNotes', notes,
-            {
-              headers: {
-                Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-              },
-            });
+          const response = await api.post('/YachtNotes', notes);
           if (response.status >= 200 && response.status < 300) {
             is_successful = true;
           }
@@ -545,12 +506,7 @@ export default function Page() {
     let is_successful = false;
     const deleteYacht = async () => {
       try {
-        const response = await axios.get('http://localhost:7153/api/Yachts/Remove/' + removeID,
-          {
-            headers: {
-              Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-            },
-          });
+        const response = await api.get('/Yachts/Remove/' + removeID);
         if (response.status >= 200 && response.status < 300) {
           is_successful = true;
         }
@@ -607,12 +563,7 @@ export default function Page() {
 
     const deleteNote = async () => {
       try {
-        const response = await axios.get('http://localhost:7153/api/YachtNotes/Remove/' + note_id,
-          {
-            headers: {
-              Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-            },
-          });
+        const response = await api.get('/YachtNotes/Remove/' + note_id);
         if (response.status >= 200 && response.status < 300) {
           is_successful = true;
         }
@@ -646,12 +597,7 @@ export default function Page() {
         }
         const updateNote = async () => {
           try {
-            const response = await axios.put('http://localhost:7153/api/YachtNotes/Update', param,
-              {
-                headers: {
-                  Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-                },
-              });
+            const response = await api.put('/YachtNotes/Update', param);
             if (response.status >= 200 && response.status < 300) {
               is_successful = true;
             }

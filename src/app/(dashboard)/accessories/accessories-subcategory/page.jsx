@@ -5,8 +5,9 @@ import FormLayout from '@components/form/FormLayout'
 import CustomTable from "../../../../components/Table/CustomTable";
 import Card from "@mui/material/Card";
 import React, {useEffect, useState} from "react";
-import axios from "axios";
 import * as https from "https";
+import api from '../../../../api_helper/api';
+
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
 import {
@@ -52,12 +53,7 @@ export default function Page() {
 
   const fetchData = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/AccessorySubCategories',
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
+      const response = await api.get('/AccessorySubCategories');
       setRows(response.data.data);
 
 
@@ -68,12 +64,7 @@ export default function Page() {
 
   const fetchSelect = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/AccessoryCategories',
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
+      const response = await api.get('/AccessoryCategories');
       const optionsData = response.data.data.map(item => ({
         label: item.name,
         value: item.id,
@@ -213,12 +204,8 @@ export default function Page() {
       const saveBrand = async () => {
         try {
           const response = isEdit
-            ? await axios.put('http://localhost:7153/api/AccessorySubCategories/Update', params, {
-              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
-            })
-            : await axios.post('http://localhost:7153/api/AccessorySubCategories', params, {
-              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
-            });
+            ? await api.put('/AccessorySubCategories/Update', params)
+            : await api.post('/AccessorySubCategories', params);
 
           if (response.status >= 200 && response.status < 300) {
             is_successful = true;
@@ -248,7 +235,7 @@ export default function Page() {
     //     }
     //     const editModel = async () => {
     //       try {
-    //         const response = await axios.put('http://localhost:7153/api/AccessorySubCategories/Update', params,
+    //         const response = await api.put('/AccessorySubCategories/Update', params,
     //           {
     //             headers: {
     //               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -270,7 +257,7 @@ export default function Page() {
     //     }
     //     const createModel = async () => {
     //       try {
-    //         const response = await axios.post('http://localhost:7153/api/AccessorySubCategories', params,
+    //         const response = await api.post('/AccessorySubCategories', params,
     //           {
     //             headers: {
     //               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
@@ -305,12 +292,7 @@ export default function Page() {
     setLoading(true);
     const deleteBrand = async () => {
       try {
-        const response = await axios.get('http://localhost:7153/api/AccessorySubCategories/Remove/' + removeID,
-          {
-            headers: {
-              Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-            },
-          });
+        const response = await api.get('/AccessorySubCategories/Remove/' + removeID);
         if (response.status >= 200 && response.status < 300) {
           is_successful = true;
         }
