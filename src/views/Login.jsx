@@ -111,7 +111,7 @@ const LoginV2 = ({ mode }) => {
 
   const getUser = async (id) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/Users/GetWithDetails/' + id, {
+      const response = await axios.get('https://mcmdapi.talyasmart.com/api/Users/GetWithDetails/' + id, {
         headers: {
           Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
         },
@@ -145,7 +145,7 @@ const LoginV2 = ({ mode }) => {
         "password": password
       }
       try {
-        response = await axios.post('http://localhost:7153/api/Users/Login', params, {});
+        response = await axios.post('https://mcmdapi.talyasmart.com/api/Users/Login', params, {});
         if ( 200 <= response.status && response.status < 300) {
           if (response.data && response.data.data.accessToken){
             secureLocalStorage.setItem('accessToken', response.data.data.accessToken);
