@@ -2,7 +2,7 @@
 
 import 'react-perfect-scrollbar/dist/css/styles.css'
 import '@/app/globals.css'
-import '@assets/iconify-icons/generated-icons.css'
+import '../assets/iconify-icons/generated-icons.css'
 
 export default function RootLayout({ children }) {
   return (
