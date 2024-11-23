@@ -1,22 +1,29 @@
 import { NextResponse } from 'next/server';
 
-const protectedRoutes = ['/dashboard','/yacht', '/accessories', '/spare-parts', '/users', '/company', '/team-statistics'];
+const unprotectedRoutes = ['/login'];
 
 export function middleware(request) {
   const { nextUrl } = request;
+  const token = request.cookies.get('authToken');
+  const isAuthenticated = token && token.value && token.value.length > 0;
 
-  const token = request.cookies.get('authToken'); // Assuming the token is stored in cookies
-
-  // Check if the user is trying to access a protected route
-  if (protectedRoutes.some((route) => nextUrl.pathname.startsWith(route))) {
-    if ("value" in token && token["value"].length > 0) {
-      // If authorized and accessing '/dashboard', rewrite to '/dashboard/user'
-      if (nextUrl.pathname.startsWith('/dashboard')) {
-        return NextResponse.rewrite(new URL('/dashboard', request.url));
-      }
-    } else {
-      // If not authorized, redirect to login
-      return NextResponse.redirect(new URL('/login', request.url));
-    }
+  if (nextUrl.pathname === '/') {
+    return isAuthenticated
+      ? NextResponse.redirect(new URL('/dashboard', request.url))
+      : NextResponse.redirect(new URL('/login', request.url));
   }
+
+  if (nextUrl.pathname === '/login' && isAuthenticated) {
+    return NextResponse.redirect(new URL('/dashboard', request.url));
+  }
+
+  if (!unprotectedRoutes.includes(nextUrl.pathname) && !isAuthenticated) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
+
+  return NextResponse.next();
 }
+
+export const config = {
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)']
+};
