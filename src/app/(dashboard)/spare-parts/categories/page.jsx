@@ -16,6 +16,7 @@ import secureLocalStorage from "react-secure-storage";
 import Box from "@mui/material/Box";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import api from '../../../../api_helper/api';
 
 
 export default function Page() {
@@ -38,12 +39,7 @@ export default function Page() {
 
   const fetchData = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/SparePartCategories',
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
+      const response = await api.get('/SparePartCategories');
       setRows(response.data.data);
 
 
@@ -161,12 +157,8 @@ export default function Page() {
       const saveBrand = async () => {
         try {
           const response = isEdit
-            ? await axios.put('http://localhost:7153/api/SparePartCategories/Update', params, {
-              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
-            })
-            : await axios.post('http://localhost:7153/api/SparePartCategories', params, {
-              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
-            });
+            ? await api.put('/SparePartCategories/Update', params)
+            : await api.post('/SparePartCategories', params);
 
           if (response.status >= 200 && response.status < 300) {
             is_successful = true;
@@ -247,12 +239,7 @@ export default function Page() {
     let is_successful = false;
     const deleteSparePartCategories = async () => {
       try {
-        const response = await axios.get('http://localhost:7153/api/SparePartCategories/Remove/' + removeID,
-          {
-            headers: {
-              Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-            },
-          });
+        const response = await api.get('/SparePartCategories/Remove/' + removeID);
         if (response.status >= 200 && response.status < 300) {
           is_successful = true;
         }

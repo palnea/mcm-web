@@ -6,6 +6,7 @@ import CustomTable from "../../../../components/Table/CustomTable";
 import Card from "@mui/material/Card";
 import React, {useEffect, useState} from "react";
 import axios from "axios";
+import api from '../../../../api_helper/api';
 import * as https from "https";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
@@ -52,12 +53,7 @@ export default function Page() {
 
   const fetchData = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/YachtModels',
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
+      const response = await api.get('/YachtModels');
       setRows(response.data.data);
 
 
@@ -68,12 +64,7 @@ export default function Page() {
 
   const fetchSelect = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/YachtBrands',
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
+      const response = await api.get('/YachtBrands');
       const optionsData = response.data.data.map(item => ({
         label: item.name,
         value: item.id,
@@ -265,12 +256,8 @@ export default function Page() {
       const saveBrand = async () => {
         try {
           const response = isEdit
-            ? await axios.put('http://localhost:7153/api/YachtModels/Update', params, {
-              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
-            })
-            : await axios.post('http://localhost:7153/api/YachtModels', params, {
-              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
-            });
+            ? await api.put('/YachtModels/Update', params)
+            : await api.post('/YachtModels', params);
 
           if (response.status >= 200 && response.status < 300) {
             is_successful = true;
@@ -306,12 +293,7 @@ export default function Page() {
     let is_successful = false;
     const deleteBrand = async () => {
       try {
-        const response = await axios.get('http://localhost:7153/api/YachtModels/Remove/' + removeID,
-          {
-            headers: {
-              Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-            },
-          });
+        const response = await api.get('/YachtModels/Remove/' + removeID);
         if (response.status >= 200 && response.status < 300) {
           is_successful = true;
         }

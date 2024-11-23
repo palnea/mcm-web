@@ -28,6 +28,7 @@ import Box from "@mui/material/Box";
 import MenuItem from "@mui/material/MenuItem";
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import api from '../../../../api_helper/api';
 
 export default function Page() {
 
@@ -120,12 +121,7 @@ export default function Page() {
 
   const fetchData = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/Groups',
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
+      const response = await api.get('/Groups');
       setRows(response.data.data);
 
     } catch (err) {
@@ -318,12 +314,8 @@ export default function Page() {
       const saveBrand = async () => {
         try {
           const response = isEdit
-            ? await axios.put('http://localhost:7153/api/Groups/Update', params, {
-              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
-            })
-            : await axios.post('http://localhost:7153/api/Groups', params, {
-              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
-            });
+            ? await api.put('/Groups/Update', params)
+            : await api.post('/Groups', params);
 
           if (response.status >= 200 && response.status < 300) {
             is_successful = true;
@@ -358,12 +350,7 @@ export default function Page() {
     let is_successful = false;
     const deleteUser = async () => {
       try {
-        const response = await axios.get('http://localhost:7153/api/Groups/Remove/' + removeID,
-          {
-            headers: {
-              Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-            },
-          });
+        const response = await api.get('/Groups/Remove/' + removeID);
         if (response.status >= 200 && response.status < 300) {
           is_successful = true;
         }

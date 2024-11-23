@@ -6,6 +6,8 @@ import CustomTable from "../../../../components/Table/CustomTable";
 import Card from "@mui/material/Card";
 import React, {useEffect, useState} from "react";
 import axios from "axios";
+import api from '../../../../api_helper/api';
+
 import * as https from "https";
 import Button from "@mui/material/Button";
 import IconButton from "@mui/material/IconButton";
@@ -37,12 +39,7 @@ export default function Page() {
 
   const fetchData = async (id, name) => {
     try {
-      const response = await axios.get('http://localhost:7153/api/YachtBrands',
-        {
-          headers: {
-            Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-          },
-        });
+      const response = await api.get('/YachtBrands');
       setRows(response.data.data);
 
     } catch (err) {
@@ -205,12 +202,8 @@ export default function Page() {
       const saveBrand = async () => {
         try {
           const response = isEdit
-            ? await axios.put('http://localhost:7153/api/YachtBrands/Update', params, {
-              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
-            })
-            : await axios.post('http://localhost:7153/api/YachtBrands', params, {
-              headers: { Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken") },
-            });
+            ? await api.put('/YachtBrands/Update', params)
+            : await api.post('/YachtBrands', params);
 
           if (response.status >= 200 && response.status < 300) {
             is_successful = true;
@@ -245,12 +238,7 @@ export default function Page() {
     let is_successful = false;
     const deleteBrand = async () => {
       try {
-        const response = await axios.get('http://localhost:7153/api/YachtBrands/Remove/' + removeID,
-          {
-            headers: {
-              Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-            },
-          });
+        const response = await api.get('/YachtBrands/Remove/' + removeID);
         if (response.status >= 200 && response.status < 300) {
           is_successful = true;
         }

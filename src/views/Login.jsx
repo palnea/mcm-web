@@ -28,11 +28,13 @@ import themeConfig from '@configs/themeConfig'
 // Hook Imports
 import { useImageVariant } from '@core/hooks/useImageVariant'
 import { useSettings } from '@core/hooks/useSettings'
-import axios from "axios";
 import secureLocalStorage from "react-secure-storage";
 import {useTranslation} from "react-i18next";
 import LanguageSelector from "@components/LanguageDropdown/LanguageSelector";
 import { jwtDecode } from "jwt-decode";
+
+import api from '../api_helper/api';
+
 
 // Styled Custom Components
 const LoginIllustration = styled('img')(({ theme }) => ({
@@ -100,11 +102,7 @@ const LoginV2 = ({ mode }) => {
 
   const getUser = async (id) => {
     try {
-      const response = await axios.get('https://mcmdapi.talyasmart.com/api/Users/GetWithDetails/' + id, {
-        headers: {
-          Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-        },
-      });
+      const response = await api.get('/Users/GetWithDetails/' + id);
       if ( 200 <= response.status && response.status < 300) {
         secureLocalStorage.setItem('user', response.data.data);
         //buraya kullancinin diger bilgileri de alinabilir policy vs
@@ -134,10 +132,11 @@ const LoginV2 = ({ mode }) => {
         "password": password
       }
       try {
-        response = await axios.post('https://mcmdapi.talyasmart.com/api/Users/Login', params, {});
+        response = await api.post('/Users/Login', params, {});
         if ( 200 <= response.status && response.status < 300) {
           if (response.data && response.data.data.accessToken){
             secureLocalStorage.setItem('accessToken', response.data.data.accessToken);
+            document.cookie = `authToken=${response.data.data.accessToken}; path=/; max-age=${60 * 60 * 24}; secure; SameSite=Strict;`;
             const decoded = jwtDecode(response.data.data.accessToken);
             await getUser(decoded.sub);
             router.push('/dashboard');

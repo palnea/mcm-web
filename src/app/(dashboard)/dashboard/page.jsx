@@ -2,10 +2,10 @@
 
 import Grid from '@mui/material/Grid'
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import CardStatVertical from '@/components/card-statistics/Vertical'
 import { useTheme } from '@mui/material/styles'
 import { useRouter } from 'next/navigation'
+import api from '../../../api_helper/api';
 
 export default function Page() {
   const theme = useTheme()
@@ -15,11 +15,7 @@ export default function Page() {
 
   const fetchDashboardData = async (companyId = 1) => {
     try {
-      const response = await axios.get(`http://localhost:7153/api/Tickets/Dashboard/${companyId}`, {
-        headers: {
-          Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-        },
-      });
+      const response = await api.get(`/Tickets/Dashboard/${companyId}`);
       setDashboardData(response.data.data);
     } catch (err) {
       setError(err.message);

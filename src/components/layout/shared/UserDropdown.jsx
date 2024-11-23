@@ -68,6 +68,9 @@ const UserDropdown = () => {
     // Redirect to login page
     secureLocalStorage.removeItem("accessToken");
     secureLocalStorage.removeItem("user");
+    // Set the authToken cookie
+    document.cookie = `authToken=; path=/; max-age=${60 * 60 * 24}; secure; SameSite=Strict;`;
+
     router.push('/login')
   }
 
