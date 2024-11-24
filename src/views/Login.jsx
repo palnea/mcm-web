@@ -1,7 +1,7 @@
 'use client'
 
 // React Imports
-import {useEffect, useState} from 'react'
+import React, {useEffect, useState} from 'react'
 
 // Next Imports
 import { useRouter } from 'next/navigation'
@@ -34,6 +34,7 @@ import LanguageSelector from "@components/LanguageDropdown/LanguageSelector";
 import { jwtDecode } from "jwt-decode";
 
 import api from '../api_helper/api';
+import { CircularProgress } from '@mui/material'
 
 
 // Styled Custom Components
@@ -64,6 +65,7 @@ const LoginV2 = ({ mode }) => {
   // States
   const [isPasswordShown, setIsPasswordShown] = useState(false)
   const [isClient, setIsClient] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   // Set up a client-only check to ensure text matches between server and client
   useEffect(() => {
@@ -125,6 +127,7 @@ const LoginV2 = ({ mode }) => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    setLoading(true);
     if (validateForm()) {
       let response;
       const params = {
@@ -161,6 +164,8 @@ const LoginV2 = ({ mode }) => {
         setTimeout(() => {
           setGeneralError('');
         }, 5000); // 5000ms = 5 seconds
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -263,7 +268,7 @@ const LoginV2 = ({ mode }) => {
               </Typography>
             )}
             <Button fullWidth variant='contained' type='submit'>
-              {t('login')}
+              {loading ? <CircularProgress size={24} color={"info"} /> : t("login")}
             </Button>
             {/*<div className='flex justify-center items-center flex-wrap gap-2'>*/}
             {/*  <Typography>{t('New on our platform?')}</Typography>*/}
