@@ -74,6 +74,8 @@
   "phone": "Telefon",
   "photoUrl": "Fotoğraf URL",
   "users": "Kullanıcılar",
+  "faults": "Talepler",
+  "faultTypes": "Talep Tipleri",
   "notificationToken": "Bildirim Token",
   "userGroups": "Kullanıcı Grupları",
   "editUserGroup": "Kullanıcı Grubunu Düzenle",

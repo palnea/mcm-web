@@ -70,6 +70,8 @@
   "deleteUserMessage": "Are you sure you want to delete user ",
   "userOps": "User",
   "users": "Users",
+  "faults": "Requests",
+  "faultTypes": "Request Types",
   "surname": "Surname",
   "title": "Title",
   "phone": "Phone",

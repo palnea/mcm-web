@@ -112,6 +112,18 @@ const VerticalMenu = ({ scrollMenu }) => {
 
         </SubMenu>
 
+        <MenuSection label={t("faults")}/>
+
+        <SubMenu label={t("faults")} icon={<i className='tabler-users-group' />}>
+          <MenuItem href={`/fault/fault`} button={"secondary"}>
+            {t("faults")}
+          </MenuItem>
+          <MenuItem href='/fault/fault-type'  button={"secondary"}>
+            {t("faultTypes")}
+          </MenuItem>
+
+        </SubMenu>
+
         <MenuSection label={t("company")}/>
         <MenuItem href='/company/company' icon={<i className='tabler-building' />} button={"secondary"}>
           {t("company")}
