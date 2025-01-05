@@ -671,7 +671,7 @@ export default function Page() {
                               multiline  // Makes the field a textarea
                               rows={4}  // Adjusts the number of visible rows (height)
                               InputLabelProps={{ shrink: true }}
-                              value={params[key].slice(0, 10)}  // Format date for display
+                              value={params[key]}
                               variant="outlined"
                               label={t(key)}
                               onChange={(e) => handleInputChange(key, e.target.value)}
