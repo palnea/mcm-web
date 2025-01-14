@@ -535,7 +535,7 @@ export default function Page() {
     }
     if (key === "expiryDate") {
       // Store the date value as full timestamp format
-      const fullTimestamp = new Date(value).toISOString().slice(0, -1);  // Adjusted to get a full ISO timestamp
+      const fullTimestamp = new Date(value).toISOString()?.slice(0, -1);  // Adjusted to get a full ISO timestamp
       setParams(prevParams => ({ ...prevParams, [key]: fullTimestamp }));
     } else {
       setParams(prevParams => ({
@@ -769,7 +769,7 @@ export default function Page() {
                               fullWidth
                               type="date"  // Setting type to "date"
                               InputLabelProps={{ shrink: true }}
-                              value={params[key].slice(0, 10)}  // Format date for display
+                              value={params[key]?.slice(0, 10)}  // Format date for display
                               variant="outlined"
                               label={t(key)}
                               onChange={(e) => handleInputChange(key, e.target.value)}
