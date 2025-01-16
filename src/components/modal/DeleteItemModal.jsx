@@ -6,28 +6,24 @@ import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 
 const DeleteItemModal = ({
-                            open,
-                            onClose,
-                            onConfirm,
-                            itemName,
-                            loading,
-                            t,
-                            language,
-                            entityType = 'item' // Default to generic 'item'
-                          }) => {
-  // Generic translation keys that can be used for any entity
-  const translationKeys = {
-    deleteTitle: `delete${entityType.charAt(0).toUpperCase() + entityType.slice(1)}`,
-    deleteMessage: `delete${entityType.charAt(0).toUpperCase() + entityType.slice(1)}Message`
-  }
-
+                           open,
+                           onClose,
+                           onConfirm,
+                           itemName,
+                           loading,
+                           language,
+                           deleteTitle,
+                           deleteMessage,
+                           cancelText,
+                           deleteText
+                         }) => {
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>{t(translationKeys.deleteTitle)}</DialogTitle>
+      <DialogTitle>{deleteTitle}</DialogTitle>
       <DialogContent>
         {language === 'en' ? (
           <Typography component='div'>
-            {t(translationKeys.deleteMessage)}
+            {deleteMessage}
             <Box fontWeight='fontWeightBold' display='inline' ml={1} mr={1}>
               {itemName}
             </Box>
@@ -38,16 +34,16 @@ const DeleteItemModal = ({
             <Box fontWeight='fontWeightBold' display='inline' mr={1}>
               {itemName}
             </Box>
-            {t(translationKeys.deleteMessage)}
+            {deleteMessage}
           </Typography>
         )}
       </DialogContent>
       <DialogActions>
         <Button onClick={onClose} color='secondary'>
-          {t('cancel')}
+          {cancelText}
         </Button>
         <Button onClick={onConfirm} color='error'>
-          {loading ? <CircularProgress size={24} /> : t('delete')}
+          {loading ? <CircularProgress size={24} /> : deleteText}
         </Button>
       </DialogActions>
     </Dialog>
@@ -60,15 +56,16 @@ DeleteItemModal.propTypes = {
   onConfirm: PropTypes.func.isRequired,
   itemName: PropTypes.string,
   loading: PropTypes.bool,
-  t: PropTypes.func.isRequired,
   language: PropTypes.string.isRequired,
-  entityType: PropTypes.string
+  deleteTitle: PropTypes.string.isRequired,
+  deleteMessage: PropTypes.string.isRequired,
+  cancelText: PropTypes.string.isRequired,
+  deleteText: PropTypes.string.isRequired
 }
 
 DeleteItemModal.defaultProps = {
   itemName: '',
-  loading: false,
-  entityType: 'item'
+  loading: false
 }
 
 export default DeleteItemModal

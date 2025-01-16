@@ -18,20 +18,19 @@ import {
 import { CloudUpload as CloudUploadIcon } from '@mui/icons-material'
 
 const CreateEditItemModal = ({
-                               open,
-                               isEdit,
-                               onClose,
-                               onSave,
-                               initialData,
-                               errors,
-                               loading,
-                               t,
-                               defaultInputValue
-                             }) => {
+  open,
+  isEdit,
+  onClose,
+  onSave,
+  initialData,
+  errors,
+  loading,
+  translations,
+  defaultInputValue
+}) => {
   const [inputValue, setInputValue] = useState(defaultInputValue || '')
   const [selectedFile, setSelectedFile] = useState(null)
   const [imagePreview, setImagePreview] = useState(null)
-  console.log("image url", initialData.imageUrl)
 
   useEffect(() => {
     if (isEdit && initialData) {
@@ -40,7 +39,7 @@ const CreateEditItemModal = ({
     }
   }, [isEdit, initialData])
 
-  const handleImgChange = (file) => {
+  const handleImgChange = file => {
     if (file) {
       setSelectedFile(file)
       const previewUrl = URL.createObjectURL(file)
@@ -48,9 +47,8 @@ const CreateEditItemModal = ({
     }
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = event => {
     event.preventDefault()
-    // Create FormData only if there's a new file selected
     const formData = new FormData()
     formData.append('name', inputValue)
 
@@ -71,43 +69,39 @@ const CreateEditItemModal = ({
   }
 
   return (
-    <Dialog
-      open={open}
-      onClose={handleCloseAndReset}
-      maxWidth="md"
-    >
-      <DialogTitle>{isEdit ? t('editCompany') : t('createNewCompany')}</DialogTitle>
+    <Dialog open={open} onClose={handleCloseAndReset} maxWidth='md'>
+      <DialogTitle>{isEdit ? translations.editTitle : translations.createTitle}</DialogTitle>
       <form noValidate autoComplete='off' onSubmit={handleSubmit}>
         <DialogContent>
-          <Box display='flex' flexDirection="column" gap={3}>
+          <Box display='flex' flexDirection='column' gap={3}>
             <Box display='flex' gap={2}>
               <TextField
                 autoFocus
                 margin='dense'
-                label={t('name')}
+                label={translations.nameLabel}
                 type='text'
                 fullWidth
                 value={inputValue}
                 error={!!errors?.name}
-                helperText={errors?.name ? t(errors.name) : ''}
+                helperText={errors?.name ? errors.name : ''}
                 onChange={e => setInputValue(e.target.value)}
                 sx={{ flex: 2 }}
               />
               <input
                 type='file'
                 id='file-input'
-                accept="image/*"
+                accept='image/*'
                 style={{ display: 'none' }}
                 onChange={e => handleImgChange(e.target.files[0])}
               />
               <TextField
                 margin='dense'
-                label={t('imageUrl')}
+                label={translations.imageLabel}
                 fullWidth
                 sx={{ flex: 2 }}
                 error={!!errors?.imageUrl}
-                helperText={errors?.imageUrl ? t(errors.imageUrl) : ''}
-                value={selectedFile ? selectedFile.name : (initialData?.imageUrl || '')}
+                helperText={errors?.imageUrl ? errors.imageUrl : ''}
+                value={selectedFile ? selectedFile.name : initialData?.imageUrl || ''}
                 InputProps={{
                   readOnly: true,
                   endAdornment: (
@@ -122,14 +116,13 @@ const CreateEditItemModal = ({
               />
             </Box>
 
-            {/* Image Preview Section */}
             {imagePreview && (
               <Card sx={{ maxWidth: '100%', boxShadow: 'none', bgcolor: 'background.default' }}>
                 <Box sx={{ position: 'relative', width: '100%', height: 200 }}>
                   <CardMedia
-                    component="img"
+                    component='img'
                     image={imagePreview}
-                    alt="Selected image preview"
+                    alt='Selected image preview'
                     sx={{
                       height: '100%',
                       objectFit: 'contain',
@@ -138,8 +131,8 @@ const CreateEditItemModal = ({
                     }}
                   />
                 </Box>
-                <Typography variant="caption" color="text.secondary" sx={{ mt: 1 }}>
-                  {t('imagePreview')}
+                <Typography variant='caption' color='text.secondary' sx={{ mt: 1 }}>
+                  {translations.previewLabel}
                 </Typography>
               </Card>
             )}
@@ -147,10 +140,10 @@ const CreateEditItemModal = ({
         </DialogContent>
         <DialogActions>
           <Button onClick={handleCloseAndReset} color='secondary'>
-            {t('cancel')}
+            {translations.cancelText}
           </Button>
-          <Button type='submit' color='primary' variant="contained">
-            {loading ? <CircularProgress size={24} /> : isEdit ? t('edit') : t('create')}
+          <Button type='submit' color='primary' variant='contained'>
+            {loading ? <CircularProgress size={24} /> : isEdit ? translations.editText : translations.createText}
           </Button>
         </DialogActions>
       </form>
@@ -164,7 +157,6 @@ CreateEditItemModal.propTypes = {
   onClose: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
   defaultInputValue: PropTypes.string,
-  defaultIMGValue: PropTypes.string,
   initialData: PropTypes.shape({
     name: PropTypes.string,
     imageUrl: PropTypes.string
@@ -174,7 +166,16 @@ CreateEditItemModal.propTypes = {
     imageUrl: PropTypes.string
   }),
   loading: PropTypes.bool,
-  t: PropTypes.func.isRequired
+  translations: PropTypes.shape({
+    editTitle: PropTypes.string.isRequired,
+    createTitle: PropTypes.string.isRequired,
+    nameLabel: PropTypes.string.isRequired,
+    imageLabel: PropTypes.string.isRequired,
+    previewLabel: PropTypes.string.isRequired,
+    cancelText: PropTypes.string.isRequired,
+    editText: PropTypes.string.isRequired,
+    createText: PropTypes.string.isRequired
+  }).isRequired
 }
 
 CreateEditItemModal.defaultProps = {

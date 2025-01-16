@@ -28,6 +28,17 @@ export default function Page() {
     imageUrl: ''
   })
 
+  const modalTranslations = {
+    editTitle: t('editCompany'),
+    createTitle: t('createNewCompany'),
+    nameLabel: t('name'),
+    imageLabel: t('imageUrl'),
+    previewLabel: t('imagePreview'),
+    cancelText: t('cancel'),
+    editText: t('edit'),
+    createText: t('create')
+  }
+
   const fetchData = async () => {
     try {
       const response = await api.get('/YachtBrands')
@@ -159,7 +170,7 @@ export default function Page() {
         if (brandResponse.status >= 200 && brandResponse.status < 300) {
           // If there's a new file, upload it
           if (file) {
-            const brandId = isEdit ? editID : brandResponse.data.id
+            const brandId = isEdit ? editID : brandResponse.data.data.id
             await uploadFile(brandId, file)
           }
 
@@ -206,11 +217,11 @@ export default function Page() {
         open={open}
         onClose={handleClose}
         onSave={handleSave}
-        t={t}
         isEdit={isEdit}
         initialData={{ name: name, imageUrl: imageUrl }}
         errors={errors}
         loading={loading}
+        translations={modalTranslations}
       />
 
       <DeleteItemModal
@@ -219,9 +230,11 @@ export default function Page() {
         onConfirm={handleDelConfirm}
         itemName={itemToDelete.name}
         loading={loading}
-        t={t}
         language={i18n.language}
-        entityType='brand'
+        deleteTitle={t('deleteBrand')}
+        deleteMessage={t('deleteBrandMessage')}
+        cancelText={t('cancel')}
+        deleteText={t('delete')}
       />
 
       <Grid container spacing={6}>
