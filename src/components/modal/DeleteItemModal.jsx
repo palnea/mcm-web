@@ -5,25 +5,40 @@ import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import Button from '@mui/material/Button'
 
-const DeleteCompanyDialog = ({ open, onClose, onConfirm, companyName, loading, t, language }) => {
+const DeleteItemModal = ({
+                            open,
+                            onClose,
+                            onConfirm,
+                            itemName,
+                            loading,
+                            t,
+                            language,
+                            entityType = 'item' // Default to generic 'item'
+                          }) => {
+  // Generic translation keys that can be used for any entity
+  const translationKeys = {
+    deleteTitle: `delete${entityType.charAt(0).toUpperCase() + entityType.slice(1)}`,
+    deleteMessage: `delete${entityType.charAt(0).toUpperCase() + entityType.slice(1)}Message`
+  }
+
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>{t('deleteCompany')}</DialogTitle>
+      <DialogTitle>{t(translationKeys.deleteTitle)}</DialogTitle>
       <DialogContent>
         {language === 'en' ? (
           <Typography component='div'>
-            {t('deleteCompanyMsg')}
-            <Box fontWeight='fontWeightBold' display='inline'>
-              {companyName}
+            {t(translationKeys.deleteMessage)}
+            <Box fontWeight='fontWeightBold' display='inline' ml={1} mr={1}>
+              {itemName}
             </Box>
             ?
           </Typography>
         ) : (
           <Typography>
-            <Box fontWeight='fontWeightBold' display='inline'>
-              {companyName}
-            </Box>{' '}
-            {t('deleteBrandMessage')}
+            <Box fontWeight='fontWeightBold' display='inline' mr={1}>
+              {itemName}
+            </Box>
+            {t(translationKeys.deleteMessage)}
           </Typography>
         )}
       </DialogContent>
@@ -31,7 +46,7 @@ const DeleteCompanyDialog = ({ open, onClose, onConfirm, companyName, loading, t
         <Button onClick={onClose} color='secondary'>
           {t('cancel')}
         </Button>
-        <Button onClick={onConfirm} color='primary'>
+        <Button onClick={onConfirm} color='error'>
           {loading ? <CircularProgress size={24} /> : t('delete')}
         </Button>
       </DialogActions>
@@ -39,19 +54,21 @@ const DeleteCompanyDialog = ({ open, onClose, onConfirm, companyName, loading, t
   )
 }
 
-DeleteCompanyDialog.propTypes = {
+DeleteItemModal.propTypes = {
   open: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,
   onConfirm: PropTypes.func.isRequired,
-  companyName: PropTypes.string,
+  itemName: PropTypes.string,
   loading: PropTypes.bool,
   t: PropTypes.func.isRequired,
-  language: PropTypes.string.isRequired
+  language: PropTypes.string.isRequired,
+  entityType: PropTypes.string
 }
 
-DeleteCompanyDialog.defaultProps = {
-  companyName: '',
-  loading: false
+DeleteItemModal.defaultProps = {
+  itemName: '',
+  loading: false,
+  entityType: 'item'
 }
 
-export default DeleteCompanyDialog
+export default DeleteItemModal

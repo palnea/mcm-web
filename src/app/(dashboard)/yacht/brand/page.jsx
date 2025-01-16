@@ -6,24 +6,21 @@ import Card from '@mui/material/Card'
 import React, { useEffect, useState } from 'react'
 import api from '../../../../api_helper/api'
 import IconButton from '@mui/material/IconButton'
-import { CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material'
-import Button from '@mui/material/Button'
 import { useTranslation } from 'react-i18next'
-import Box from '@mui/material/Box'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import CreateEditItemModal from '@components/modal/CreateEditItemModal'
+import DeleteItemModal from '@components/modal/DeleteItemModal'
 
 export default function Page() {
   const [open, setOpen] = useState(false)
   const [name, setName] = useState('')
-  const [imageUrl, setImgUrl] = useState('')
+  const [imageUrl, setImageUrl] = useState('')
   const [editID, setEditID] = useState('')
-  const [removeID, setRemoveID] = useState('')
   const [rows, setRows] = useState([])
   const [loading, setLoading] = useState(false)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
-  const [nameDel, setNameDel] = useState('')
+  const [itemToDelete, setItemToDelete] = useState({ id: '', name: '' })
   const [isEdit, setIsEdit] = useState(false)
   const { t, i18n } = useTranslation('common')
   const [errors, setErrors] = useState({
@@ -96,15 +93,14 @@ export default function Page() {
   const handleEdit = (id, name, imageUrl) => {
     setIsEdit(true)
     setName(name)
-    setImgUrl(process.env.NEXT_PUBLIC_CONTENT_BASE_URL + '/' + imageUrl)
+    setImageUrl(process.env.NEXT_PUBLIC_CONTENT_BASE_URL + '/' + imageUrl)
     setEditID(id)
     handleOpen()
   }
 
   const handleDelete = (id, name) => {
+    setItemToDelete({ id, name })
     setOpenDeleteModal(true)
-    setNameDel(name)
-    setRemoveID(id)
   }
 
   const handleOpen = () => setOpen(true)
@@ -113,7 +109,6 @@ export default function Page() {
     setOpen(false)
     setIsEdit(false)
     setEditID('')
-    setRemoveID('')
     setErrors({
       name: '',
       imageUrl: ''
@@ -164,8 +159,7 @@ export default function Page() {
         if (brandResponse.status >= 200 && brandResponse.status < 300) {
           // If there's a new file, upload it
           if (file) {
-            console.log(brandResponse)
-            const brandId = isEdit ? editID : brandResponse.data.data.id
+            const brandId = isEdit ? editID : brandResponse.data.id
             await uploadFile(brandId, file)
           }
 
@@ -184,13 +178,13 @@ export default function Page() {
 
   const handleDelClose = () => {
     setOpenDeleteModal(false)
-    setNameDel('')
+    setItemToDelete({ id: '', name: '' })
   }
 
-  const handleDelSave = async () => {
+  const handleDelConfirm = async () => {
     setLoading(true)
     try {
-      const response = await api.get('/YachtBrands/Remove/' + removeID)
+      const response = await api.get('/YachtBrands/Remove/' + itemToDelete.id)
       if (response.status >= 200 && response.status < 300) {
         handleDelClose()
         toast.success(t('Brand deleted successfully!'))
@@ -219,35 +213,16 @@ export default function Page() {
         loading={loading}
       />
 
-      <Dialog open={openDeleteModal} onClose={handleDelClose}>
-        <DialogTitle>{t('deleteBrand')}</DialogTitle>
-        <DialogContent>
-          {i18n.language === 'en' ? (
-            <Typography component='div'>
-              {t('deleteBrandMessage')}
-              <Box fontWeight='fontWeightBold' display='inline'>
-                {nameDel}
-              </Box>
-              ?
-            </Typography>
-          ) : (
-            <Typography>
-              <Box fontWeight='fontWeightBold' display='inline'>
-                {nameDel}
-              </Box>{' '}
-              {t('deleteBrandMessage')}
-            </Typography>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleDelClose} color='secondary'>
-            {t('cancel')}
-          </Button>
-          <Button onClick={handleDelSave} color='primary'>
-            {loading ? <CircularProgress size={24} /> : t('delete')}
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <DeleteItemModal
+        open={openDeleteModal}
+        onClose={handleDelClose}
+        onConfirm={handleDelConfirm}
+        itemName={itemToDelete.name}
+        loading={loading}
+        t={t}
+        language={i18n.language}
+        entityType='brand'
+      />
 
       <Grid container spacing={6}>
         <Grid item xs={12} sm={6} md={6} lg={6}>
