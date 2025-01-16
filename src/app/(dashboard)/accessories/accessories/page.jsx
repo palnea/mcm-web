@@ -118,7 +118,6 @@ export default function Page() {
           label: item.name,
           value: item.id,
         })),
-        { label: 'Compatible with All', value: -1 }
       ];
       setOptionsBrands(optionsData);
 
