@@ -74,6 +74,7 @@ export default function Page() {
   const columns = [
     { id: 'id', label: 'id' },
     { id: 'name', label: 'name' },
+    { id: 'brand', label: 'brand', render: row => row.brandName },
     {
       id: 'createdDate',
       label: 'createdDate',
