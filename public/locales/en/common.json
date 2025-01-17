@@ -101,6 +101,7 @@
   "editYacht": "Edit Yacht",
   "createNewYacht": "Create New Yacht",
   "selectUsers": "Select Users",
+  "selectShipType": "Select Ship Type",
   "deleteYacht": "Delete Yacht",
   "deleteYachtMessage": "Are you sure you want to delete yacht ",
   "createNote": "Create Note",

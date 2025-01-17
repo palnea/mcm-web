@@ -9,8 +9,8 @@ import IconButton from '@mui/material/IconButton'
 import { useTranslation } from 'react-i18next'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import CreateEditItemModal from '@components/modal/CreateEditItemModal'
-import DeleteItemModal from '@components/modal/DeleteItemModal'
+import CreateEditItemModal from '@components/pages/(dashboard)/yacht/brand/CreateEditItemModal'
+import DeleteItemModal from '@components/pages/(dashboard)/yacht/brand/DeleteItemModal'
 
 export default function Page() {
   const [open, setOpen] = useState(false)
