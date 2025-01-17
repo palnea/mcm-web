@@ -309,7 +309,7 @@ export default function Page() {
         onConfirm={handleDelSave}
         language={i18n.language}
         deleteTitle={t('deleteModel')}
-        deleteMessage={t('deleteBrandMessage')}
+        deleteMessage={t('deleteModelMessage')}
         cancelText={t('cancel')}
         deleteText={t('delete')}
       />

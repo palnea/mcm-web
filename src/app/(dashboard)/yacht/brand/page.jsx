@@ -29,8 +29,8 @@ export default function Page() {
   })
 
   const modalTranslations = {
-    editTitle: t('editCompany'),
-    createTitle: t('createNewCompany'),
+    editTitle: t('editBrand'),
+    createTitle: t('createNewBrand'),
     nameLabel: t('name'),
     imageLabel: t('imageUrl'),
     previewLabel: t('imagePreview'),
