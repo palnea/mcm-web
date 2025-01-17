@@ -85,6 +85,8 @@
   "photoUrl": "Photo Url",
   "notificationToken": "Notification Token",
   "userGroups": "User Groups",
+  "resources": "Resources",
+  "teams": "Teams",
   "editUserGroup": "Edit User Group",
   "createNewUserGroup": "Create New User Group",
   "deleteUserGroup": "Delete User Group",

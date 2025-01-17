@@ -85,6 +85,8 @@
   "faultTypes": "Talep Tipleri",
   "notificationToken": "Bildirim Token",
   "userGroups": "Kullanıcı Grupları",
+  "resources": "Kaynaklar",
+  "teams": "Takımlar",
   "editUserGroup": "Kullanıcı Grubunu Düzenle",
   "createNewUserGroup": "Yeni Kullanıcı Grubu Oluştur",
   "deleteUserGroup": "Kullanıcı Grubunu Sil",
