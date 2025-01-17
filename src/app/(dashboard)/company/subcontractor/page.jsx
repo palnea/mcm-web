@@ -169,19 +169,15 @@ export default function Page() {
 
   const handleSave = async formData => {
     const name = formData.get('name')
-    const companyIdsString = formData.get('companyIds')
+    const companyIdsString = formData.get('companyIds') || '[]'
     const file = formData.get('file')
 
     let newErrors = {}
     if (!name) {
       newErrors.name = 'Name is required'
     }
-    if (!companyIdsString) {
-      newErrors.companies = 'At least one company is required'
-    }
 
     setErrors(newErrors)
-
     if (Object.keys(newErrors).length === 0) {
       setLoading(true)
       try {
@@ -191,7 +187,6 @@ export default function Page() {
         const subcontractorParams = isEdit
           ? { id: editID, name: name }
           : { name: name, companyIds: companyIds }
-
         const subcontractorResponse = isEdit
           ? await api.put('/SubContractors/Update', subcontractorParams)
           : await api.post('/SubContractors', subcontractorParams)

@@ -76,6 +76,7 @@ const CreateEditSubcontractorModal = ({
         !newValue.find(newComp => newComp.id === company.id)
       )
 
+      let hasError = false
       // Handle additions
       for (const company of added) {
         try {
@@ -85,7 +86,8 @@ const CreateEditSubcontractorModal = ({
           })
         } catch (err) {
           console.error('Error adding company:', err)
-          return // Stop if there's an error
+          hasError = true
+          return
         }
       }
 
@@ -98,8 +100,16 @@ const CreateEditSubcontractorModal = ({
           })
         } catch (err) {
           console.error('Error removing company:', err)
-          return // Stop if there's an error
+          hasError = true
+          return
         }
+      }
+
+      if (hasError) {
+        await fetchSubcontractorDetails(initialData.id)
+      }
+      else {
+        setOriginalCompanies(newValue)
       }
     }
 
@@ -130,7 +140,6 @@ const CreateEditSubcontractorModal = ({
     } else if (isEdit && initialData?.imageUrl) {
       formData.append('imageUrl', initialData.imageUrl)
     }
-
     onSave(formData)
   }
 
@@ -251,7 +260,7 @@ const CreateEditSubcontractorModal = ({
             type='submit'
             color='primary'
             variant='contained'
-            disabled={!selectedCompanies.length || !inputValue || loading}
+            disabled={!inputValue || loading}
           >
             {loading ? <CircularProgress size={24} /> : isEdit ? translations.editText : translations.createText}
           </Button>
