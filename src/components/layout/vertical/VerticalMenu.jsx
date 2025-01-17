@@ -125,9 +125,14 @@ const VerticalMenu = ({ scrollMenu }) => {
         </SubMenu>
 
         <MenuSection label={t("company")}/>
-        <MenuItem href='/company/company' icon={<i className='tabler-building' />} button={"secondary"}>
-          {t("company")}
-        </MenuItem>
+        <SubMenu label={t("company")} icon={<i className='tabler-building' />}>
+          <MenuItem href='/company/company' button={"secondary"}>
+            {t("company")}
+          </MenuItem>
+          <MenuItem href='/company/subcontractor' button={"secondary"}>
+            {t("subcontractor")}
+          </MenuItem>
+        </SubMenu>
         <MenuItem href='/team-statistics' icon={<i className='tabler-users-group' />} button={"secondary"}>
           {t("groupStatistics")}
         </MenuItem>
