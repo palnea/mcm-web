@@ -183,7 +183,6 @@ CreateEditItemModal.propTypes = {
   onSave: PropTypes.func.isRequired,
   isEdit: PropTypes.bool,
   inputValue: PropTypes.string,
-  onInputChange: PropTypes.func.isRequired,
   selectValue: PropTypes.string,
   loading: PropTypes.bool,
   options: PropTypes.arrayOf(
