@@ -119,14 +119,6 @@ export default function Page() {
       render: row => subcontractorsDict[row.subContractorId]?.name || '-'
     },
     {
-      id: 'users',
-      label: 'Users',
-      render: row => {
-        const teamUsers = row.users || []
-        return teamUsers.map(userId => usersDict[userId]?.name || '-').join(', ')
-      }
-    },
-    {
       id: 'createdDate',
       label: 'createdDate',
       render: row => {
