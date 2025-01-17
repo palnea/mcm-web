@@ -196,54 +196,12 @@ export default function Page() {
           if (response.status >= 200 && response.status < 300) {
             is_successful = true;
             const companyId = response.data.data.id;
-            // const paramMedia = {
-            //   FileUrl: media.FileUrl,
-            //   TicketId: '',
-            //   ProcessId: '',
-            //   InventoryId: '',
-            //   CompanyId: companyId,
-            //   UserId: '',
-            //   ControlId: '',
-            //   ControlType: '',
-            //   MediaFiles: media.MediaFiles,
-            // }
-
-            //id verilmeli herhalde ama mediafiledan gidip alınamiyor gibi (oyle olunca id veremiyorum)
-            // const paramMedia = isEdit
-            //   ? {
-            //     FileUrl: media.FileUrl,
-            //     TicketId: '',
-            //     ProcessId: '',
-            //     InventoryId: '',
-            //     CompanyId: companyId,
-            //     UserId: '',
-            //     ControlId: '',
-            //     ControlType: '',
-            //     MediaFiles: media.MediaFiles,
-            //   }
-            //   : {
-            //     FileUrl: media.FileUrl,
-            //     TicketId: '',
-            //     ProcessId: '',
-            //     InventoryId: '',
-            //     CompanyId: companyId,
-            //     UserId: '',
-            //     ControlId: '',
-            //     ControlType: '',
-            //     MediaFiles: media.MediaFiles,
-            //   };
 
             const responseMedia = isEdit
               ? await api.put('/MediaFiles/Update', params)
               : await api.post('/MediaFiles', params);
 
             console.log("media ", paramMedia);
-            // const responseMedia = await api.post('/MediaFiles', paramMedia,
-            //   {
-            //     headers: {
-            //       Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-            //     },
-            //   });
 
           }
         } catch (err) {
@@ -263,77 +221,6 @@ export default function Page() {
         }
       });
     }
-
-    // if (Object.keys(newErrors).length === 0) {
-    //   if (isEdit) {
-    //     const params = {
-    //       "id": editID,
-    //       "name": inputValue,
-    //       "imgUrl": inputIMGValue
-    //     }
-    //     const editModel = async () => {
-    //       try {
-    //         const response = await api.put('/Companies/Update', params,
-    //           {
-    //             headers: {
-    //               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-    //             },
-    //           });
-    //
-    //       } catch (err) {
-    //         // setErrorClosedTicket(false);
-    //       }
-    //     };
-    //
-    //     editModel();
-    //   } else {
-    //     const params = {
-    //       "name": inputValue,
-    //       "imgUrl": inputIMGValue
-    //
-    //     }
-    //     const createModel = async () => {
-    //       try {
-    //         const response = await api.post('/Companies', params,
-    //           {
-    //             headers: {
-    //               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-    //             },
-    //           });
-    //         const companyId = response.data.data.id;
-    //         const paramMedia = {
-    //           FileUrl: media.FileUrl,
-    //           TicketId: '',
-    //           ProcessId: '',
-    //           InventoryId: '',
-    //           CompanyId: companyId,
-    //           UserId: '',
-    //           ControlId: '',
-    //           ControlType: '',
-    //           MediaFiles: media.MediaFiles,
-    //         }
-    //         console.log(paramMedia);
-    //         const responseMedia = await api.post('/MediaFiles', paramMedia,
-    //           {
-    //             headers: {
-    //               Authorization: 'Bearer ' + secureLocalStorage.getItem("accessToken"),
-    //             },
-    //           });
-    //
-    //       } catch (err) {
-    //         // setErrorClosedTicket(false);
-    //       }
-    //     };
-    //
-    //     createModel();
-    //   }
-    //   setTimeout(() => {
-    //     fetchData();
-    //   }, 2000)
-    //
-    //   handleClose();
-    // }
-
   };
 
   const handleDelClose = () => {
@@ -409,6 +296,7 @@ export default function Page() {
                 helperText={t(errors.name)}
                 onChange={(e) => setInputValue(e.target.value)}
                 sx = {{ flex: 2 }}
+                disabled
               />
               {/* Hidden Native File Input */}
               <input
@@ -417,32 +305,6 @@ export default function Page() {
                 style={{ display: "none" }}
                 onChange={(e) => handleImgChange(e.target.files[0])}
               />
-
-              {/* TextField Styled Input with IconButton */}
-              {/*<TextField*/}
-              {/*  margin="dense"*/}
-              {/*  label={t("imgUrl")}*/}
-              {/*  fullWidth*/}
-              {/*  error={!!errors.imgUrl} // Error handling*/}
-              {/*  helperText={errors.imgUrl ? t(errors.imgUrl) : t(inputIMGValue?.name || "No file chosen")}*/}
-              {/*  InputProps={{*/}
-              {/*    readOnly: true, // Make it readonly so the user can't type*/}
-              {/*    endAdornment: (*/}
-              {/*      <InputAdornment position="end">*/}
-              {/*        <IconButton onClick={() => document.getElementById("file-input").click()} edge="end">*/}
-              {/*          <CloudUploadIcon />*/}
-              {/*        </IconButton>*/}
-              {/*      </InputAdornment>*/}
-              {/*    ),*/}
-              {/*  }}*/}
-              {/*  sx={{*/}
-              {/*    "& .MuiInputBase-root": {*/}
-              {/*      cursor: "pointer",*/}
-              {/*    },*/}
-              {/*    flex: 2*/}
-              {/*  }}*/}
-              {/*  onClick={() => document.getElementById("file-input").click()} // Trigger input on TextField click*/}
-              {/*/>*/}
 
               <TextField
                 margin="dense"
@@ -463,6 +325,7 @@ export default function Page() {
                   ),
                 }}
                 onClick={() => document.getElementById("file-input").click()} // Trigger input on TextField click
+                disabled
               />
             </Box>
 
