@@ -96,7 +96,7 @@ const LoginV2 = ({ mode }) => {
     borderedDarkIllustration
   )
 
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errors, setErrors] = useState({});
   const [generalError, setGeneralError] = useState(''); // New state for general error
@@ -117,7 +117,7 @@ const LoginV2 = ({ mode }) => {
 
   const validateForm = () => {
     let formErrors = {};
-    if (!username) formErrors.username = 'Username is required';
+    if (!email) formErrors.email = 'Email is required';
     if (!password) formErrors.password = 'Password is required';
     setErrors(formErrors);
     return Object.keys(formErrors).length === 0; // Returns true if no errors
@@ -131,7 +131,7 @@ const LoginV2 = ({ mode }) => {
     if (validateForm()) {
       let response;
       const params = {
-        "username": username,
+        "email": email,
         "password": password
       }
       try {
@@ -144,14 +144,14 @@ const LoginV2 = ({ mode }) => {
             await getUser(decoded.sub);
             router.push('/dashboard');
           }else {
-            setGeneralError('Invalid username or password');
+            setGeneralError('Invalid email or password');
             // Automatically hide the error after 5 seconds
             setTimeout(() => {
               setGeneralError('');
             }, 5000); // 5000ms = 5 seconds
           }
         }else {
-          setGeneralError('Invalid username or password');
+          setGeneralError('Invalid email or password');
           // Automatically hide the error after 5 seconds
           setTimeout(() => {
             setGeneralError('');
@@ -159,7 +159,7 @@ const LoginV2 = ({ mode }) => {
         }
 
       } catch (error){
-        setGeneralError('Invalid username or password');
+        setGeneralError('Invalid email or password');
         // Automatically hide the error after 5 seconds
         setTimeout(() => {
           setGeneralError('');
@@ -222,12 +222,12 @@ const LoginV2 = ({ mode }) => {
             <CustomTextField
               autoFocus
               fullWidth
-              label={t('username')}
-              placeholder={t('enterYourUsername')}
-              value={username}
-              onChange={e => setUsername(e.target.value)}
-              error={!!errors.username}
-              helperText={t(errors.username)}
+              label={t('email')}
+              placeholder={t('enterYourEmail')}
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              error={!!errors.email}
+              helperText={t(errors.email)}
             />
             <CustomTextField
               fullWidth

@@ -9,15 +9,18 @@ import IconButton from '@mui/material/IconButton'
 import { useTranslation } from 'react-i18next'
 import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-import CreateEditItemModal from '@components/pages/(dashboard)/yacht/brand/CreateEditItemModal'
 import DeleteItemModal from '@components/pages/(dashboard)/yacht/brand/DeleteItemModal'
+import CreateEditSubcontractorModal
+  from '@components/pages/(dashboard)/company/subcontractor/CreateEditSubcontractorModal'
 
 export default function Page() {
   const [open, setOpen] = useState(false)
   const [name, setName] = useState('')
   const [imageUrl, setImageUrl] = useState('')
+  const [companyId, setCompanyId] = useState('')
   const [editID, setEditID] = useState('')
   const [rows, setRows] = useState([])
+  const [companies, setCompanies] = useState([])
   const [loading, setLoading] = useState(false)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [itemToDelete, setItemToDelete] = useState({ id: '', name: '' })
@@ -25,23 +28,35 @@ export default function Page() {
   const { t, i18n } = useTranslation('common')
   const [errors, setErrors] = useState({
     name: '',
-    imageUrl: ''
+    imageUrl: '',
+    companyId: ''
   })
 
   const modalTranslations = {
-    editTitle: t('editBrand'),
-    createTitle: t('createNewBrand'),
+    editTitle: t('editSubcontractor'),
+    createTitle: t('createNewSubcontractor'),
     nameLabel: t('name'),
     imageLabel: t('imageUrl'),
+    companyLabel: t('company'),
     previewLabel: t('imagePreview'),
     cancelText: t('cancel'),
     editText: t('edit'),
     createText: t('create')
   }
 
+  const fetchCompanies = async () => {
+    try {
+      const response = await api.get('/Companies')
+      setCompanies(response.data.data)
+    } catch (err) {
+      console.error('Error fetching companies:', err)
+      toast.error(t('Error fetching companies'))
+    }
+  }
+
   const fetchData = async () => {
     try {
-      const response = await api.get('/YachtBrands')
+      const response = await api.get('/SubContractors')
       setRows(response.data.data)
     } catch (err) {
       console.error('Error fetching data:', err)
@@ -50,6 +65,7 @@ export default function Page() {
 
   useEffect(() => {
     fetchData()
+    fetchCompanies()
   }, [])
 
   const columns = [
@@ -90,7 +106,8 @@ export default function Page() {
       disableSorting: true,
       render: row => (
         <>
-          <IconButton size='small' color={'primary'} onClick={() => handleEdit(row.id, row.name, row.imageUrl)}>
+          <IconButton size='small' color={'primary'}
+                      onClick={() => handleEdit(row.id, row.name, row.imageUrl, row.companyId)}>
             <i className='tabler-pencil' />
           </IconButton>
           <IconButton color={'error'} size='small' onClick={() => handleDelete(row.id, row.name)}>
@@ -101,10 +118,12 @@ export default function Page() {
     }
   ]
 
-  const handleEdit = (id, name, imageUrl) => {
+  const handleEdit = (id, name, imageUrl, companyId) => {
     setIsEdit(true)
     setName(name)
-    setImageUrl(process.env.NEXT_PUBLIC_CONTENT_BASE_URL + '/' + imageUrl)
+    if (imageUrl)
+      setImageUrl(process.env.NEXT_PUBLIC_CONTENT_BASE_URL + '/' + imageUrl)
+    setCompanyId(companyId)
     setEditID(id)
     handleOpen()
   }
@@ -120,9 +139,11 @@ export default function Page() {
     setOpen(false)
     setIsEdit(false)
     setEditID('')
+    setImageUrl(null)
     setErrors({
       name: '',
-      imageUrl: ''
+      imageUrl: '',
+      companyId: ''
     })
   }
 
@@ -132,7 +153,7 @@ export default function Page() {
     const formData = new FormData()
     formData.append('Id', id)
     formData.append('ImageFile', file)
-    formData.append('EntityType', 'YachtBrand')
+    formData.append('EntityType', 'SubContractor')
 
     try {
       return await api.put('/FileUploads/SingleFileUpload', formData, {
@@ -148,6 +169,7 @@ export default function Page() {
 
   const handleSave = async formData => {
     const name = formData.get('name')
+    const companyIdsString = formData.get('companyIds') || '[]'
     const file = formData.get('file')
 
     let newErrors = {}
@@ -156,26 +178,27 @@ export default function Page() {
     }
 
     setErrors(newErrors)
-
     if (Object.keys(newErrors).length === 0) {
       setLoading(true)
       try {
-        // First, create/update the brand
-        const brandParams = isEdit ? { id: editID, name: name } : { name: name }
+        // Parse the JSON string back to array and ensure all values are integers
+        const companyIds = JSON.parse(companyIdsString).map(id => parseInt(id))
 
-        const brandResponse = isEdit
-          ? await api.put('/YachtBrands/Update', brandParams)
-          : await api.post('/YachtBrands', brandParams)
+        const subcontractorParams = isEdit
+          ? { id: editID, name: name }
+          : { name: name, companyIds: companyIds }
+        const subcontractorResponse = isEdit
+          ? await api.put('/SubContractors/Update', subcontractorParams)
+          : await api.post('/SubContractors', subcontractorParams)
 
-        if (brandResponse.status >= 200 && brandResponse.status < 300) {
-          // If there's a new file, upload it
+        if (subcontractorResponse.status >= 200 && subcontractorResponse.status < 300) {
           if (file) {
-            const brandId = isEdit ? editID : brandResponse.data.data.id
-            await uploadFile(brandId, file)
+            const subcontractorId = isEdit ? editID : subcontractorResponse.data.data.id
+            await uploadFile(subcontractorId, file)
           }
 
           handleClose()
-          toast.success(isEdit ? t('Brand updated successfully!') : t('Brand created successfully!'))
+          toast.success(isEdit ? t('Subcontractor updated successfully!') : t('Subcontractor created successfully!'))
           fetchData()
         }
       } catch (err) {
@@ -195,10 +218,10 @@ export default function Page() {
   const handleDelConfirm = async () => {
     setLoading(true)
     try {
-      const response = await api.get('/YachtBrands/Remove/' + itemToDelete.id)
+      const response = await api.get('/SubContractors/Remove/' + itemToDelete.id)
       if (response.status >= 200 && response.status < 300) {
         handleDelClose()
-        toast.success(t('Brand deleted successfully!'))
+        toast.success(t('Subcontractor deleted successfully!'))
         fetchData()
       }
     } catch (err) {
@@ -213,14 +236,15 @@ export default function Page() {
     <>
       <ToastContainer position='top-right' autoClose={3000} hideProgressBar={false} closeOnClick pauseOnHover />
 
-      <CreateEditItemModal
+      <CreateEditSubcontractorModal
         open={open}
         onClose={handleClose}
         onSave={handleSave}
         isEdit={isEdit}
-        initialData={{ name: name, imageUrl: imageUrl }}
+        initialData={{ name: name, imageUrl: imageUrl, companyId: companyId, id: editID }}
         errors={errors}
         loading={loading}
+        companies={companies}
         translations={modalTranslations}
       />
 
@@ -231,15 +255,15 @@ export default function Page() {
         itemName={itemToDelete.name}
         loading={loading}
         language={i18n.language}
-        deleteTitle={t('deleteBrand')}
-        deleteMessage={t('deleteBrandMessage')}
+        deleteTitle={t('deleteSubcontractor')}
+        deleteMessage={t('deleteSubcontractorMessage')}
         cancelText={t('cancel')}
         deleteText={t('delete')}
       />
 
       <Grid container spacing={6}>
         <Grid item xs={12} sm={6} md={6} lg={6}>
-          <Typography variant='h4'>{t('brandOps')}</Typography>
+          <Typography variant='h4'>{t('subcontractorOps')}</Typography>
         </Grid>
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <Card>
