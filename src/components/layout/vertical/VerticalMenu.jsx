@@ -102,12 +102,15 @@ const VerticalMenu = ({ scrollMenu }) => {
         </SubMenu>
         <MenuSection label={t("users")}/>
 
-        <SubMenu label={t("users")} icon={<i className='tabler-users-group' />}>
+        <SubMenu label={t("resources")} icon={<i className='tabler-users-group' />}>
           <MenuItem href={`/users/user`} button={"secondary"}>
             {t("users")}
           </MenuItem>
           <MenuItem href='/users/user-group'  button={"secondary"}>
             {t("userGroups")}
+          </MenuItem>
+          <MenuItem href='/users/team'  button={"secondary"}>
+            {t("teams")}
           </MenuItem>
 
         </SubMenu>
@@ -125,16 +128,14 @@ const VerticalMenu = ({ scrollMenu }) => {
         </SubMenu>
 
         <MenuSection label={t("company")}/>
-        <SubMenu label={t("company")} icon={<i className='tabler-building' />}>
-          <MenuItem href='/company/company' button={"secondary"}>
-            {t("company")}
-          </MenuItem>
-          <MenuItem href='/company/subcontractor' button={"secondary"}>
-            {t("subcontractor")}
-          </MenuItem>
-        </SubMenu>
+        <MenuItem href='/company/company' button={"secondary"}>
+          {t("company")}
+        </MenuItem>
+        <MenuItem href='/company/subcontractor' button={"secondary"}>
+          {t("subcontractor")}
+        </MenuItem>
         <MenuItem href='/team-statistics' icon={<i className='tabler-users-group' />} button={"secondary"}>
-          {t("groupStatistics")}
+          {t("KPI")}
         </MenuItem>
 
       </Menu>

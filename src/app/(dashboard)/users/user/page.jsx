@@ -453,7 +453,7 @@ export default function Page() {
                   ) :
                   key === "companyId" ? (
                     <Grid item xs={12} sm={6} key={key}>
-                      <FormControl fullWidth variant="outlined" error={!!errors.companyId}>
+                      <FormControl fullWidth variant="outlined" error={!!errors.companyId} disabled>
                         <InputLabel>{t("selectCompany")}</InputLabel>
                         <Select
                           key={key}
@@ -487,6 +487,7 @@ export default function Page() {
                           type={typeof params[key] === "string" ? "text" : "number"}
                           value={params[key]}
                           onChange={(e) => handleInputChange(key, e.target.value)}
+                          disabled={key === "id"}
                         />
                       }
                     </Grid>
@@ -530,7 +531,7 @@ export default function Page() {
         <Grid item xs={12} sm={12} md={12} lg={12}>
           <Card>
             <div className={"flex justify-end p-3"}>
-              <IconButton  variant="contained" color="success" onClick={handleOpen}>
+              <IconButton  variant="contained" color="success" onClick={handleOpen} disabled>
                 <i className='tabler-plus' />
               </IconButton>
             </div>

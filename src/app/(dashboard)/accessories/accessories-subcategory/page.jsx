@@ -96,6 +96,7 @@ export default function Page() {
   const columns = [
     { id: "id", label: "id" },
     { id: "name", label: "name" },
+    { id: "accessoryCategory", label: "category", render: (row) => row.categoryName },
     { id: "createdDate", label: "createdDate",
       render: (row) => {
         const date = new Date(row.createdDate);

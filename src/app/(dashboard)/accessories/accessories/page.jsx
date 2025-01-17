@@ -181,6 +181,8 @@ export default function Page() {
     { id: "id", label: "id" },
     { id: "name", label: "name" },
     { id: "description", label: "description" },
+    { id: "accessoryCategory", label: "category", render: (row) => row.categoryName },
+    { id: "accessorySubCategory", label: "subCategory", render: (row) => row.subCategoryName },
     { id: "createdDate", label: "createdDate",
       render: (row) => {
         const date = new Date(row.createdDate);

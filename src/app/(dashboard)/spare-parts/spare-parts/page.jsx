@@ -182,6 +182,7 @@ export default function Page() {
     { id: "id", label: "id" },
     { id: "name", label: "name" },
     { id: "description", label: "description" },
+    { id: "category", label: "category", render: (row) => row.categoryName },
     { id: "createdDate", label: "createdDate",
       render: (row) => {
         const date = new Date(row.createdDate);
