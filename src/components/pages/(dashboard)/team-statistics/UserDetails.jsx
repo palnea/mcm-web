@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Box, Table, TableBody, TableCell, TableHead, TableRow, Typography } from '@mui/material'
 
-const UserDetails = ({ user, tickets }) => {
+const UserDetails = ({ user, tickets, t }) => {
   const [userStats, setUserStats] = useState({
     openedTickets: 0,
     assignedTickets: 0,
@@ -22,14 +22,14 @@ const UserDetails = ({ user, tickets }) => {
   return (
     <Box margin={1}>
       <Typography variant='h6' gutterBottom component='div'>
-        User Statistics
+        {t('User Statistics')}
       </Typography>
       <Table size='small'>
         <TableHead>
           <TableRow>
-            <TableCell>Opened Tickets</TableCell>
-            <TableCell>Assigned Tickets</TableCell>
-            <TableCell>Processed Tickets</TableCell>
+            <TableCell>{t('Opened Tickets')}</TableCell>
+            <TableCell>{t('Assigned Tickets')}</TableCell>
+            <TableCell>{t('Processed Tickets')}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>

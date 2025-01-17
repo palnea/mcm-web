@@ -6,10 +6,11 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import UserDetails from '@components/pages/(dashboard)/team-statistics/UserDetails'
 
-const TeamRow = ({ team, tickets }) => {
+const TeamRow = ({ team, tickets, t }) => {
   const [open, setOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState(null)
   const [users, setUsers] = useState([])
+
 
   const fetchTeamDetails = async teamId => {
     try {
@@ -17,7 +18,7 @@ const TeamRow = ({ team, tickets }) => {
       return response.data.data || null
     } catch (err) {
       console.error('Error fetching team details:', err)
-      toast.error('An error occurred while fetching team details')
+      toast.error(t('An error occurred while fetching team details'))
       return null
     }
   }
@@ -43,14 +44,14 @@ const TeamRow = ({ team, tickets }) => {
           <Collapse in={open} timeout='auto' unmountOnExit>
             <Box margin={1}>
               <Typography variant='h6' gutterBottom component='div'>
-                Team Members
+                {t('Team Members')}
               </Typography>
               <Table size='small'>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Name</TableCell>
-                    <TableCell>Email</TableCell>
-                    <TableCell>Action</TableCell>
+                    <TableCell>{t('Name')}</TableCell>
+                    <TableCell>{t('Email')}</TableCell>
+                    <TableCell>{t('Action')}</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -72,7 +73,7 @@ const TeamRow = ({ team, tickets }) => {
                         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
                           <Collapse in={selectedUser === user.id} timeout='auto' unmountOnExit>
                             <Box margin={1}>
-                              <UserDetails user={user} tickets={tickets} />
+                              <UserDetails user={user} tickets={tickets} t={t}/>
                             </Box>
                           </Collapse>
                         </TableCell>

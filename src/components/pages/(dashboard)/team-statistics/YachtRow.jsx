@@ -3,7 +3,7 @@ import { Box, Collapse, IconButton, Table, TableBody, TableCell, TableHead, Tabl
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 
-const YachtRow = ({ yacht, tickets }) => {
+const YachtRow = ({ yacht, tickets, t }) => {
   const [open, setOpen] = useState(false)
   const [yachtStats, setYachtStats] = useState({
     totalTickets: tickets.length,
@@ -43,15 +43,15 @@ const YachtRow = ({ yacht, tickets }) => {
           <Collapse in={open} timeout='auto' unmountOnExit>
             <Box margin={1}>
               <Typography variant='h6' gutterBottom component='div'>
-                Yacht Statistics
+                {t('Yacht Statistics')}
               </Typography>
               <Table size='small'>
                 <TableHead>
                   <TableRow>
-                    <TableCell>Closed Tickets</TableCell>
-                    <TableCell>Processed Tickets</TableCell>
-                    <TableCell>Chronic Tickets</TableCell>
-                    <TableCell>Pending Tickets</TableCell>
+                    <TableCell>{t('Closed Tickets')}</TableCell>
+                    <TableCell>{t('Processed Tickets')}</TableCell>
+                    <TableCell>{t('Chronic Tickets')}</TableCell>
+                    <TableCell>{t('Pending Tickets')}</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -71,4 +71,4 @@ const YachtRow = ({ yacht, tickets }) => {
   )
 }
 
-export default YachtRow;
+export default YachtRow
