@@ -1,38 +1,23 @@
 'use client'
-// KPIDashboard.js
+
 import React, { useEffect, useState } from 'react'
-import {
-  Box, Container,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Paper,
-  Select,
-  Tab,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Tabs
-} from '@mui/material'
+import { Box, CircularProgress, Container } from '@mui/material'
 import { toast } from 'react-toastify'
 import api from '@/api_helper/api'
-import TeamRow from '@components/pages/(dashboard)/team-statistics/TeamRow'
-import YachtRow from '@components/pages/(dashboard)/team-statistics/YachtRow'
-import UserRow from '@components/pages/(dashboard)/team-statistics/UserRow'
-import { useTranslation } from 'react-i18next'
+import SupportTrackerWidget from '@components/pages/(dashboard)/team-statistics/SupportTrackerWidget'
+import UserListWidget from '@components/pages/(dashboard)/team-statistics/UserListWidget'
+import YachtListWidget from '@components/pages/(dashboard)/team-statistics/YachtListWidget'
+import TeamListWidget from '@components/pages/(dashboard)/team-statistics/TeamListWidget'
+import Grid from '@mui/material/Grid'
 
-// Main KPI Dashboard Component
+
 const Page = () => {
-  const { t, i18n } = useTranslation('common')
-  const [tabValue, setTabValue] = useState(0)
   const [timeFilter, setTimeFilter] = useState('week')
   const [tickets, setTickets] = useState([])
-  const [activeUsers, setActiveUsers] = useState([])
+  const [users, setUsers] = useState([])
   const [yachts, setYachts] = useState([])
   const [teams, setTeams] = useState([])
+  const [activeUsers, setActiveUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const fetchTickets = async () => {
     try {
@@ -100,6 +85,18 @@ const Page = () => {
       return null
     }
   }
+
+  const fetchUsers = async () => {
+    try {
+      const response = await api.get('/Users')
+      return response.data.data || []
+    } catch (err) {
+      console.error('Error fetching users:', err)
+      toast.error(t('An error occurred while fetching users'))
+      return []
+    }
+  }
+
   const fetchData = async () => {
     setLoading(true)
     try {
@@ -112,11 +109,12 @@ const Page = () => {
         startDate.setDate(startDate.getDate() - 30)
       }
       // Fetch all required data
-      const [ticketsData, usersData, yachtsData, teamsData] = await Promise.all([
+      const [ticketsData, activeUsersData, yachtsData, teamsData, users] = await Promise.all([
         fetchTickets(),
         fetchActiveUsers(startDate, endDate),
         fetchYachts(),
-        fetchTeams()
+        fetchTeams(),
+        fetchUsers()
       ])
       // Process tickets data
       const processedTickets = ticketsData.map(ticket => ({
@@ -135,9 +133,10 @@ const Page = () => {
       // Sort yachts by ticket count
       const sortedYachts = yachtsWithTickets.sort((a, b) => (b.tickets?.length || 0) - (a.tickets?.length || 0))
       setTickets(filteredTickets)
-      setActiveUsers(usersData)
+      setActiveUsers(activeUsersData)
       setYachts(sortedYachts)
       setTeams(teamsData)
+      setUsers(users)
     } catch (err) {
       console.error('Error fetching dashboard data:', err)
       toast.error(t('An error occurred while fetching dashboard data'))
@@ -145,169 +144,63 @@ const Page = () => {
       setTimeout(() => setLoading(false), 800)
     }
   }
-  const handleTeamExpand = async teamId => {
-    try {
-      const teamDetails = await fetchTeamDetails(teamId)
-      setTeams(prevTeams => prevTeams.map(team => (team.id === teamId ? { ...team, users: teamDetails.users } : team)))
-    } catch (err) {
-      console.error('Error fetching team details:', err)
-      toast.error(t('An error occurred while fetching team details'))
-    }
-  }
+
   useEffect(() => {
     fetchData()
   }, [timeFilter])
-  const handleTabChange = (event, newValue) => {
-    setTabValue(newValue)
-  }
+
   return (
-    <Container maxWidth='lg'>
-      <Box sx={{ py: 4 }}>
-        <Box
-          sx={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            mb: 4
-          }}
-        >
-          <Box sx={{ flex: 1 }}>
-            <Tabs
-              value={tabValue}
-              onChange={handleTabChange}
-              sx={{
-                '& .MuiTab-root': {
-                  px: 4,
-                  minWidth: 120
-                }
-              }}
-            >
-              <Tab label={t('Users')} />
-              <Tab label={t('Yachts')} />
-              <Tab label={t('Teams')} />
-            </Tabs>
+    <Container maxWidth="xl">
+      <Box sx={{ py: 4, position: 'relative' }}>
+        {loading && (
+          <Box
+            sx={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: 'rgba(255, 255, 255, 0.7)',
+              zIndex: 1000
+            }}
+          >
+            <CircularProgress size={60} />
           </Box>
-          <FormControl sx={{ minWidth: 200, ml: 2 }}>
-            <InputLabel>{t('Time Period')}</InputLabel>
-            <Select value={timeFilter} label={t('Time Period')} onChange={e => setTimeFilter(e.target.value)}>
-              <MenuItem value='week'>{t('Last Week')}</MenuItem>
-              <MenuItem value='month'>{t('Last Month')}</MenuItem>
-            </Select>
-          </FormControl>
-        </Box>
-        <Box sx={{ mt: 3 }}>
-          <TabPanel value={tabValue} index={0}>
-            <TableContainer component={Paper} elevation={1}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ width: 50 }} />
-                    <TableCell
-                      sx={{
-                        fontSize: '1.1rem',
-                        fontWeight: 500
-                      }}
-                    >
-                      {t('User')}
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        fontSize: '1.1rem',
-                        fontWeight: 500
-                      }}
-                    >
-                      {t('Active Tickets')}
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {activeUsers.map(user => (
-                    <UserRow
-                      key={user.userId}
-                      user={user}
-                      tickets={tickets.filter(t => t.createdBy === user.userId || t.assignedToUserId === user.userId)}
-                      t={t}
-                    />
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </TabPanel>
-          <TabPanel value={tabValue} index={1}>
-            <TableContainer component={Paper} elevation={1}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ width: 50 }} />
-                    <TableCell
-                      sx={{
-                        fontSize: '1.1rem',
-                        fontWeight: 500
-                      }}
-                    >
-                      {t('Yacht')}
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        fontSize: '1.1rem',
-                        fontWeight: 500
-                      }}
-                    >
-                      {t('Total Tickets')}
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {yachts.map(yacht => (
-                    <YachtRow key={yacht.id} yacht={yacht} tickets={yacht.tickets || []} t={t} />
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </TabPanel>
-          <TabPanel value={tabValue} index={2}>
-            <TableContainer component={Paper} elevation={1}>
-              <Table>
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ width: 50 }} />
-                    <TableCell
-                      sx={{
-                        fontSize: '1.1rem',
-                        fontWeight: 500
-                      }}
-                    >
-                      {t('Team Name')}
-                    </TableCell>
-                    <TableCell
-                      sx={{
-                        fontSize: '1.1rem',
-                        fontWeight: 500
-                      }}
-                    >
-                      {t('Members')}
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {teams.map(team => (
-                    <TeamRow key={team.id} team={team} onExpand={() => handleTeamExpand(team.id)} tickets={tickets} t={t} />
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          </TabPanel>
-        </Box>
+        )}
+        <Grid container spacing={3}>
+          <Grid item xs={12} md={6}>
+            <SupportTrackerWidget
+              tickets={tickets}
+              timeFilter={timeFilter}
+              onTimeFilterChange={setTimeFilter}
+            />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <UserListWidget
+              users={users}
+              tickets={tickets}
+              activeUsers={users.length > 5 ? users.slice(0, 5) : users}
+            />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <YachtListWidget
+              yachts={yachts}
+              tickets={tickets}
+            />
+          </Grid>
+          <Grid item xs={12} md={6}>
+            <TeamListWidget
+              teams={teams}
+              tickets={tickets}
+            />
+          </Grid>
+        </Grid>
       </Box>
     </Container>
   )
 }
-// TabPanel component for handling tab content
-const TabPanel = ({ children, value, index }) => {
-  return (
-    <div role='tabpanel' hidden={value !== index}>
-      {value === index && <Box sx={{ p: 3 }}>{children}</Box>}
-    </div>
-  )
-}
+
 export default Page
