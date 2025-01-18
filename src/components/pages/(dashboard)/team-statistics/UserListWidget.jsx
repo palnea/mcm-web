@@ -79,8 +79,8 @@ const UserListWidget = ({ users, tickets, activeUsers }) => {
                     <TableRow key={user.id}>
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                          <Avatar sx={{ mr: 2 }}>{user.fullName?.[0] || 'U'}</Avatar>
-                          <Typography>{user.name || user.username || `User ${user.userId}`}</Typography>
+                          <Avatar sx={{ mr: 2 }}>{user.name?.[0] || 'U'}</Avatar>
+                          <Typography>{user.name || user.username || `User ${user.id}`}</Typography>
                         </Box>
                       </TableCell>
                       <TableCell>

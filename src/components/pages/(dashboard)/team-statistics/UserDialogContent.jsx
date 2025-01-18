@@ -97,7 +97,7 @@ const UserExpandableRow = ({ user, stats, tickets, isExpanded, onToggle }) => {
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>{user.fullName?.[0] || <Person />}</Avatar>
             <Box>
-              <Typography variant='subtitle2'>{user.fullName || `User ${user.id}`}</Typography>
+              <Typography variant='subtitle2'>{user.name || user.username || `User ${user.id}`}</Typography>
               <Typography variant='body2' color='text.secondary'>
                 {user.email}
               </Typography>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Badge,
   Box,
@@ -27,7 +27,6 @@ const SupportTrackerWidget = ({ tickets, timeFilter, onTimeFilterChange }) => {
   const [openTickets, setOpenTickets] = useState(0)
   const [newTickets, setNewTickets] = useState(0)
   const [closedTickets, setClosedTickets] = useState(0)
-  const [completionRate, setCompletionRate] = useState(0)
   const [dialogOpen, setDialogOpen] = useState(false)
 
   const fillData = () => {
@@ -51,23 +50,22 @@ const SupportTrackerWidget = ({ tickets, timeFilter, onTimeFilterChange }) => {
       setNewTickets(filteredTickets.length)
       setClosedTickets(filteredTickets.filter(t => t.closeTime).length)
     }
-
-    const total = filteredTickets.length
-    setCompletionRate(total ? (closedTickets / total) * 100 : 0)
   }
 
   useEffect(() => {
     fillData()
   }, [tickets, timeFilter])
 
-  useEffect(() => {
-    fillData()
-  }, [])
+  const pieData = useMemo(() => {
+    return [
+      { name: 'Closed', value: closedTickets },
+      { name: 'Open', value: openTickets }
+    ]
+  }, [openTickets, closedTickets])
 
-  const pieData = [
-    { name: 'Completed', value: completionRate },
-    { name: 'Remaining', value: 100 - completionRate }
-  ]
+  const completionRate = useMemo(() => {
+    return openTickets + closedTickets > 0 ? (closedTickets / (openTickets + closedTickets)) * 100 : 0
+  }, [openTickets, closedTickets])
 
   return (
     <>
