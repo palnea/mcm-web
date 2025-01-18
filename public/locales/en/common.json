@@ -261,5 +261,7 @@
   "Yacht note created successfully!": "Yacht note created successfully!",
   "download": "Download",
   "qrCode": "QR Code",
-  "close": "Close"
+  "close": "Close",
+  "onTrack": "On Track",
+  "attentionNeeded": "Attention Needed"
 }
