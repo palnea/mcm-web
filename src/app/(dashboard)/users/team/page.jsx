@@ -190,9 +190,6 @@ export default function Page() {
     if (!formData.companyId) {
       newErrors.companyId = 'Company is required'
     }
-    if (!formData.subContractorId) {
-      newErrors.subContractorId = 'Subcontractor is required'
-    }
 
     setErrors(newErrors)
 
