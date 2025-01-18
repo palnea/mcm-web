@@ -76,7 +76,7 @@ const VerticalMenu = ({ scrollMenu }) => {
           </MenuItem>
         </SubMenu>
         <MenuSection label={t("accessories")}/>
-        <SubMenu label={t("accessoriesCategory")} icon={<i className='tabler-device-ipad-horizontal-plus' />}>
+        <SubMenu label={t("accessories")} icon={<i className='tabler-device-ipad-horizontal-plus' />}>
           <MenuItem href={`/accessories/accessories-category`} button={"secondary"}>
             {t("accessoriesCategory")}
           </MenuItem>

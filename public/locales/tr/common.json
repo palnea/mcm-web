@@ -258,8 +258,8 @@
   "Yacht deleted successfully!": "Yacht başarıyla silindi!",
   "Yacht created successfully!": "Yacht başarıyla oluşturuldu!",
   "Yacht updated successfully!": "Yacht başarıyla güncellendi!",
-  "Yacht note created successfully!": "Yat notu başarıyla oluşturuldu!"
-
-
-
+  "Yacht note created successfully!": "Yat notu başarıyla oluşturuldu!",
+  "download": "İndir",
+  "qrCode": "QR Kod",
+  "close": "Kapat"
 }

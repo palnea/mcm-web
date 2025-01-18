@@ -176,8 +176,8 @@
   "category": "Category",
   "subCategory": "Subcategory",
   "accessories": "Accessories",
-  "accessoriesSubcategory": "Accessories Subcategory",
-  "accessoriesCategory": "Accessories Category",
+  "accessoriesSubcategory": "Accessory Subcategories",
+  "accessoriesCategory": "Accessory Categories",
   "createAccessoryNewCategory": "Create New Accessory Category",
   "editAccessoryCategory": "Edit Accessory Category",
   "deleteAccessoryCategory": "Delete Accessory Category",
@@ -258,13 +258,8 @@
   "Yacht deleted successfully!": "Yacht deleted successfully!",
   "Yacht created successfully!": "Yacht created successfully!",
   "Yacht updated successfully!": "Yacht updated successfully!",
-  "Yacht note created successfully!": "Yacht note created successfully!"
-
-
-
-
-
-
-
-
+  "Yacht note created successfully!": "Yacht note created successfully!",
+  "download": "Download",
+  "qrCode": "QR Code",
+  "close": "Close"
 }

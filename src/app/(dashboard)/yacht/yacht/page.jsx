@@ -33,6 +33,7 @@ import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import DeleteItemModal from '@components/pages/(dashboard)/yacht/brand/DeleteItemModal'
 import { CloudUpload as CloudUploadIcon } from '@mui/icons-material'
+import YachtQRDialog from '@components/pages/(dashboard)/yacht/yacht/YachtQRDialog'
 
 export const shipTypes = [
   { label: 'Sailboat', value: 'Sailboat' },
@@ -41,7 +42,7 @@ export const shipTypes = [
   { label: 'Motor Catamaran', value: 'MotorCatamaran' },
   { label: 'Inflatable Boat', value: 'InflatableBoat' },
   { label: 'Other', value: 'Other' }
-];
+]
 
 export default function Page() {
   const [open, setOpen] = useState(false)
@@ -113,7 +114,7 @@ export default function Page() {
       engineMakeAndModel: '',
       enginePower: '',
       imageUrl: '',
-      shipType: '',
+      shipType: ''
     }
     setParams(param => ({
       ...param,
@@ -135,6 +136,7 @@ export default function Page() {
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [openNotesModal, setOpenNotesModal] = useState(false)
   const [id, setId] = useState('')
+  const [openQR, setOpenQR] = useState(false)
 
   const [nameDel, setNameDel] = useState('')
   const [isEdit, setIsEdit] = useState(false)
@@ -288,6 +290,9 @@ export default function Page() {
           <IconButton size='small' color={'secondary'} onClick={() => handleNote(row.id)}>
             <i className='tabler-notes' />
           </IconButton>
+          <IconButton size='small' style={{color: '#585a63'}} onClick={() => handleQROpen(row.id)}>
+            <i className='tabler-qrcode' />
+          </IconButton>
         </>
       )
     }
@@ -298,8 +303,7 @@ export default function Page() {
     setEditID(row.id)
     if (row.imageUrl) {
       setParams({ ...row, imageUrl: process.env.NEXT_PUBLIC_CONTENT_BASE_URL + '/' + row.imageUrl })
-    }
-    else {
+    } else {
       setParams(row)
     }
     getYachtNoteByID(row.id)
@@ -332,6 +336,16 @@ export default function Page() {
   const handleNote = id => {
     handleOpenNoteModal(true)
     setId(id)
+  }
+
+  const handleQROpen = id => {
+    setOpenQR(true)
+    setId(id)
+  }
+
+  const handleQRClose = () => {
+    setOpenQR(false)
+    setId('')
   }
 
   const handleOpen = id => {
@@ -382,7 +396,7 @@ export default function Page() {
     }
   }
 
-  const handleSave = async() => {
+  const handleSave = async () => {
     event.preventDefault()
     let newErrors = {}
     // Validate required fields
@@ -655,7 +669,7 @@ export default function Page() {
                     </Typography>
                   </Card>
                 )}
-                <Grid container spacing={4} marginTop={5} >
+                <Grid container spacing={4} marginTop={5}>
                   {Object.keys(params).map(key =>
                     key === 'yachtBrandId' ? (
                       <Grid item xs={12} sm={6} key={key}>
@@ -705,30 +719,30 @@ export default function Page() {
                           <FormHelperText>{t(errors[key])}</FormHelperText>
                         </FormControl>
                       </Grid>
-                    )  : key === 'shipType' ? (
-                        <Grid item xs={12} sm={6} key={key}>
-                          <FormControl fullWidth variant='outlined' error={!!errors[key]}>
-                            <InputLabel>{t('selectShipType')}</InputLabel>
-                            <Select
-                              key={key}
-                              fullWidth
-                              label={t('selectShipType')}
-                              variant='outlined'
-                              value={params[key] || ''}
-                              onChange={e => handleInputChange(key, e.target.value)}
-                              displayEmpty
-                            >
-                              {/*<MenuItem value="" disabled>{t("selectUsers")}</MenuItem>*/}
-                              {shipTypes.map(option => (
-                                <MenuItem key={option.label} value={option.value}>
-                                  {option.label}
-                                </MenuItem>
-                              ))}
-                            </Select>
-                            <FormHelperText>{t(errors[key])}</FormHelperText>
-                          </FormControl>
-                        </Grid>
-                      ) : key === 'userId' ? (
+                    ) : key === 'shipType' ? (
+                      <Grid item xs={12} sm={6} key={key}>
+                        <FormControl fullWidth variant='outlined' error={!!errors[key]}>
+                          <InputLabel>{t('selectShipType')}</InputLabel>
+                          <Select
+                            key={key}
+                            fullWidth
+                            label={t('selectShipType')}
+                            variant='outlined'
+                            value={params[key] || ''}
+                            onChange={e => handleInputChange(key, e.target.value)}
+                            displayEmpty
+                          >
+                            {/*<MenuItem value="" disabled>{t("selectUsers")}</MenuItem>*/}
+                            {shipTypes.map(option => (
+                              <MenuItem key={option.label} value={option.value}>
+                                {option.label}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                          <FormHelperText>{t(errors[key])}</FormHelperText>
+                        </FormControl>
+                      </Grid>
+                    ) : key === 'userId' ? (
                       <Grid item xs={12} sm={6} key={key}>
                         <FormControl fullWidth variant='outlined' error={!!errors[key]}>
                           <InputLabel>{t('selectUsers')}</InputLabel>
@@ -944,6 +958,7 @@ export default function Page() {
           </DialogActions>
         </form>
       </Dialog>
+      <YachtQRDialog open={openQR} yachtId={id} t={t} onClose={handleQRClose} />
       <Grid container spacing={6}>
         <Grid item xs={12} sm={6} md={6} lg={6}>
           <Typography variant='h4'>{t('yachtOps')}</Typography>
