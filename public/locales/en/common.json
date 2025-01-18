@@ -17,6 +17,7 @@
   "An error occurred while fetching teams": "An error occurred while fetching teams",
   "An error occurred while fetching team details": "An error occurred while fetching team details",
   "An error occurred while fetching dashboard data": "An error occurred while fetching dashboard data",
+  "errorFetchingData": "An error occurred while fetching data",
   "Team Members": "Team Members",
   "Name": "Name",
   "Email": "Email",

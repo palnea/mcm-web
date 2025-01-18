@@ -17,6 +17,7 @@
   "An error occurred while fetching teams": "Takımlar alınırken bir hata oluştu",
   "An error occurred while fetching team details": "Takım detayları alınırken bir hata oluştu",
   "An error occurred while fetching dashboard data": "Pano verileri alınırken bir hata oluştu",
+  "errorFetchingData": "Veri alınırken bir hata oluştu",
   "Team Members": "Takım Üyeleri",
   "Name": "İsim",
   "Email": "E-posta",
