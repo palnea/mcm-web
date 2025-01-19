@@ -305,5 +305,10 @@
   "High": "High",
   "Medium": "Medium",
   "Chronic Issue": "Chronic Issue",
-  "Year": "Year"
+  "Year": "Year",
+  "NotAssigned": "Not Assigned",
+  "TransferRequest": "Transfer Request",
+  "WaitingForSpareParts": "Waiting For Spare Parts",
+  "ExternalSupport": "External Support",
+  "ChronicOnHold": "Chronic On Hold"
 }

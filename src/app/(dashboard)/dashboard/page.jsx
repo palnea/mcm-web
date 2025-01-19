@@ -10,12 +10,14 @@ import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
+import { useTranslation } from 'next-i18next'
 
 export default function Page() {
   const theme = useTheme()
   const [chartData, setChartData] = useState([])
   const [monthlyChartData, setMonthlyChartData] = useState([])
   const [dashboardData, setDashboardData] = useState(null)
+  const {t, i18n} = useTranslation('common')
 
   const processTicketData = (tickets, days) => {
     const now = new Date()
@@ -74,42 +76,42 @@ export default function Page() {
   const cardConfigs = [
     {
       // Row 1
-      title: 'AÇIK',
+      title: t('Open'),
       stats: dashboardData?.openTickets || 0,
       avatarColor: 'warning',
       avatarIcon: 'tabler:solution1',
       route: '/tickets/open'
     },
     {
-      title: 'ATANMAYAN',
+      title: t('NotAssigned'),
       stats: dashboardData?.notAssigneds || 0,
       avatarColor: 'primary',
       avatarIcon: 'tabler:exception1',
       route: '/tickets/unassigned'
     },
     {
-      title: 'TRANSFER TALEBİ',
+      title: t('TransferRequest'),
       stats: dashboardData?.openTransfers || 0,
       avatarColor: 'success',
       avatarIcon: 'tabler:swap',
       route: '/transfers'
     },
     {
-      title: 'MALZEME BEKLEYEN',
+      title: t('WaitingForSpareParts'),
       stats: dashboardData?.pendingMaterial || 0,
       avatarColor: 'warning',
       avatarIcon: 'tabler:shoppingcart',
       route: '/tickets/pending-material'
     },
     {
-      title: 'DIŞ DESTEK',
+      title: t('ExternalSupport'),
       stats: dashboardData?.outSourceJobs || 0,
       avatarColor: 'error',
       avatarIcon: 'tabler:phone',
       route: '/tickets/outsource'
     },
     {
-      title: 'KRONİK ONHOLD',
+      title: t('ChronicOnHold'),
       stats: dashboardData?.chronicOnHold || 0,
       avatarColor: 'error',
       avatarIcon: 'tabler:pushpino',
@@ -194,7 +196,7 @@ export default function Page() {
             }}
           >
             <CardStatVertical
-              title={card.title}
+              title={card.title.toLocaleUpperCase(i18n.language)}
               subtitle={card.subtitle}
               stats={card.stats}
               avatarColor={card.avatarColor}
