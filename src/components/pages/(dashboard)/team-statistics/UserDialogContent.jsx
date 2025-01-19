@@ -25,7 +25,7 @@ import {
 import { AccessTime, Assignment, CheckCircle, KeyboardArrowDown, KeyboardArrowUp, Person } from '@mui/icons-material'
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
-export const UsersDialogContent = ({ users, userTickets }) => {
+export const UsersDialogContent = ({ users, userTickets, t }) => {
   const [selectedUser, setSelectedUser] = useState(null)
   console.log("UsersDialogContent -> userTickets", userTickets)
 
@@ -50,11 +50,11 @@ export const UsersDialogContent = ({ users, userTickets }) => {
         <TableHead>
           <TableRow>
             <TableCell />
-            <TableCell>User</TableCell>
-            <TableCell>Assigned</TableCell>
-            <TableCell>Created</TableCell>
-            <TableCell>Completion Rate</TableCell>
-            <TableCell>Status</TableCell>
+            <TableCell>{t('User')}</TableCell>
+            <TableCell>{t('Assigned')}</TableCell>
+            <TableCell>{t('Created')}</TableCell>
+            <TableCell>{t('Completion')} Rate</TableCell>
+            <TableCell>{t('Status')}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -148,7 +148,7 @@ const UserExpandableRow = ({ user, stats, tickets, isExpanded, onToggle }) => {
                   <Card>
                     <CardContent>
                       <Typography variant='h6' gutterBottom>
-                        Performance Metrics
+                        {t('Performance Metrics')}
                       </Typography>
                       <ResponsiveContainer width='100%' height={200}>
                         <BarChart data={userTicketStats}>
