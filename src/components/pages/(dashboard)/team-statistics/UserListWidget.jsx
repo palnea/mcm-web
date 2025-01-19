@@ -22,17 +22,17 @@ import {
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import UserDialogContent from '@components/pages/(dashboard)/team-statistics/UserDialogContent'
 
-const UserListWidget = ({ users, tickets, activeUsers }) => {
+const UserListWidget = ({ users, tickets, activeUsers, t }) => {
   const [selectedUser, setSelectedUser] = useState(null)
   const [dialogOpen, setDialogOpen] = useState(false)
 
   // Group tickets for users (get assigned and created tickets) assignedToUserId, createdByUser
   const userTickets = tickets.reduce((acc, ticket) => {
     if (!acc[ticket.assignedToUserId]) {
-      acc[ticket.assignedToUserId] = [];
+      acc[ticket.assignedToUserId] = []
     }
     if (!acc[ticket.createdByUser]) {
-      acc[ticket.createdByUser] = [];
+      acc[ticket.createdByUser] = []
     }
     acc[ticket.assignedToUserId].push(ticket);
     if (ticket.createdByUser?.id && ticket.assignedToUserId !== ticket.createdByUser?.id) {
@@ -55,7 +55,7 @@ const UserListWidget = ({ users, tickets, activeUsers }) => {
     <>
       <Card sx={{ height: '100%', cursor: 'pointer' }} onClick={() => setDialogOpen(true)}>
         <CardHeader
-          title='Active Users'
+          title={t('Active Users')}
           action={
             <IconButton>
               <MoreVertIcon />
@@ -67,9 +67,9 @@ const UserListWidget = ({ users, tickets, activeUsers }) => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>User</TableCell>
-                  <TableCell>Progress</TableCell>
-                  <TableCell>Status</TableCell>
+                  <TableCell>{t('User')}</TableCell>
+                  <TableCell>{t('Progress')}</TableCell>
+                  <TableCell>{t('Status')}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -80,7 +80,7 @@ const UserListWidget = ({ users, tickets, activeUsers }) => {
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                           <Avatar sx={{ mr: 2 }}>{user.name?.[0] || 'U'}</Avatar>
-                          <Typography>{user.name || user.username || `User ${user.id}`}</Typography>
+                          <Typography>{user.name || user.username || t('User {userId}', { userId: user.id })}</Typography>
                         </Box>
                       </TableCell>
                       <TableCell>
@@ -93,7 +93,7 @@ const UserListWidget = ({ users, tickets, activeUsers }) => {
                       </TableCell>
                       <TableCell>
                         <Badge color={progress > 50 ? 'success' : 'warning'} variant='dot'>
-                          {progress > 50 ? 'Active' : 'Pending'}
+                          {progress > 50 ? t('Active') : t('Pending')}
                         </Badge>
                       </TableCell>
                     </TableRow>
@@ -106,13 +106,14 @@ const UserListWidget = ({ users, tickets, activeUsers }) => {
       </Card>
 
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth='md' fullWidth>
-        <DialogTitle>User Details</DialogTitle>
+        <DialogTitle>{t('User Details')}</DialogTitle>
         <DialogContent>
           <UserDialogContent
             users={users}
             userTickets={userTickets}
             selectedUser={selectedUser}
             setSelectedUser={setSelectedUser}
+            t={t}
           />
         </DialogContent>
       </Dialog>

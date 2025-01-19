@@ -4,6 +4,7 @@ import {
   Box,
   Card,
   CardContent,
+  Chip,
   Collapse,
   Grid,
   IconButton,
@@ -15,17 +16,14 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
-  Chip
+  Typography
 } from '@mui/material'
 import { AccessTime, CheckCircle, Group, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material'
 import { toast } from 'react-toastify'
 import api from '../../../../api_helper/api'
-import { useTranslation } from 'next-i18next'
 
-export const TeamsDialogContent = ({ teams, tickets }) => {
+export const TeamsDialogContent = ({ teams, tickets, t }) => {
   const [selectedTeam, setSelectedTeam] = useState(null)
-  const { t } = useTranslation('common')
 
   return (
     <TableContainer component={Paper} elevation={3}>
@@ -33,11 +31,10 @@ export const TeamsDialogContent = ({ teams, tickets }) => {
         <TableHead>
           <TableRow>
             <TableCell />
-            <TableCell>Team</TableCell>
-            <TableCell>Members</TableCell>
-            <TableCell>Total Tickets</TableCell>
-            <TableCell>Performance</TableCell>
-            <TableCell>Status</TableCell>
+            <TableCell>{t('Team')}</TableCell>
+            <TableCell>{t('Members')}</TableCell>
+            <TableCell>{t('Performance')}</TableCell>
+            <TableCell>{t('Status')}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -49,6 +46,7 @@ export const TeamsDialogContent = ({ teams, tickets }) => {
                 tickets={tickets}
                 isExpanded={selectedTeam === team.id}
                 onToggle={() => setSelectedTeam(selectedTeam === team.id ? null : team.id)}
+                t={t}
               />
             )
           })}
@@ -58,7 +56,7 @@ export const TeamsDialogContent = ({ teams, tickets }) => {
   )
 }
 
-const TeamExpandableRow = ({ team, tickets, isExpanded, onToggle }) => {
+const TeamExpandableRow = ({ team, tickets, isExpanded, onToggle, t }) => {
   const [users, setUsers] = useState([])
   const [teamStats, setTeamStats] = useState({
     total: 0,
@@ -97,13 +95,11 @@ const TeamExpandableRow = ({ team, tickets, isExpanded, onToggle }) => {
     if (isExpanded) {
       fetchTeamDetails(team.id)
         .then(teamDetails => {
-          console.log('teamDetails:', teamDetails)
           const teamUsers = teamDetails?.users || []
           setUsers(teamUsers)
           return teamUsers
         })
         .then(users => {
-          console.log('users:', users)
           fillTeamStats(users)
         })
     } else {
@@ -133,10 +129,7 @@ const TeamExpandableRow = ({ team, tickets, isExpanded, onToggle }) => {
           </Box>
         </TableCell>
         <TableCell>
-          <Chip label={`${teamStats.members} members`} size='small' color='primary' variant='outlined' />
-        </TableCell>
-        <TableCell>
-          <Chip label={teamStats.total} size='small' color='info' variant='outlined' />
+          <Chip label={`${team.userCount} ${t('members')}`} size='small' color='primary' variant='outlined' />
         </TableCell>
         <TableCell>
           <Box sx={{ display: 'flex', alignItems: 'center', minWidth: 200 }}>
@@ -161,7 +154,7 @@ const TeamExpandableRow = ({ team, tickets, isExpanded, onToggle }) => {
         <TableCell>
           <Chip
             icon={teamStats.completionRate > 50 ? <CheckCircle /> : <AccessTime />}
-            label={teamStats.completionRate > 50 ? 'High Performing' : 'Progressing'}
+            label={teamStats.completionRate > 50 ? t('High Performing') : t('Progressing')}
             color={teamStats.completionRate > 50 ? 'success' : 'warning'}
             size='small'
           />
@@ -171,9 +164,22 @@ const TeamExpandableRow = ({ team, tickets, isExpanded, onToggle }) => {
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>
           <Collapse in={isExpanded} timeout='auto' unmountOnExit>
             <Box sx={{ margin: 3 }}>
-              <Typography variant='h6' gutterBottom>
-                Team Members
-              </Typography>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                <Typography variant='h6'>{t('Team Members')}</Typography>
+                <Card sx={{ minWidth: 200 }}>
+                  <CardContent>
+                    <Typography variant='h6' color="text.secondary" gutterBottom>
+                      {t('Total Tickets')}
+                    </Typography>
+                    <Typography variant='h4'>
+                      {teamStats.total}
+                    </Typography>
+                    <Typography variant='body2' color="text.secondary">
+                      {teamStats.closed} {t('closed')}
+                    </Typography>
+                  </CardContent>
+                </Card>
+              </Box>
               <Grid container spacing={3}>
                 {users?.map(user => {
                   const userTickets = tickets.filter(t => t.assignedToUserId === user.id)
@@ -196,7 +202,7 @@ const TeamExpandableRow = ({ team, tickets, isExpanded, onToggle }) => {
                           </Box>
                           <Box sx={{ mb: 2 }}>
                             <Typography variant='body2' color='text.secondary' gutterBottom>
-                              Completion Rate
+                              {t('Completion Rate')}
                             </Typography>
                             <LinearProgress
                               variant='determinate'
@@ -206,10 +212,10 @@ const TeamExpandableRow = ({ team, tickets, isExpanded, onToggle }) => {
                           </Box>
                           <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                             <Typography variant='body2' color='text.secondary'>
-                              Assigned: {userTickets.length}
+                              {t('Assigned')}: {userTickets.length}
                             </Typography>
                             <Typography variant='body2' color='text.secondary'>
-                              Closed: {userTickets.filter(t => t.closeTime).length}
+                              {t('Closed')}: {userTickets.filter(t => t.closeTime).length}
                             </Typography>
                           </Box>
                         </CardContent>

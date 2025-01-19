@@ -23,7 +23,7 @@ import {
 } from '@mui/material'
 import { Cell, Pie, PieChart } from 'recharts'
 
-const SupportTrackerWidget = ({ tickets, timeFilter, onTimeFilterChange }) => {
+const SupportTrackerWidget = ({ tickets, timeFilter, onTimeFilterChange, t }) => {
   const [openTickets, setOpenTickets] = useState(0)
   const [newTickets, setNewTickets] = useState(0)
   const [closedTickets, setClosedTickets] = useState(0)
@@ -58,10 +58,10 @@ const SupportTrackerWidget = ({ tickets, timeFilter, onTimeFilterChange }) => {
 
   const pieData = useMemo(() => {
     return [
-      { name: 'Closed', value: closedTickets },
-      { name: 'Open', value: openTickets }
+      { name: t('Closed'), value: closedTickets },
+      { name: t('Open'), value: openTickets }
     ]
-  }, [openTickets, closedTickets])
+  }, [openTickets, closedTickets, t])
 
   const completionRate = useMemo(() => {
     return openTickets + closedTickets > 0 ? (closedTickets / (openTickets + closedTickets)) * 100 : 0
@@ -71,7 +71,7 @@ const SupportTrackerWidget = ({ tickets, timeFilter, onTimeFilterChange }) => {
     <>
       <Card sx={{ height: '100%', cursor: 'pointer' }} onClick={() => setDialogOpen(true)}>
         <CardHeader
-          title='Support Tracker'
+          title={t('Support Tracker')}
           action={
             <FormControl variant='standard' sx={{ minWidth: 120 }}>
               <Select
@@ -79,9 +79,9 @@ const SupportTrackerWidget = ({ tickets, timeFilter, onTimeFilterChange }) => {
                 onChange={e => onTimeFilterChange(e.target.value)}
                 onClick={e => e.stopPropagation()}
               >
-                <MenuItem value='week'>Last Week</MenuItem>
-                <MenuItem value='month'>Last Month</MenuItem>
-                <MenuItem value='all'>All Time</MenuItem>
+                <MenuItem value='week'>{t('Last Week')}</MenuItem>
+                <MenuItem value='month'>{t('Last Month')}</MenuItem>
+                <MenuItem value='all'>{t('All Time')}</MenuItem>
               </Select>
             </FormControl>
           }
@@ -91,19 +91,19 @@ const SupportTrackerWidget = ({ tickets, timeFilter, onTimeFilterChange }) => {
             <Grid item xs={8}>
               <Box sx={{ mb: 2 }}>
                 <Typography variant='h6' color='text.secondary'>
-                  New Tickets
+                  {t('New Tickets')}
                 </Typography>
                 <Typography variant='h4'>{newTickets}</Typography>
               </Box>
               <Box sx={{ mb: 2 }}>
                 <Typography variant='h6' color='text.secondary'>
-                  Open Tickets
+                  {t('Open Tickets')}
                 </Typography>
                 <Typography variant='h4'>{openTickets}</Typography>
               </Box>
               <Box>
                 <Typography variant='h6' color='text.secondary'>
-                  Closed Tickets
+                  {t('Closed Tickets')}
                 </Typography>
                 <Typography variant='h4'>{closedTickets}</Typography>
               </Box>
@@ -139,16 +139,16 @@ const SupportTrackerWidget = ({ tickets, timeFilter, onTimeFilterChange }) => {
       </Card>
 
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth='md' fullWidth>
-        <DialogTitle>Support Tracker Details</DialogTitle>
+        <DialogTitle>{t('Support Tracker Details')}</DialogTitle>
         <DialogContent>
           <TableContainer component={Paper}>
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Ticket ID</TableCell>
-                  <TableCell>Created Date</TableCell>
-                  <TableCell>Status</TableCell>
-                  <TableCell>Assigned To</TableCell>
+                  <TableCell>{t('Ticket ID')}</TableCell>
+                  <TableCell>{t('Created Date')}</TableCell>
+                  <TableCell>{t('Status')}</TableCell>
+                  <TableCell>{t('Assigned To')}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -158,7 +158,7 @@ const SupportTrackerWidget = ({ tickets, timeFilter, onTimeFilterChange }) => {
                     <TableCell>{new Date(ticket.createdDate).toLocaleDateString()}</TableCell>
                     <TableCell>
                       <Badge color={ticket.closeTime ? 'success' : 'warning'} variant='dot'>
-                        {ticket.closeTime ? 'Closed' : 'Open'}
+                        {ticket.closeTime ? t('Closed') : t('Open')}
                       </Badge>
                     </TableCell>
                     <TableCell>{ticket.assignedToUserId}</TableCell>

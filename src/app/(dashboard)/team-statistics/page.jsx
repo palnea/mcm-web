@@ -9,9 +9,10 @@ import UserListWidget from '@components/pages/(dashboard)/team-statistics/UserLi
 import YachtListWidget from '@components/pages/(dashboard)/team-statistics/YachtListWidget'
 import TeamListWidget from '@components/pages/(dashboard)/team-statistics/TeamListWidget'
 import Grid from '@mui/material/Grid'
-
+import { useTranslation } from 'next-i18next';
 
 const Page = () => {
+  const { t } = useTranslation('common')
   const [timeFilter, setTimeFilter] = useState('week')
   const [tickets, setTickets] = useState([])
   const [users, setUsers] = useState([])
@@ -19,6 +20,7 @@ const Page = () => {
   const [teams, setTeams] = useState([])
   const [activeUsers, setActiveUsers] = useState([])
   const [loading, setLoading] = useState(true)
+
   const fetchTickets = async () => {
     try {
       const response = await api.get('/Tickets')
@@ -176,6 +178,7 @@ const Page = () => {
               tickets={tickets}
               timeFilter={timeFilter}
               onTimeFilterChange={setTimeFilter}
+              t={t}
             />
           </Grid>
           <Grid item xs={12} md={6}>
@@ -183,18 +186,21 @@ const Page = () => {
               users={users}
               tickets={tickets}
               activeUsers={users.length > 5 ? users.slice(0, 5) : users}
+              t={t}
             />
           </Grid>
           <Grid item xs={12} md={6}>
             <YachtListWidget
               yachts={yachts}
               tickets={tickets}
+              t={t}
             />
           </Grid>
           <Grid item xs={12} md={6}>
             <TeamListWidget
               teams={teams}
               tickets={tickets}
+              t={t}
             />
           </Grid>
         </Grid>

@@ -20,11 +20,9 @@ import {
 } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import YachtsDialogContent from '@components/pages/(dashboard)/team-statistics/YachtDialogContent'
-import { useTranslation } from 'next-i18next'
 
-const YachtListWidget = ({ yachts, tickets }) => {
+const YachtListWidget = ({ yachts, tickets, t }) => {
   const [dialogOpen, setDialogOpen] = useState(false)
-  const { t } = useTranslation('common');
 
   // Group tickets for yachts
   const yachtTickets = tickets.reduce((acc, ticket) => {
@@ -45,7 +43,7 @@ const YachtListWidget = ({ yachts, tickets }) => {
     <>
       <Card sx={{ height: '100%', cursor: 'pointer' }} onClick={() => setDialogOpen(true)}>
         <CardHeader
-          title='Yacht List'
+          title={t('Yacht List')}
           action={
             <IconButton>
               <MoreVertIcon />
@@ -57,11 +55,11 @@ const YachtListWidget = ({ yachts, tickets }) => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Yacht</TableCell>
-                  <TableCell>HIN</TableCell>
-                  <TableCell>Total</TableCell>
-                  <TableCell>Progress</TableCell>
-                  <TableCell>Status</TableCell>
+                  <TableCell>{t('Yacht')}</TableCell>
+                  <TableCell>{t('HIN')}</TableCell>
+                  <TableCell>{t('Total')}</TableCell>
+                  <TableCell>{t('Progress')}</TableCell>
+                  <TableCell>{t('Status')}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -74,7 +72,7 @@ const YachtListWidget = ({ yachts, tickets }) => {
                           <Typography>{yacht.name}</Typography>
                         </Box>
                       </TableCell>
-                      <TableCell>{yacht.hin || 'N/A'}</TableCell>
+                      <TableCell>{yacht.hin || t('N/A')}</TableCell>
                       <TableCell>
                         {yachtTickets[yacht.id]?.length || 0}
                       </TableCell>
@@ -88,7 +86,7 @@ const YachtListWidget = ({ yachts, tickets }) => {
                       </TableCell>
                       <TableCell>
                         <Badge color={progress > 50 ? 'success' : 'warning'} variant='dot'>
-                          {progress > 50 ? t('onTrack') : t('attentionNeeded')}
+                          {progress > 50 ? t('On Track') : t('Attention Needed')}
                         </Badge>
                       </TableCell>
                     </TableRow>
@@ -101,9 +99,9 @@ const YachtListWidget = ({ yachts, tickets }) => {
       </Card>
 
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth='md' fullWidth>
-        <DialogTitle>Yacht Details</DialogTitle>
+        <DialogTitle>{t('Yacht Details')}</DialogTitle>
         <DialogContent>
-          <YachtsDialogContent yachts={yachts} tickets={tickets} />
+          <YachtsDialogContent yachts={yachts} tickets={tickets} t={t} />
         </DialogContent>
       </Dialog>
     </>

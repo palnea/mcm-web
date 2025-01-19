@@ -34,7 +34,7 @@ import {
 } from '@mui/icons-material'
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 
-export const YachtsDialogContent = ({ yachts, tickets }) => {
+export const YachtsDialogContent = ({ yachts, tickets, t }) => {
   const [selectedYacht, setSelectedYacht] = useState(null)
 
   const getYachtStats = yachtId => {
@@ -56,11 +56,11 @@ export const YachtsDialogContent = ({ yachts, tickets }) => {
         <TableHead>
           <TableRow>
             <TableCell />
-            <TableCell>Yacht</TableCell>
-            <TableCell>HIN</TableCell>
-            <TableCell>Total Tickets</TableCell>
-            <TableCell>Performance</TableCell>
-            <TableCell>Status</TableCell>
+            <TableCell>{t('Yacht')}</TableCell>
+            <TableCell>{t('HIN')}</TableCell>
+            <TableCell>{t('Total Tickets')}</TableCell>
+            <TableCell>{t('Performance')}</TableCell>
+            <TableCell>{t('Status')}</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -74,6 +74,7 @@ export const YachtsDialogContent = ({ yachts, tickets }) => {
                 tickets={tickets}
                 isExpanded={selectedYacht === yacht.id}
                 onToggle={() => setSelectedYacht(selectedYacht === yacht.id ? null : yacht.id)}
+                t={t}
               />
             )
           })}
@@ -83,7 +84,7 @@ export const YachtsDialogContent = ({ yachts, tickets }) => {
   )
 }
 
-const YachtExpandableRow = ({ yacht, stats, tickets, isExpanded, onToggle }) => {
+const YachtExpandableRow = ({ yacht, stats, tickets, isExpanded, onToggle, t }) => {
   const yachtTickets = tickets.filter(t => t.yachtId === yacht.id)
 
   const getTicketPriorityStats = () => {
@@ -116,17 +117,17 @@ const YachtExpandableRow = ({ yacht, stats, tickets, isExpanded, onToggle }) => 
             <Box>
               <Typography variant='subtitle2'>{yacht.name}</Typography>
               <Typography variant='body2' color='text.secondary'>
-                Model: {yacht.model || 'N/A'}
+                {t('Model')}: {yacht.model || t('N/A')}
               </Typography>
             </Box>
           </Box>
         </TableCell>
-        <TableCell>{yacht.hin || 'N/A'}</TableCell>
+        <TableCell>{yacht.hin || t('N/A')}</TableCell>
         <TableCell>
           <Box sx={{ display: 'flex', gap: 1 }}>
-            <Chip label={`Total: ${stats.total}`} size='small' color='primary' variant='outlined' />
+            <Chip label={t('Total') + ': ' + stats.total} size='small' color='primary' variant='outlined' />
             <Chip
-              label={`Chronic: ${stats.chronic}`}
+              label={t('Chronic') + ': ' + stats.chronic}
               size='small'
               color={stats.chronic > 0 ? 'error' : 'success'}
               variant='outlined'
@@ -157,7 +158,7 @@ const YachtExpandableRow = ({ yacht, stats, tickets, isExpanded, onToggle }) => 
         <TableCell>
           <Chip
             icon={stats.completionRate > 70 ? <CheckCircle /> : stats.chronic > 0 ? <ErrorOutline /> : <AccessTime />}
-            label={stats.completionRate > 70 ? 'Excellent' : stats.chronic > 0 ? 'Needs Attention' : 'In Progress'}
+            label={stats.completionRate > 70 ? t('Excellent') : stats.chronic > 0 ? t('Needs Attention') : t('In Progress')}
             color={stats.completionRate > 70 ? 'success' : stats.chronic > 0 ? 'error' : 'warning'}
             size='small'
           />
@@ -172,7 +173,7 @@ const YachtExpandableRow = ({ yacht, stats, tickets, isExpanded, onToggle }) => 
                   <Card>
                     <CardContent>
                       <Typography variant='h6' gutterBottom>
-                        Ticket Priority Distribution
+                        {t('Ticket Priority Distribution')}
                       </Typography>
                       <ResponsiveContainer width='100%' height={200}>
                         <BarChart
@@ -188,7 +189,7 @@ const YachtExpandableRow = ({ yacht, stats, tickets, isExpanded, onToggle }) => 
                           <Bar
                             dataKey='count'
                             fill="#8884d8"
-                            name="Tickets"
+                            name={t("Tickets")}
                             isAnimationActive={true}
                           >
                             {Object.entries(priorityStats).map(([priority, count]) =>
@@ -219,7 +220,7 @@ const YachtExpandableRow = ({ yacht, stats, tickets, isExpanded, onToggle }) => 
                   <Card>
                     <CardContent>
                       <Typography variant='h6' gutterBottom>
-                        Recent Tickets
+                        {t('Recent Tickets')}
                       </Typography>
                       <List>
                         {yachtTickets
@@ -231,7 +232,7 @@ const YachtExpandableRow = ({ yacht, stats, tickets, isExpanded, onToggle }) => 
                                 secondaryAction={
                                   <Chip
                                     size='small'
-                                    label={ticket.priority}
+                                    label={t(ticket.priority)}
                                     color={
                                       ticket.priority === 'High'
                                         ? 'error'
@@ -266,7 +267,7 @@ const YachtExpandableRow = ({ yacht, stats, tickets, isExpanded, onToggle }) => 
                                   secondary={
                                     <>
                                       <Typography component='span' variant='body2' color='text.primary'>
-                                        {ticket.closeTime ? 'Closed' : ticket.isChronic ? 'Chronic Issue' : 'Open'}
+                                        {ticket.closeTime ? t('Closed') : ticket.isChronic ? t('Chronic Issue') : t('Open')}
                                       </Typography>
                                       {` — ${new Date(ticket.createdDate).toLocaleDateString()}`}
                                     </>
@@ -285,32 +286,32 @@ const YachtExpandableRow = ({ yacht, stats, tickets, isExpanded, onToggle }) => 
                   <Card>
                     <CardContent>
                       <Typography variant='h6' gutterBottom>
-                        Yacht Details
+                        {t('Yacht Details')}
                       </Typography>
                       <Grid container spacing={2}>
                         <Grid item xs={6} md={3}>
                           <Typography color='text.secondary' variant='body2'>
-                            Name
+                            {t('Name')}
                           </Typography>
                           <Typography variant='body1'>{yacht.name}</Typography>
                         </Grid>
                         <Grid item xs={6} md={3}>
                           <Typography color='text.secondary' variant='body2'>
-                            HIN
+                            {t('HIN')}
                           </Typography>
-                          <Typography variant='body1'>{yacht.hin || 'N/A'}</Typography>
+                          <Typography variant='body1'>{yacht.hin || t('N/A')}</Typography>
                         </Grid>
                         <Grid item xs={6} md={3}>
                           <Typography color='text.secondary' variant='body2'>
-                            Model
+                            {t('Model')}
                           </Typography>
-                          <Typography variant='body1'>{yacht.model || 'N/A'}</Typography>
+                          <Typography variant='body1'>{yacht.model || t('N/A')}</Typography>
                         </Grid>
                         <Grid item xs={6} md={3}>
                           <Typography color='text.secondary' variant='body2'>
-                            Year
+                            {t('Year')}
                           </Typography>
-                          <Typography variant='body1'>{yacht.year || 'N/A'}</Typography>
+                          <Typography variant='body1'>{yacht.year || t('N/A')}</Typography>
                         </Grid>
                       </Grid>
                     </CardContent>

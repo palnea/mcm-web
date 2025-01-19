@@ -20,14 +20,14 @@ import MoreVertIcon from '@mui/icons-material/MoreVert'
 import PeopleIcon from '@mui/icons-material/People'
 import TeamsDialogContent from '@components/pages/(dashboard)/team-statistics/TeamDialogContent'
 
-const TeamListWidget = ({ teams, tickets }) => {
+const TeamListWidget = ({ teams, tickets, t }) => {
   const [dialogOpen, setDialogOpen] = useState(false)
 
   return (
     <>
       <Card sx={{ height: '100%', cursor: 'pointer' }} onClick={() => setDialogOpen(true)}>
         <CardHeader
-          title='Team List'
+          title={t('Team List')}
           action={
             <IconButton>
               <MoreVertIcon />
@@ -39,9 +39,9 @@ const TeamListWidget = ({ teams, tickets }) => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell>Team</TableCell>
-                  <TableCell>Members</TableCell>
-                  <TableCell>Status</TableCell>
+                  <TableCell>{t('Team')}</TableCell>
+                  <TableCell>{t('Members')}</TableCell>
+                  <TableCell>{t('Status')}</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -55,10 +55,10 @@ const TeamListWidget = ({ teams, tickets }) => {
                         <Typography>{team.name}</Typography>
                       </Box>
                     </TableCell>
-                    <TableCell>{team.userCount || 0} members</TableCell>
+                    <TableCell>{`${team.userCount} ${t('members')}`}</TableCell>
                     <TableCell>
                       <Badge color={team.userCount > 0 ? 'success' : 'warning'} variant='dot'>
-                        {team.userCount > 0 ? 'Active' : 'Empty'}
+                        {team.userCount > 0 ? t('Active') : t('Empty')}
                       </Badge>
                     </TableCell>
                   </TableRow>
@@ -70,9 +70,9 @@ const TeamListWidget = ({ teams, tickets }) => {
       </Card>
 
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth='md' fullWidth>
-        <DialogTitle>Team Details</DialogTitle>
+        <DialogTitle>{t('Team Details')}</DialogTitle>
         <DialogContent>
-          <TeamsDialogContent teams={teams} tickets={tickets}/>
+          <TeamsDialogContent teams={teams} tickets={tickets} t={t}/>
         </DialogContent>
       </Dialog>
     </>
