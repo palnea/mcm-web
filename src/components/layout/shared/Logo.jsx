@@ -62,10 +62,10 @@ const Logo = ({ color }) => {
     <div className='flex items-center'>
       {/*<VuexyLogo className='text-2xl text-primary' />*/}
       <Image
-        src="/images/logo/mcm_logo_2.jpeg"
+        src="/images/logo/marine.png"
         alt={""}
         width={45}
-        height={40}
+        height={20}
         priority
       />
       <LogoText
