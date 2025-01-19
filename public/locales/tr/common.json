@@ -309,5 +309,10 @@
   "High": "Yüksek",
   "Medium": "Orta",
   "Chronic Issue": "Kronik Sorun",
-  "Year": "Yıl"
+  "Year": "Yıl",
+  "NotAssigned": "Atanmamış",
+  "TransferRequest": "Transfer Talebi",
+  "WaitingForSpareParts": "Malzeme Bekleyen",
+  "ExternalSupport": "Dış Destek",
+  "ChronicOnHold": "Kronik Beklemede"
 }
