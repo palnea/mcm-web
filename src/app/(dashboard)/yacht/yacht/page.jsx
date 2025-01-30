@@ -136,6 +136,7 @@ export default function Page() {
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [openNotesModal, setOpenNotesModal] = useState(false)
   const [id, setId] = useState('')
+  const [selectedYacht, setSelectedYacht] = useState('')
   const [openQR, setOpenQR] = useState(false)
 
   const [nameDel, setNameDel] = useState('')
@@ -228,6 +229,18 @@ export default function Page() {
 
   const columns = [
     { id: 'id', label: 'id' },
+    {
+      id: 'imageUrl',
+      label: 'Image',
+      render: row =>
+        row.imageUrl ? (
+          <img
+            src={process.env.NEXT_PUBLIC_CONTENT_BASE_URL + '/' + row.imageUrl}
+            alt={row.name}
+            style={{ height: '50px', width: 'auto' }}
+          />
+        ) : null
+    },
     { id: 'name', label: 'name' },
     {
       id: 'yachtBrand',
@@ -249,7 +262,6 @@ export default function Page() {
     { id: 'grossTonnage', label: 'grossTonnage' },
     { id: 'netTonnage', label: 'netTonnage' },
     { id: 'yearOfBuild', label: 'yearOfBuild' },
-
     {
       id: 'expiryDate',
       label: 'expiryDate',
@@ -340,6 +352,7 @@ export default function Page() {
 
   const handleQROpen = id => {
     setOpenQR(true)
+    setSelectedYacht(rows.filter(row => row.id === id)[0])
     setId(id)
   }
 
@@ -958,7 +971,14 @@ export default function Page() {
           </DialogActions>
         </form>
       </Dialog>
-      <YachtQRDialog open={openQR} yachtId={id} t={t} onClose={handleQRClose} />
+      <YachtQRDialog
+        open={openQR}
+        yachtId={id}
+        yachtName={selectedYacht?.name}
+        yachtHIN={selectedYacht?.hin}
+        t={t}
+        onClose={handleQRClose}
+      />
       <Grid container spacing={6}>
         <Grid item xs={12} sm={6} md={6} lg={6}>
           <Typography variant='h4'>{t('yachtOps')}</Typography>
