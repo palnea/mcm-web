@@ -209,7 +209,7 @@ export default function Page() {
     setIsEdit(true)
     setParams(row)
     getPartCodeByID(row.id)
-    removeKeysWithFilter(['sparePartCodes', 'createdDate', 'updatedDate']) // Pass an array of keys to remove
+    removeKeysWithFilter(['sparePartCodes', 'createdDate', 'updatedDate', 'ticketCount']) // Pass an array of keys to remove
     handleOpen()
   }
 

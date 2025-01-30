@@ -329,5 +329,7 @@
   "priority": "Öncelik",
   "status": "Durum",
   "tickets": "Talepler",
-  "ticketCode": "Talep Kodu"
+  "ticketCode": "Talep Kodu",
+  "imageUrl": "Image",
+  "categoryName": "Kategori Adı"
 }

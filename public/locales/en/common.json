@@ -325,5 +325,7 @@
   "priority": "Priority",
   "status": "Status",
   "tickets": "Tickets",
-  "ticketCode": "Ticket Code"
+  "ticketCode": "Ticket Code",
+  "imageUrl": "Image",
+  "categoryName": "Category Name"
 }
