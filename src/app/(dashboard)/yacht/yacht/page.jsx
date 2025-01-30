@@ -302,7 +302,7 @@ export default function Page() {
           <IconButton size='small' color={'secondary'} onClick={() => handleNote(row.id)}>
             <i className='tabler-notes' />
           </IconButton>
-          <IconButton size='small' style={{color: '#585a63'}} onClick={() => handleQROpen(row.id)}>
+          <IconButton size='small' style={{ color: '#585a63' }} onClick={() => handleQROpen(row.id)}>
             <i className='tabler-qrcode' />
           </IconButton>
         </>
@@ -849,13 +849,23 @@ export default function Page() {
                               sx={{ flex: 2 }}
                               error={!!errors?.imageUrl}
                               helperText={errors?.imageUrl ? errors.imageUrl : ''}
-                              value={selectedFile ? selectedFile.name : !!params?.imageUrl ? `${params?.name?.replaceAll(" ", "").toLowerCase()}.${params?.imageUrl?.split(".").slice(-1)}` || '' : ''}
+                              value={
+                                selectedFile
+                                  ? selectedFile.name
+                                  : !!params?.imageUrl
+                                    ? `${params?.name?.replaceAll(' ', '').toLowerCase()}.${params?.imageUrl?.split('.').slice(-1)}` ||
+                                      ''
+                                    : ''
+                              }
                               InputProps={{
                                 readOnly: true,
                                 endAdornment: (
                                   <InputAdornment position='end'>
                                     <IconButton
-                                      onClick={() => document.getElementById('file-input').click()}
+                                      onClick={e => {
+                                        e.stopPropagation()
+                                        document.getElementById('file-input').click()
+                                      }}
                                       edge='end'
                                     >
                                       <CloudUploadIcon />

@@ -101,12 +101,25 @@ const CreateEditItemModal = ({
                 sx={{ flex: 2 }}
                 error={!!errors?.imageUrl}
                 helperText={errors?.imageUrl ? errors.imageUrl : ''}
-                value={selectedFile ? selectedFile.name : !!initialData?.imageUrl ? `${initialData?.name?.replaceAll(" ", "").toLowerCase()}.${initialData?.imageUrl?.split(".").slice(-1)}` || '' : ''}
+                value={
+                  selectedFile
+                    ? selectedFile.name
+                    : !!initialData?.imageUrl
+                      ? `${initialData?.name?.replaceAll(' ', '').toLowerCase()}.${initialData?.imageUrl?.split('.').slice(-1)}` ||
+                        ''
+                      : ''
+                }
                 InputProps={{
                   readOnly: true,
                   endAdornment: (
                     <InputAdornment position='end'>
-                      <IconButton onClick={() => document.getElementById('file-input').click()} edge='end'>
+                      <IconButton
+                        onClick={e => {
+                          e.stopPropagation()
+                          document.getElementById('file-input').click()
+                        }}
+                        edge='end'
+                      >
                         <CloudUploadIcon />
                       </IconButton>
                     </InputAdornment>
