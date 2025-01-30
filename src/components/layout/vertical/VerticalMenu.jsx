@@ -63,6 +63,10 @@ const VerticalMenu = ({ scrollMenu }) => {
         <MenuItem href='/dashboard' icon={<i className='tabler-layout-dashboard' />}>
           {t("dashboard")}
         </MenuItem>
+        <MenuSection label={t("ticket")}/>
+        <MenuItem href={`/ticket`} button={"secondary"}>
+          {t("tickets")}
+        </MenuItem>
         <MenuSection label={t("yahct")}/>
         <SubMenu label={t("yahcts")} icon={<i className='tabler-sailboat' />}>
           <MenuItem href={`/yacht/brand`} button={"secondary"}>

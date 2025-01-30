@@ -62,8 +62,22 @@ const TeamExpandableRow = ({ team, tickets, isExpanded, onToggle, t }) => {
     total: 0,
     closed: 0,
     members: 0,
-    completionRate: 0
+    completionRate: 0,
+    averageCloseTime: 0
   })
+
+  const calculateAverageCloseTime = (tickets) => {
+    const closedTickets = tickets.filter(t => t.closeTime && t.assignTime);
+    if (closedTickets.length === 0) return 0;
+
+    const totalTime = closedTickets.reduce((sum, ticket) => {
+      const closeTime = new Date(ticket.closeTime);
+      const assignTime = new Date(ticket.assignTime);
+      return sum + (closeTime - assignTime);
+    }, 0);
+
+    return totalTime / closedTickets.length / (1000 * 60 * 60); // Convert to hours
+  };
 
   const fillTeamStats = users => {
     const teamUserIds = users?.map(u => u.id) || []
@@ -71,12 +85,14 @@ const TeamExpandableRow = ({ team, tickets, isExpanded, onToggle, t }) => {
       t => teamUserIds.includes(t.assignedToUserId) || teamUserIds.includes(t.createdBy)
     )
     const closedTickets = teamTickets.filter(t => t.closeTime)
+    const avgCloseTime = calculateAverageCloseTime(teamTickets)
 
     setTeamStats({
       total: teamTickets.length,
       closed: closedTickets.length,
       members: users?.length || 0,
-      completionRate: teamTickets.length ? (closedTickets.length / teamTickets.length) * 100 : 0
+      completionRate: teamTickets.length ? (closedTickets.length / teamTickets.length) * 100 : 0,
+      averageCloseTime: avgCloseTime
     })
   }
 
@@ -152,12 +168,17 @@ const TeamExpandableRow = ({ team, tickets, isExpanded, onToggle, t }) => {
           </Box>
         </TableCell>
         <TableCell>
-          <Chip
-            icon={teamStats.completionRate > 50 ? <CheckCircle /> : <AccessTime />}
-            label={teamStats.completionRate > 50 ? t('High Performing') : t('Progressing')}
-            color={teamStats.completionRate > 50 ? 'success' : 'warning'}
-            size='small'
-          />
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <Chip
+              icon={teamStats.completionRate > 50 ? <CheckCircle /> : <AccessTime />}
+              label={teamStats.completionRate > 50 ? t('High Performing') : t('Progressing')}
+              color={teamStats.completionRate > 50 ? 'success' : 'warning'}
+              size='small'
+            />
+            <Typography variant='caption' color='text.secondary'>
+              {t('Avg. Close Time')}: {teamStats.averageCloseTime.toFixed(1)} {t('hours')}
+            </Typography>
+          </Box>
         </TableCell>
       </TableRow>
       <TableRow>
@@ -175,7 +196,7 @@ const TeamExpandableRow = ({ team, tickets, isExpanded, onToggle, t }) => {
                       {teamStats.total}
                     </Typography>
                     <Typography variant='body2' color="text.secondary">
-                      {teamStats.closed} {t('closed')}
+                      {teamStats.closed} {t('closed')} • {teamStats.averageCloseTime.toFixed(1)} {t('hrs avg')}
                     </Typography>
                   </CardContent>
                 </Card>
@@ -186,6 +207,7 @@ const TeamExpandableRow = ({ team, tickets, isExpanded, onToggle, t }) => {
                   const completionRate = userTickets.length
                     ? (userTickets.filter(t => t.closeTime).length / userTickets.length) * 100
                     : 0
+                  const avgCloseTime = calculateAverageCloseTime(userTickets)
 
                   return (
                     <Grid item xs={12} md={6} key={user.id}>
@@ -218,6 +240,9 @@ const TeamExpandableRow = ({ team, tickets, isExpanded, onToggle, t }) => {
                               {t('Closed')}: {userTickets.filter(t => t.closeTime).length}
                             </Typography>
                           </Box>
+                          <Typography variant='body2' color='text.secondary' sx={{ mt: 1 }}>
+                            {t('Avg. Close Time')}: {avgCloseTime.toFixed(1)} {t('hours')}
+                          </Typography>
                         </CardContent>
                       </Card>
                     </Grid>
