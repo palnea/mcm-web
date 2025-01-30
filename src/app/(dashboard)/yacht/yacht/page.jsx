@@ -849,7 +849,7 @@ export default function Page() {
                               sx={{ flex: 2 }}
                               error={!!errors?.imageUrl}
                               helperText={errors?.imageUrl ? errors.imageUrl : ''}
-                              value={selectedFile ? selectedFile.name : params.imageUrl || ''}
+                              value={selectedFile ? selectedFile.name : !!params?.imageUrl ? `${params?.name?.replaceAll(" ", "").toLowerCase()}.${params?.imageUrl?.split(".").slice(-1)}` || '' : ''}
                               InputProps={{
                                 readOnly: true,
                                 endAdornment: (

@@ -215,7 +215,7 @@ const CreateEditSubcontractorModal = ({
                 fullWidth
                 error={!!errors?.imageUrl}
                 helperText={errors?.imageUrl ? errors.imageUrl : ''}
-                value={selectedFile ? selectedFile.name : initialData?.imageUrl || ''}
+                value={selectedFile ? selectedFile.name : !!initialData?.imageUrl ? `${initialData?.name?.replaceAll(" ", "").toLowerCase()}.${initialData?.imageUrl?.split(".").slice(-1)}` || '' : ''}
                 InputProps={{
                   readOnly: true,
                   endAdornment: (
