@@ -4,6 +4,7 @@ import {
   Box,
   Card,
   CardContent,
+  Chip,
   Collapse,
   Grid,
   IconButton,
@@ -19,15 +20,15 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
-  Chip
+  Typography
 } from '@mui/material'
 import { AccessTime, Assignment, CheckCircle, KeyboardArrowDown, KeyboardArrowUp, Person } from '@mui/icons-material'
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import { useTranslation } from 'next-i18next'
 
-export const UsersDialogContent = ({ users, userTickets, t }) => {
+export const UsersDialogContent = ({ users, userTickets }) => {
   const [selectedUser, setSelectedUser] = useState(null)
-  console.log("UsersDialogContent -> userTickets", userTickets)
+  const { t } = useTranslation('common')
 
   const getUserStats = userId => {
     const currentUserTickets = userTickets[userId] || []
@@ -75,6 +76,7 @@ export const UsersDialogContent = ({ users, userTickets, t }) => {
 }
 
 const UserExpandableRow = ({ user, stats, tickets, isExpanded, onToggle }) => {
+  const { t } = useTranslation('common')
   const userTicketStats = [
     { name: 'Assigned', value: stats.assigned },
     { name: 'Closed', value: stats.closed },
