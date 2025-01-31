@@ -1,10 +1,32 @@
 import React, { useState, useEffect } from 'react'
 import {
+  Avatar,
   Box,
+  Card,
+  CardContent,
+  Chip,
+  Collapse,
+  Grid,
+  LinearProgress,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Paper,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
   TextField,
-  InputAdornment,
+  Typography
 } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
+import InputAdornment from '@mui/material/InputAdornment'
+import { AccessTime, Assignment, CheckCircle, DirectionsBoat, ErrorOutline } from '@mui/icons-material'
+import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import Divider from '@mui/material/Divider'
 
 export const YachtsDialogContent = ({ yachts, tickets, t }) => {
   const [selectedYacht, setSelectedYacht] = useState(null)
@@ -28,9 +50,7 @@ export const YachtsDialogContent = ({ yachts, tickets, t }) => {
     const searchableFields = ['name', 'hin', 'model', 'code', 'officialNumber', 'port', 'shipType']
 
     const filtered = yachts.filter(yacht =>
-      searchableFields.some(field =>
-        yacht[field]?.toString().toLowerCase().includes(searchTerm.toLowerCase())
-      )
+      searchableFields.some(field => yacht[field]?.toString().toLowerCase().includes(searchTerm.toLowerCase()))
     )
     setFilteredYachts(filtered)
   }, [searchTerm, yachts])
@@ -40,16 +60,16 @@ export const YachtsDialogContent = ({ yachts, tickets, t }) => {
       <Box sx={{ p: 2 }}>
         <TextField
           fullWidth
-          variant="outlined"
+          variant='outlined'
           placeholder={t('Search yachts...')}
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={e => setSearchTerm(e.target.value)}
           InputProps={{
             startAdornment: (
-              <InputAdornment position="start">
+              <InputAdornment position='start'>
                 <SearchIcon />
               </InputAdornment>
-            ),
+            )
           }}
           sx={{ mb: 2 }}
         />
