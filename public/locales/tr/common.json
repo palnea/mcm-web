@@ -310,6 +310,12 @@
   "Medium": "Orta",
   "Chronic Issue": "Kronik Sorun",
   "Year": "Yıl",
+  "NotAssigned": "Atanmamış",
+  "TransferRequest": "Transfer Talebi",
+  "WaitingForSpareParts": "Malzeme Bekleyen",
+  "ExternalSupport": "Dış Destek",
+  "ChronicOnHold": "Kronik Beklemede"
+  "Year": "Yıl",
   "Average Close Time": "Ortalama Kapanış Süresi",
   "Ticket Details": "Talep Detayları",
   "Description": "Açıklama",

@@ -306,6 +306,12 @@
   "Medium": "Medium",
   "Chronic Issue": "Chronic Issue",
   "Year": "Year",
+  "NotAssigned": "Not Assigned",
+  "TransferRequest": "Transfer Request",
+  "WaitingForSpareParts": "Waiting For Spare Parts",
+  "ExternalSupport": "External Support",
+  "ChronicOnHold": "Chronic On Hold"
+  "Year": "Year",
   "Average Close Time": "Average Close Time",
   "Ticket Details": "Ticket Details",
   "Description": "Description",
