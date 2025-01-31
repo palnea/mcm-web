@@ -342,6 +342,6 @@
   "Search yachts": "Yat ara. Marka, model, isim, HIN...",
   "Search...": "Ara...",
   "Error fetching audit logs": "Denetim günlükleri alınırken bir hata oluştu",
-  "Audit Logs": "Denetim Günlükleri",
-  "auditlogs": "denetim-günlükleri"
+  "Audit Logs": "Denetim Kayıtları",
+  "auditlogs": "Denetim Kayıtları"
 }
