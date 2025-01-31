@@ -340,5 +340,7 @@
   "Error fetching audit logs": "Error fetching audit logs",
   "Audit Logs": "Audit Logs",
   "auditlogs": "Audit Logs",
-  "See Details": "See Details"
+  "See Details": "See Details",
+  "Start Date": "Start Date",
+  "End Date": "End Date"
 }
