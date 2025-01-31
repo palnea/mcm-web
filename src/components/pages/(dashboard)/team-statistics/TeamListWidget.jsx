@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  IconButton,
   Table,
   TableBody,
   TableCell,
@@ -14,19 +13,29 @@ import {
   TableRow,
   Typography
 } from '@mui/material'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
 import PeopleIcon from '@mui/icons-material/People'
+import Button from '@mui/material/Button'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 const TeamListWidget = ({ teams, t }) => {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+
+  const handleSeeDetails = widgetType => {
+    const params = new URLSearchParams(searchParams)
+    params.set('view', widgetType)
+    router.push(`?${params.toString()}`)
+  }
+
   return (
     <>
-      <Card sx={{ height: '100%', cursor: 'pointer' }}>
+      <Card sx={{ height: '100%' }}>
         <CardHeader
           title={t('Team List')}
           action={
-            <IconButton>
-              <MoreVertIcon />
-            </IconButton>
+            <Button variant='text' onClick={() => handleSeeDetails('teams')} sx={{ whiteSpace: 'nowrap' }}>
+              {t('See Details')}
+            </Button>
           }
         />
         <CardContent>
@@ -66,6 +75,5 @@ const TeamListWidget = ({ teams, t }) => {
     </>
   )
 }
-
 
 export default TeamListWidget

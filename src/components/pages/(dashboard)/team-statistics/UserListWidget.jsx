@@ -5,7 +5,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  IconButton,
   LinearProgress,
   Table,
   TableBody,
@@ -15,9 +14,12 @@ import {
   TableRow,
   Typography
 } from '@mui/material'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Button from '@mui/material/Button'
 
 const UserListWidget = ({ tickets, activeUsers, t }) => {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   // Group tickets for users (get assigned and created tickets) assignedToUserId, createdByUser
   const userTickets = tickets.reduce((acc, ticket) => {
     if (!acc[ticket.assignedToUserId]) {
@@ -43,15 +45,21 @@ const UserListWidget = ({ tickets, activeUsers, t }) => {
     }
   })
 
+  const handleSeeDetails = widgetType => {
+    const params = new URLSearchParams(searchParams)
+    params.set('view', widgetType)
+    router.push(`?${params.toString()}`)
+  }
+
   return (
     <>
-      <Card sx={{ height: '100%', cursor: 'pointer' }}>
+      <Card sx={{ height: '100%' }}>
         <CardHeader
           title={t('Active Users')}
           action={
-            <IconButton>
-              <MoreVertIcon />
-            </IconButton>
+            <Button variant='text' onClick={() => handleSeeDetails('users')} sx={{ whiteSpace: 'nowrap' }}>
+              {t('See Details')}
+            </Button>
           }
         />
         <CardContent>

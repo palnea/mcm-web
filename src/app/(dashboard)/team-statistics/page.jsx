@@ -192,14 +192,12 @@ const Page = () => {
         return (
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
-              <div onClick={() => handleWidgetClick('support')}>
-                <SupportTrackerWidget
-                  tickets={tickets}
-                  timeFilter={timeFilter}
-                  onTimeFilterChange={setTimeFilter}
-                  t={t}
-                />
-              </div>
+              <SupportTrackerWidget
+                tickets={tickets}
+                timeFilter={timeFilter}
+                onTimeFilterChange={setTimeFilter}
+                t={t}
+              />
             </Grid>
             <Grid item xs={12} md={6}>
               <div onClick={() => handleWidgetClick('users')}>
@@ -212,14 +210,10 @@ const Page = () => {
               </div>
             </Grid>
             <Grid item xs={12} md={6}>
-              <div onClick={() => handleWidgetClick('yachts')}>
                 <YachtListWidget yachts={yachts} tickets={tickets} t={t} />
-              </div>
             </Grid>
             <Grid item xs={12} md={6}>
-              <div onClick={() => handleWidgetClick('teams')}>
-                <TeamListWidget teams={teams} tickets={tickets} t={t} />
-              </div>
+              <TeamListWidget teams={teams} tickets={tickets} t={t} />
             </Grid>
           </Grid>
         )

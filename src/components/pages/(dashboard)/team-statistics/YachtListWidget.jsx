@@ -4,7 +4,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  IconButton,
   LinearProgress,
   Table,
   TableBody,
@@ -14,9 +13,12 @@ import {
   TableRow,
   Typography
 } from '@mui/material'
-import MoreVertIcon from '@mui/icons-material/MoreVert'
+import Button from '@mui/material/Button'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 const YachtListWidget = ({ yachts, tickets, t }) => {
+  const router = useRouter()
+  const searchParams = useSearchParams()
   // Group tickets for yachts
   const yachtTickets = tickets.reduce((acc, ticket) => {
     if (!acc[ticket.yachtId]) {
@@ -32,15 +34,21 @@ const YachtListWidget = ({ yachts, tickets, t }) => {
     return assignedTickets.length > 0 ? (closedTickets.length / assignedTickets.length) * 100 : 0
   }
 
+  const handleSeeDetails = widgetType => {
+    const params = new URLSearchParams(searchParams)
+    params.set('view', widgetType)
+    router.push(`?${params.toString()}`)
+  }
+
   return (
     <>
-      <Card sx={{ height: '100%', cursor: 'pointer' }}>
+      <Card sx={{ height: '100%' }}>
         <CardHeader
           title={t('Yacht List')}
           action={
-            <IconButton>
-              <MoreVertIcon />
-            </IconButton>
+            <Button variant='text' onClick={() => handleSeeDetails('yachts')} sx={{ whiteSpace: 'nowrap' }}>
+              {t('See Details')}
+            </Button>
           }
         />
         <CardContent>
