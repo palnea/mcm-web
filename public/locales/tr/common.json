@@ -340,5 +340,8 @@
   "Search users...": "Kullanıcı ara. İsim, soyisim, e-posta, telefon numarası...",
   "Search teams": "Takım adına göre ara...",
   "Search yachts": "Yat ara. Marka, model, isim, HIN...",
-  "Search...": "Ara..."
+  "Search...": "Ara...",
+  "Error fetching audit logs": "Denetim günlükleri alınırken bir hata oluştu",
+  "Audit Logs": "Denetim Kayıtları",
+  "auditlogs": "Denetim Kayıtları"
 }

@@ -336,5 +336,8 @@
   "Search users...": "Search by user name, title, email, phone...",
   "Search teams...": "Search by team name...",
   "Search yachts...": "Search by yacht name, model, brand, HIN...",
-  "Search...": "Search..."
+  "Search...": "Search...",
+  "Error fetching audit logs": "Error fetching audit logs",
+  "Audit Logs": "Audit Logs",
+  "auditlogs": "Audit Logs"
 }
