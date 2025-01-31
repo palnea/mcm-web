@@ -343,5 +343,8 @@
   "Search...": "Ara...",
   "Error fetching audit logs": "Denetim günlükleri alınırken bir hata oluştu",
   "Audit Logs": "Denetim Kayıtları",
-  "auditlogs": "Denetim Kayıtları"
+  "auditlogs": "Denetim Kayıtları",
+  "See Details":  "Detayları Gör",
+  "Start Date": "Başlangıç Tarihi",
+  "End Date": "Bitiş Tarihi"
 }

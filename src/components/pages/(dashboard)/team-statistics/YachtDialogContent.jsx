@@ -82,8 +82,8 @@ export const YachtsDialogContent = ({ yachts, tickets, t }) => {
               <TableCell>{t('Yacht')}</TableCell>
               <TableCell>{t('HIN')}</TableCell>
               <TableCell>{t('Total Tickets')}</TableCell>
-              <TableCell>{t('Performance')}</TableCell>
-              <TableCell>{t('Status')}</TableCell>
+              {/*<TableCell>{t('Performance')}</TableCell>*/}
+              {/*<TableCell>{t('Status')}</TableCell>*/}
             </TableRow>
           </TableHead>
           <TableBody>
@@ -179,14 +179,14 @@ const YachtExpandableRow = ({ yacht, stats, tickets, isExpanded, onToggle, t }) 
             </Typography>
           </Box>
         </TableCell>
-        <TableCell>
-          <Chip
-            icon={stats.completionRate > 70 ? <CheckCircle /> : stats.chronic > 0 ? <ErrorOutline /> : <AccessTime />}
-            label={stats.completionRate > 70 ? t('Excellent') : stats.chronic > 0 ? t('Needs Attention') : t('In Progress')}
-            color={stats.completionRate > 70 ? 'success' : stats.chronic > 0 ? 'error' : 'warning'}
-            size='small'
-          />
-        </TableCell>
+        {/*<TableCell>*/}
+        {/*  <Chip*/}
+        {/*    icon={stats.completionRate > 70 ? <CheckCircle /> : stats.chronic > 0 ? <ErrorOutline /> : <AccessTime />}*/}
+        {/*    label={stats.completionRate > 70 ? t('Excellent') : stats.chronic > 0 ? t('Needs Attention') : t('In Progress')}*/}
+        {/*    color={stats.completionRate > 70 ? 'success' : stats.chronic > 0 ? 'error' : 'warning'}*/}
+        {/*    size='small'*/}
+        {/*  />*/}
+        {/*</TableCell>*/}
       </TableRow>
       <TableRow>
         <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={6}>

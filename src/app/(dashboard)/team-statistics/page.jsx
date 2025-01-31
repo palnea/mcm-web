@@ -24,6 +24,7 @@ const Page = () => {
 
   const [timeFilter, setTimeFilter] = useState('week')
   const [tickets, setTickets] = useState([])
+  const [filteredTickets, setFilteredTickets] = useState([])
   const [users, setUsers] = useState([])
   const [yachts, setYachts] = useState([])
   const [teams, setTeams] = useState([])
@@ -135,6 +136,7 @@ const Page = () => {
         ...ticket,
         createdDate: new Date(ticket.createdDate)
       }))
+      setTickets(processedTickets);
 
       const filteredTickets = processedTickets.filter(
         ticket => ticket.createdDate >= startDate && ticket.createdDate <= endDate
@@ -147,7 +149,7 @@ const Page = () => {
 
       const sortedYachts = yachtsWithTickets.sort((a, b) => (b.tickets?.length || 0) - (a.tickets?.length || 0))
 
-      setTickets(filteredTickets)
+      setFilteredTickets(filteredTickets)
       setActiveUsers(activeUsersData)
       setYachts(sortedYachts)
       setTeams(teamsData)
@@ -192,14 +194,12 @@ const Page = () => {
         return (
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
-              <div onClick={() => handleWidgetClick('support')}>
-                <SupportTrackerWidget
-                  tickets={tickets}
-                  timeFilter={timeFilter}
-                  onTimeFilterChange={setTimeFilter}
-                  t={t}
-                />
-              </div>
+              <SupportTrackerWidget
+                tickets={filteredTickets}
+                timeFilter={timeFilter}
+                onTimeFilterChange={setTimeFilter}
+                t={t}
+              />
             </Grid>
             <Grid item xs={12} md={6}>
               <div onClick={() => handleWidgetClick('users')}>
@@ -212,14 +212,10 @@ const Page = () => {
               </div>
             </Grid>
             <Grid item xs={12} md={6}>
-              <div onClick={() => handleWidgetClick('yachts')}>
                 <YachtListWidget yachts={yachts} tickets={tickets} t={t} />
-              </div>
             </Grid>
             <Grid item xs={12} md={6}>
-              <div onClick={() => handleWidgetClick('teams')}>
-                <TeamListWidget teams={teams} tickets={tickets} t={t} />
-              </div>
+              <TeamListWidget teams={teams} tickets={tickets} t={t} />
             </Grid>
           </Grid>
         )

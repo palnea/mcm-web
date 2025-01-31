@@ -1,11 +1,15 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Box, Card, CardContent, CardHeader, FormControl, Grid, MenuItem, Select, Typography } from '@mui/material'
 import { Cell, Pie, PieChart } from 'recharts'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Button from '@mui/material/Button'
 
 const SupportTrackerWidget = ({ tickets, timeFilter, onTimeFilterChange, t }) => {
   const [openTickets, setOpenTickets] = useState(0)
   const [newTickets, setNewTickets] = useState(0)
   const [closedTickets, setClosedTickets] = useState(0)
+  const router = useRouter()
+  const searchParams = useSearchParams()
 
   const fillData = () => {
     const startDate = new Date()
@@ -44,24 +48,35 @@ const SupportTrackerWidget = ({ tickets, timeFilter, onTimeFilterChange, t }) =>
     return openTickets + closedTickets > 0 ? (closedTickets / (openTickets + closedTickets)) * 100 : 0
   }, [openTickets, closedTickets])
 
+  const handleSeeDetails = widgetType => {
+    const params = new URLSearchParams(searchParams)
+    params.set('view', widgetType)
+    router.push(`?${params.toString()}`)
+  }
+
   return (
     <>
-      <Card sx={{ height: '100%', cursor: 'pointer' }}>
+      <Card sx={{ height: '100%' }}>
         <CardHeader
           title={t('Support Tracker')}
           action={
-            <FormControl variant='standard' sx={{ minWidth: 120 }}>
-              <Select
-                value={timeFilter}
-                onChange={e => onTimeFilterChange(e.target.value)}
-                onClick={e => e.stopPropagation()}
-                variant={'standard'}
-              >
-                <MenuItem value='week'>{t('Last Week')}</MenuItem>
-                <MenuItem value='month'>{t('Last Month')}</MenuItem>
-                <MenuItem value='all'>{t('All Time')}</MenuItem>
-              </Select>
-            </FormControl>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <FormControl variant='standard' sx={{ minWidth: 120 }}>
+                <Select
+                  value={timeFilter}
+                  onChange={e => onTimeFilterChange(e.target.value)}
+                  onClick={e => e.stopPropagation()}
+                  variant={'standard'}
+                >
+                  <MenuItem value='week'>{t('Last Week')}</MenuItem>
+                  <MenuItem value='month'>{t('Last Month')}</MenuItem>
+                  <MenuItem value='all'>{t('All Time')}</MenuItem>
+                </Select>
+              </FormControl>
+              <Button variant='text' onClick={() => handleSeeDetails('support')} sx={{ whiteSpace: 'nowrap' }}>
+                {t('See Details')}
+              </Button>
+            </Box>
           }
         />
         <CardContent>
