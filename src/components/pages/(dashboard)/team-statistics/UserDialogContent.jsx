@@ -7,6 +7,7 @@ import {
   Chip,
   Collapse,
   Grid,
+  IconButton,
   LinearProgress,
   List,
   ListItem,
@@ -22,14 +23,16 @@ import {
   TextField,
   Typography
 } from '@mui/material'
-import { AccessTime, Assignment, CheckCircle, Person, Search } from '@mui/icons-material'
+import { AccessTime, ArrowBack, Assignment, CheckCircle, Person, Search } from '@mui/icons-material'
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { useTranslation } from 'next-i18next'
+import { useRouter } from 'next/navigation'
 
 export const UsersDialogContent = ({ users, userTickets }) => {
   const [selectedUser, setSelectedUser] = useState(null)
   const [searchQuery, setSearchQuery] = useState('') // Added search state
   const { t } = useTranslation('common')
+  const router = useRouter()
 
   const getUserStats = userId => {
     const currentUserTickets = userTickets[userId] || []
@@ -61,52 +64,57 @@ export const UsersDialogContent = ({ users, userTickets }) => {
   })
 
   return (
-    <TableContainer component={Paper} elevation={3}>
-      {/* Added search TextField */}
-      <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
-        <TextField
-          fullWidth
-          variant='outlined'
-          placeholder={t('Search users...')}
-          value={searchQuery}
-          onChange={e => setSearchQuery(e.target.value)}
-          InputProps={{
-            startAdornment: <Search sx={{ color: 'action.active', mr: 1 }} />
-          }}
-          size='small'
-        />
-      </Box>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell />
-            <TableCell>{t('User')}</TableCell>
-            <TableCell>{t('Assigned')}</TableCell>
-            <TableCell>{t('Created')}</TableCell>
-            <TableCell>{t('Completion')} Rate</TableCell>
-            <TableCell>{t('Status')}</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {filteredUsers.map(user => (
-            <UserExpandableRow
-              key={user.id}
-              user={user}
-              stats={getUserStats(user.id)}
-              tickets={userTickets[user.id] || []}
-              isExpanded={selectedUser === user.id}
-              onToggle={() => setSelectedUser(selectedUser === user.id ? null : user.id)}
-            />
-          ))}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <>
+      <IconButton onClick={() => router.back()} sx={{ mr: 2 }}>
+        <ArrowBack />
+      </IconButton>
+      <TableContainer component={Paper} elevation={3}>
+        {/* Added search TextField */}
+        <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+          <TextField
+            fullWidth
+            variant='outlined'
+            placeholder={t('Search users...')}
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            InputProps={{
+              startAdornment: <Search sx={{ color: 'action.active', mr: 1 }} />
+            }}
+            size='small'
+          />
+        </Box>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell />
+              <TableCell>{t('User')}</TableCell>
+              <TableCell>{t('Assigned')}</TableCell>
+              <TableCell>{t('Created')}</TableCell>
+              <TableCell>{t('Completion')} Rate</TableCell>
+              <TableCell>{t('Status')}</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredUsers.map(user => (
+              <UserExpandableRow
+                key={user.id}
+                user={user}
+                stats={getUserStats(user.id)}
+                tickets={userTickets[user.id] || []}
+                isExpanded={selectedUser === user.id}
+                onToggle={() => setSelectedUser(selectedUser === user.id ? null : user.id)}
+              />
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </>
   )
 }
 
 const UserExpandableRow = ({ user, stats, tickets, isExpanded, onToggle }) => {
   const { t } = useTranslation('common')
-  isExpanded = true;
+  isExpanded = true
 
   const userTicketStats = [
     { name: 'Assigned', value: stats.assigned },

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Avatar,
   Box,
@@ -16,34 +16,37 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography,
-  TextField
+  TextField,
+  Typography
 } from '@mui/material'
-import { AccessTime, CheckCircle, Group, KeyboardArrowDown, KeyboardArrowUp, Search } from '@mui/icons-material'
+import { AccessTime, ArrowBack, CheckCircle, Group, Search } from '@mui/icons-material'
 import { toast } from 'react-toastify'
 import api from '../../../../api_helper/api'
+import { useRouter } from 'next/navigation'
 
 export const TeamsDialogContent = ({ teams, tickets, t }) => {
   const [selectedTeam, setSelectedTeam] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
+  const router = useRouter()
 
-  const filteredTeams = teams.filter(team =>
-    team.name.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredTeams = teams.filter(team => team.name.toLowerCase().includes(searchTerm.toLowerCase()))
 
   return (
     <Box>
+      <IconButton onClick={() => router.back()} sx={{ mr: 2 }}>
+        <ArrowBack />
+      </IconButton>
       <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
         <TextField
           fullWidth
-          variant="outlined"
+          variant='outlined'
           placeholder={t('Search teams...')}
           value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={e => setSearchTerm(e.target.value)}
           InputProps={{
             startAdornment: <Search sx={{ color: 'text.secondary', mr: 1 }} />
           }}
-          size="small"
+          size='small'
         />
       </Box>
       <TableContainer component={Paper} elevation={3}>
@@ -86,20 +89,20 @@ const TeamExpandableRow = ({ team, tickets, isExpanded, onToggle, t }) => {
     completionRate: 0,
     averageCloseTime: 0
   })
-  isExpanded = true;
+  isExpanded = true
 
-  const calculateAverageCloseTime = (tickets) => {
-    const closedTickets = tickets.filter(t => t.closeTime && t.assignTime);
-    if (closedTickets.length === 0) return 0;
+  const calculateAverageCloseTime = tickets => {
+    const closedTickets = tickets.filter(t => t.closeTime && t.assignTime)
+    if (closedTickets.length === 0) return 0
 
     const totalTime = closedTickets.reduce((sum, ticket) => {
-      const closeTime = new Date(ticket.closeTime);
-      const assignTime = new Date(ticket.assignTime);
-      return sum + (closeTime - assignTime);
-    }, 0);
+      const closeTime = new Date(ticket.closeTime)
+      const assignTime = new Date(ticket.assignTime)
+      return sum + (closeTime - assignTime)
+    }, 0)
 
-    return totalTime / closedTickets.length / (1000 * 60 * 60); // Convert to hours
-  };
+    return totalTime / closedTickets.length / (1000 * 60 * 60) // Convert to hours
+  }
 
   const fillTeamStats = users => {
     const teamUserIds = users?.map(u => u.id) || []
@@ -149,7 +152,7 @@ const TeamExpandableRow = ({ team, tickets, isExpanded, onToggle, t }) => {
     <>
       <TableRow
         sx={{
-          '& > *': { borderBottom: 'unset' },
+          '& > *': { borderBottom: 'unset' }
           // '&:hover': { backgroundColor: 'action.hover' }
         }}
       >
@@ -211,13 +214,11 @@ const TeamExpandableRow = ({ team, tickets, isExpanded, onToggle, t }) => {
                 <Typography variant='h6'>{t('Team Members')}</Typography>
                 <Card sx={{ minWidth: 200 }}>
                   <CardContent>
-                    <Typography variant='h6' color="text.secondary" gutterBottom>
+                    <Typography variant='h6' color='text.secondary' gutterBottom>
                       {t('Total Tickets')}
                     </Typography>
-                    <Typography variant='h4'>
-                      {teamStats.total}
-                    </Typography>
-                    <Typography variant='body2' color="text.secondary">
+                    <Typography variant='h4'>{teamStats.total}</Typography>
+                    <Typography variant='body2' color='text.secondary'>
                       {teamStats.closed} {t('closed')} • {teamStats.averageCloseTime.toFixed(1)} {t('hrs avg')}
                     </Typography>
                   </CardContent>

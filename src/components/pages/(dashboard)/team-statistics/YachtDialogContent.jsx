@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import {
   Avatar,
   Box,
@@ -7,6 +7,7 @@ import {
   Chip,
   Collapse,
   Grid,
+  IconButton,
   LinearProgress,
   List,
   ListItem,
@@ -24,14 +25,16 @@ import {
 } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
 import InputAdornment from '@mui/material/InputAdornment'
-import { AccessTime, Assignment, CheckCircle, DirectionsBoat, ErrorOutline } from '@mui/icons-material'
+import { ArrowBack, Assignment, CheckCircle, DirectionsBoat, ErrorOutline } from '@mui/icons-material'
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import Divider from '@mui/material/Divider'
+import { useRouter } from 'next/navigation'
 
 export const YachtsDialogContent = ({ yachts, tickets, t }) => {
   const [selectedYacht, setSelectedYacht] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [filteredYachts, setFilteredYachts] = useState(yachts)
+  const router = useRouter()
 
   const getYachtStats = yachtId => {
     const yachtTickets = tickets.filter(t => t.yachtId === yachtId)
@@ -56,60 +59,65 @@ export const YachtsDialogContent = ({ yachts, tickets, t }) => {
   }, [searchTerm, yachts])
 
   return (
-    <Box>
-      <Box sx={{ p: 2 }}>
-        <TextField
-          fullWidth
-          variant='outlined'
-          placeholder={t('Search yachts...')}
-          value={searchTerm}
-          onChange={e => setSearchTerm(e.target.value)}
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position='start'>
-                <SearchIcon />
-              </InputAdornment>
-            )
-          }}
-          sx={{ mb: 2 }}
-        />
-      </Box>
-      <TableContainer component={Paper} elevation={3}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell />
-              <TableCell>{t('Yacht')}</TableCell>
-              <TableCell>{t('HIN')}</TableCell>
-              <TableCell>{t('Total Tickets')}</TableCell>
-              {/*<TableCell>{t('Performance')}</TableCell>*/}
-              {/*<TableCell>{t('Status')}</TableCell>*/}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredYachts.map(yacht => {
-              const stats = getYachtStats(yacht.id)
-              return (
-                <YachtExpandableRow
-                  key={yacht.id}
-                  yacht={yacht}
-                  stats={stats}
-                  tickets={tickets}
-                  onToggle={() => setSelectedYacht(selectedYacht === yacht.id ? null : yacht.id)}
-                  t={t}
-                />
+    <>
+      <IconButton onClick={() => router.back()} sx={{ mr: 2 }}>
+        <ArrowBack />
+      </IconButton>
+      <Box>
+        <Box sx={{ p: 2 }}>
+          <TextField
+            fullWidth
+            variant='outlined'
+            placeholder={t('Search yachts...')}
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position='start'>
+                  <SearchIcon />
+                </InputAdornment>
               )
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </Box>
+            }}
+            sx={{ mb: 2 }}
+          />
+        </Box>
+        <TableContainer component={Paper} elevation={3}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell />
+                <TableCell>{t('Yacht')}</TableCell>
+                <TableCell>{t('HIN')}</TableCell>
+                <TableCell>{t('Total Tickets')}</TableCell>
+                {/*<TableCell>{t('Performance')}</TableCell>*/}
+                {/*<TableCell>{t('Status')}</TableCell>*/}
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {filteredYachts.map(yacht => {
+                const stats = getYachtStats(yacht.id)
+                return (
+                  <YachtExpandableRow
+                    key={yacht.id}
+                    yacht={yacht}
+                    stats={stats}
+                    tickets={tickets}
+                    onToggle={() => setSelectedYacht(selectedYacht === yacht.id ? null : yacht.id)}
+                    t={t}
+                  />
+                )
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </Box>
+    </>
   )
 }
 
 const YachtExpandableRow = ({ yacht, stats, tickets, isExpanded, onToggle, t }) => {
   const yachtTickets = tickets.filter(t => t.yachtId === yacht.id)
-  isExpanded = true;
+  isExpanded = true
 
   const getTicketPriorityStats = () => {
     return yachtTickets.reduce((acc, ticket) => {
@@ -124,7 +132,7 @@ const YachtExpandableRow = ({ yacht, stats, tickets, isExpanded, onToggle, t }) 
     <>
       <TableRow
         sx={{
-          '& > *': { borderBottom: 'unset' },
+          '& > *': { borderBottom: 'unset' }
           // '&:hover': { backgroundColor: 'action.hover' }
         }}
       >
@@ -210,30 +218,25 @@ const YachtExpandableRow = ({ yacht, stats, tickets, isExpanded, onToggle, t }) 
                           <XAxis dataKey='priority' />
                           <YAxis />
                           <Tooltip />
-                          <Bar
-                            dataKey='count'
-                            fill="#8884d8"
-                            name={t("Tickets")}
-                            isAnimationActive={true}
-                          >
-                            {Object.entries(priorityStats).map(([priority, count]) =>
+                          <Bar dataKey='count' fill='#8884d8' name={t('Tickets')} isAnimationActive={true}>
+                            {Object.entries(priorityStats).map(([priority, count]) => (
                               <Cell
                                 key={priority}
                                 fill={
-                                  priority === "1"
+                                  priority === '1'
                                     ? '#10b981'
-                                    : priority === "2"
+                                    : priority === '2'
                                       ? '#f5c20b'
-                                      : priority === "3"
+                                      : priority === '3'
                                         ? '#f59e0b'
-                                        : priority === "4"
+                                        : priority === '4'
                                           ? '#f87171'
-                                          : priority === "5"
+                                          : priority === '5'
                                             ? '#ef4444'
                                             : '#8884d8'
                                 }
                               />
-                            )}
+                            ))}
                           </Bar>
                         </BarChart>
                       </ResponsiveContainer>
@@ -291,7 +294,11 @@ const YachtExpandableRow = ({ yacht, stats, tickets, isExpanded, onToggle, t }) 
                                   secondary={
                                     <>
                                       <Typography component='span' variant='body2' color='text.primary'>
-                                        {ticket.closeTime ? t('Closed') : ticket.isChronic ? t('Chronic Issue') : t('Open')}
+                                        {ticket.closeTime
+                                          ? t('Closed')
+                                          : ticket.isChronic
+                                            ? t('Chronic Issue')
+                                            : t('Open')}
                                       </Typography>
                                       {` — ${new Date(ticket.createdDate).toLocaleDateString()}`}
                                     </>
