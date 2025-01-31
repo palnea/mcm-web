@@ -60,7 +60,7 @@ const YachtListWidget = ({ yachts, tickets, t }) => {
                   <TableCell>{t('HIN')}</TableCell>
                   <TableCell>{t('Total')}</TableCell>
                   <TableCell>{t('Progress')}</TableCell>
-                  <TableCell>{t('Status')}</TableCell>
+                  {/*<TableCell>{t('Status')}</TableCell>*/}
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -83,11 +83,11 @@ const YachtListWidget = ({ yachts, tickets, t }) => {
                           <Typography variant='body2'>{Math.round(progress)}%</Typography>
                         </Box>
                       </TableCell>
-                      <TableCell>
-                        <Badge color={progress > 50 ? 'success' : 'warning'} variant='dot'>
-                          {progress > 50 ? t('On Track') : t('Attention Needed')}
-                        </Badge>
-                      </TableCell>
+                      {/*<TableCell>*/}
+                      {/*  <Badge color={progress > 50 ? 'success' : 'warning'} variant='dot'>*/}
+                      {/*    {progress > 50 ? t('On Track') : t('Attention Needed')}*/}
+                      {/*  </Badge>*/}
+                      {/*</TableCell>*/}
                     </TableRow>
                   )
                 })}
