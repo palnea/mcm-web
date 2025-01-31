@@ -77,6 +77,8 @@ export const UsersDialogContent = ({ users, userTickets }) => {
 
 const UserExpandableRow = ({ user, stats, tickets, isExpanded, onToggle }) => {
   const { t } = useTranslation('common')
+  isExpanded = true;
+
   const userTicketStats = [
     { name: 'Assigned', value: stats.assigned },
     { name: 'Closed', value: stats.closed },
@@ -90,11 +92,11 @@ const UserExpandableRow = ({ user, stats, tickets, isExpanded, onToggle }) => {
           '&:hover': { backgroundColor: 'action.hover' }
         }}
       >
-        <TableCell>
-          <IconButton size='small' onClick={onToggle}>
-            {isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
-          </IconButton>
-        </TableCell>
+        {/*<TableCell>*/}
+        {/*  <IconButton size='small' onClick={onToggle}>*/}
+        {/*    {isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />}*/}
+        {/*  </IconButton>*/}
+        {/*</TableCell>*/}
         <TableCell>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>{user.fullName?.[0] || <Person />}</Avatar>

@@ -72,6 +72,7 @@ export const YachtsDialogContent = ({ yachts, tickets, t }) => {
                 yacht={yacht}
                 stats={stats}
                 tickets={tickets}
+                onToggle={() => setSelectedYacht(selectedYacht === yacht.id ? null : yacht.id)}
                 t={t}
               />
             )
@@ -82,9 +83,9 @@ export const YachtsDialogContent = ({ yachts, tickets, t }) => {
   )
 }
 
-const YachtExpandableRow = ({ yacht, stats, tickets, t }) => {
+const YachtExpandableRow = ({ yacht, stats, tickets, isExpanded, onToggle, t }) => {
   const yachtTickets = tickets.filter(t => t.yachtId === yacht.id)
-  const [isExpanded, setIsExpanded] = useState(true)
+  isExpanded = true;
 
   const getTicketPriorityStats = () => {
     return yachtTickets.reduce((acc, ticket) => {
@@ -104,7 +105,7 @@ const YachtExpandableRow = ({ yacht, stats, tickets, t }) => {
         }}
       >
         {/*<TableCell>*/}
-        {/*  <IconButton size='small' onClick={() => setIsExpanded(!isExpanded)}>*/}
+        {/*  <IconButton size='small' onClick={onToggle}>*/}
         {/*    {isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />}*/}
         {/*  </IconButton>*/}
         {/*</TableCell>*/}

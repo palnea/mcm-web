@@ -65,6 +65,7 @@ const TeamExpandableRow = ({ team, tickets, isExpanded, onToggle, t }) => {
     completionRate: 0,
     averageCloseTime: 0
   })
+  isExpanded = true;
 
   const calculateAverageCloseTime = (tickets) => {
     const closedTickets = tickets.filter(t => t.closeTime && t.assignTime);
@@ -128,14 +129,14 @@ const TeamExpandableRow = ({ team, tickets, isExpanded, onToggle, t }) => {
       <TableRow
         sx={{
           '& > *': { borderBottom: 'unset' },
-          '&:hover': { backgroundColor: 'action.hover' }
+          // '&:hover': { backgroundColor: 'action.hover' }
         }}
       >
-        <TableCell>
-          <IconButton size='small' onClick={onToggle}>
-            {isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
-          </IconButton>
-        </TableCell>
+        {/*<TableCell>*/}
+        {/*  <IconButton size='small' onClick={onToggle}>*/}
+        {/*    {isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />}*/}
+        {/*  </IconButton>*/}
+        {/*</TableCell>*/}
         <TableCell>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Avatar sx={{ mr: 2, bgcolor: 'secondary.main' }}>
