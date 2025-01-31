@@ -7,7 +7,6 @@ import {
   Chip,
   Collapse,
   Grid,
-  IconButton,
   LinearProgress,
   List,
   ListItem,
@@ -20,14 +19,16 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
   Typography
 } from '@mui/material'
-import { AccessTime, Assignment, CheckCircle, KeyboardArrowDown, KeyboardArrowUp, Person } from '@mui/icons-material'
+import { AccessTime, Assignment, CheckCircle, Person, Search } from '@mui/icons-material'
 import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import { useTranslation } from 'next-i18next'
 
 export const UsersDialogContent = ({ users, userTickets }) => {
   const [selectedUser, setSelectedUser] = useState(null)
+  const [searchQuery, setSearchQuery] = useState('') // Added search state
   const { t } = useTranslation('common')
 
   const getUserStats = userId => {
@@ -45,8 +46,36 @@ export const UsersDialogContent = ({ users, userTickets }) => {
     }
   }
 
+  // Added search filter function
+  const filteredUsers = users.filter(user => {
+    const searchLower = searchQuery.toLowerCase()
+    return (
+      !searchQuery ||
+      user.name?.toLowerCase().includes(searchLower) ||
+      user.fullName?.toLowerCase().includes(searchLower) ||
+      user.email?.toLowerCase().includes(searchLower) ||
+      user.phone?.toLowerCase().includes(searchLower) ||
+      user.title?.toLowerCase().includes(searchLower) ||
+      user.username?.toLowerCase().includes(searchLower)
+    )
+  })
+
   return (
     <TableContainer component={Paper} elevation={3}>
+      {/* Added search TextField */}
+      <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+        <TextField
+          fullWidth
+          variant='outlined'
+          placeholder={t('Search users...')}
+          value={searchQuery}
+          onChange={e => setSearchQuery(e.target.value)}
+          InputProps={{
+            startAdornment: <Search sx={{ color: 'action.active', mr: 1 }} />
+          }}
+          size='small'
+        />
+      </Box>
       <Table>
         <TableHead>
           <TableRow>
@@ -59,7 +88,7 @@ export const UsersDialogContent = ({ users, userTickets }) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {users.map(user => (
+          {filteredUsers.map(user => (
             <UserExpandableRow
               key={user.id}
               user={user}

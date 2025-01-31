@@ -16,43 +16,64 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography
+  Typography,
+  TextField
 } from '@mui/material'
-import { AccessTime, CheckCircle, Group, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material'
+import { AccessTime, CheckCircle, Group, KeyboardArrowDown, KeyboardArrowUp, Search } from '@mui/icons-material'
 import { toast } from 'react-toastify'
 import api from '../../../../api_helper/api'
 
 export const TeamsDialogContent = ({ teams, tickets, t }) => {
   const [selectedTeam, setSelectedTeam] = useState(null)
+  const [searchTerm, setSearchTerm] = useState('')
+
+  const filteredTeams = teams.filter(team =>
+    team.name.toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   return (
-    <TableContainer component={Paper} elevation={3}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell />
-            <TableCell>{t('Team')}</TableCell>
-            <TableCell>{t('Members')}</TableCell>
-            <TableCell>{t('Performance')}</TableCell>
-            <TableCell>{t('Status')}</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {teams.map(team => {
-            return (
-              <TeamExpandableRow
-                key={team.id}
-                team={team}
-                tickets={tickets}
-                isExpanded={selectedTeam === team.id}
-                onToggle={() => setSelectedTeam(selectedTeam === team.id ? null : team.id)}
-                t={t}
-              />
-            )
-          })}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Box>
+      <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <TextField
+          fullWidth
+          variant="outlined"
+          placeholder={t('Search teams...')}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          InputProps={{
+            startAdornment: <Search sx={{ color: 'text.secondary', mr: 1 }} />
+          }}
+          size="small"
+        />
+      </Box>
+      <TableContainer component={Paper} elevation={3}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell />
+              <TableCell>{t('Team')}</TableCell>
+              <TableCell>{t('Members')}</TableCell>
+              <TableCell>{t('Performance')}</TableCell>
+              <TableCell>{t('Status')}</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredTeams.map(team => {
+              return (
+                <TeamExpandableRow
+                  key={team.id}
+                  team={team}
+                  tickets={tickets}
+                  isExpanded={selectedTeam === team.id}
+                  onToggle={() => setSelectedTeam(selectedTeam === team.id ? null : team.id)}
+                  t={t}
+                />
+              )
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
   )
 }
 

@@ -132,8 +132,8 @@ export const getPriorityChip = (priority, t) => {
   const priorityConfig = priorityOptions.find(opt => opt.value === priority)
   return (
     <Chip
-      label={t(priorityConfig.label)}
-      color={priorityConfig.color}
+      label={t(priorityConfig?.label)}
+      color={priorityConfig?.color}
       variant="outlined"
       size="small"
     />

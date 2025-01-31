@@ -332,5 +332,9 @@
   "tickets": "Tickets",
   "ticketCode": "Ticket Code",
   "imageUrl": "Image",
-  "categoryName": "Category Name"
+  "categoryName": "Category Name",
+  "Search users...": "Search by user name, title, email, phone...",
+  "Search teams...": "Search by team name...",
+  "Search yachts...": "Search by yacht name, model, brand, HIN...",
+  "Search...": "Search..."
 }

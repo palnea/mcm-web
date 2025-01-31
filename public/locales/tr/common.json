@@ -336,5 +336,9 @@
   "tickets": "Talepler",
   "ticketCode": "Talep Kodu",
   "imageUrl": "Image",
-  "categoryName": "Kategori Adı"
+  "categoryName": "Kategori Adı",
+  "Search users...": "Kullanıcı ara. İsim, soyisim, e-posta, telefon numarası...",
+  "Search teams": "Takım adına göre ara...",
+  "Search yachts": "Yat ara. Marka, model, isim, HIN...",
+  "Search...": "Ara..."
 }
