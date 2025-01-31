@@ -24,6 +24,7 @@ const Page = () => {
 
   const [timeFilter, setTimeFilter] = useState('week')
   const [tickets, setTickets] = useState([])
+  const [filteredTickets, setFilteredTickets] = useState([])
   const [users, setUsers] = useState([])
   const [yachts, setYachts] = useState([])
   const [teams, setTeams] = useState([])
@@ -135,6 +136,7 @@ const Page = () => {
         ...ticket,
         createdDate: new Date(ticket.createdDate)
       }))
+      setTickets(processedTickets);
 
       const filteredTickets = processedTickets.filter(
         ticket => ticket.createdDate >= startDate && ticket.createdDate <= endDate
@@ -147,7 +149,7 @@ const Page = () => {
 
       const sortedYachts = yachtsWithTickets.sort((a, b) => (b.tickets?.length || 0) - (a.tickets?.length || 0))
 
-      setTickets(filteredTickets)
+      setFilteredTickets(filteredTickets)
       setActiveUsers(activeUsersData)
       setYachts(sortedYachts)
       setTeams(teamsData)
@@ -193,7 +195,7 @@ const Page = () => {
           <Grid container spacing={3}>
             <Grid item xs={12} md={6}>
               <SupportTrackerWidget
-                tickets={tickets}
+                tickets={filteredTickets}
                 timeFilter={timeFilter}
                 onTimeFilterChange={setTimeFilter}
                 t={t}
