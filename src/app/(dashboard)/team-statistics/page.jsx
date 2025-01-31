@@ -3,16 +3,25 @@
 import React, { useEffect, useState } from 'react'
 import { Box, CircularProgress, Container } from '@mui/material'
 import { toast } from 'react-toastify'
+import { useRouter, useSearchParams } from 'next/navigation'
 import api from '@/api_helper/api'
 import SupportTrackerWidget from '@components/pages/(dashboard)/team-statistics/SupportTrackerWidget'
 import UserListWidget from '@components/pages/(dashboard)/team-statistics/UserListWidget'
 import YachtListWidget from '@components/pages/(dashboard)/team-statistics/YachtListWidget'
 import TeamListWidget from '@components/pages/(dashboard)/team-statistics/TeamListWidget'
+import { TeamsDialogContent } from '@components/pages/(dashboard)/team-statistics/TeamDialogContent'
+import { UsersDialogContent } from '@components/pages/(dashboard)/team-statistics/UserDialogContent'
+import { YachtsDialogContent } from '@components/pages/(dashboard)/team-statistics/YachtDialogContent'
 import Grid from '@mui/material/Grid'
-import { useTranslation } from 'next-i18next';
+import { useTranslation } from 'next-i18next'
+import SupportTrackerDialogContent from '@components/pages/(dashboard)/team-statistics/SupportTrackerDialogContent'
 
 const Page = () => {
   const { t } = useTranslation('common')
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const view = searchParams.get('view')
+
   const [timeFilter, setTimeFilter] = useState('week')
   const [tickets, setTickets] = useState([])
   const [users, setUsers] = useState([])
@@ -99,10 +108,13 @@ const Page = () => {
     }
   }
 
+  useEffect(() => {
+    fetchData()
+  }, [timeFilter])
+
   const fetchData = async () => {
     setLoading(true)
     try {
-      // Calculate date range based on timeFilter
       const endDate = new Date()
       const startDate = new Date()
       if (timeFilter === 'week') {
@@ -110,35 +122,36 @@ const Page = () => {
       } else {
         startDate.setDate(startDate.getDate() - 30)
       }
-      // Fetch all required data
-      const [ticketsData, activeUsersData, yachtsData, teamsData, users] = await Promise.all([
+
+      const [ticketsData, activeUsersData, yachtsData, teamsData, usersData] = await Promise.all([
         fetchTickets(),
         fetchActiveUsers(startDate, endDate),
         fetchYachts(),
         fetchTeams(),
         fetchUsers()
       ])
-      // Process tickets data
+
       const processedTickets = ticketsData.map(ticket => ({
         ...ticket,
         createdDate: new Date(ticket.createdDate)
       }))
-      // Filter tickets based on time range
+
       const filteredTickets = processedTickets.filter(
         ticket => ticket.createdDate >= startDate && ticket.createdDate <= endDate
       )
-      // Match tickets with yachts
+
       const yachtsWithTickets = yachtsData.map(yacht => ({
         ...yacht,
         tickets: filteredTickets.filter(ticket => ticket.yachtId === yacht.id)
       }))
-      // Sort yachts by ticket count
+
       const sortedYachts = yachtsWithTickets.sort((a, b) => (b.tickets?.length || 0) - (a.tickets?.length || 0))
+
       setTickets(filteredTickets)
       setActiveUsers(activeUsersData)
       setYachts(sortedYachts)
       setTeams(teamsData)
-      setUsers(users)
+      setUsers(usersData)
     } catch (err) {
       console.error('Error fetching dashboard data:', err)
       toast.error(t('An error occurred while fetching dashboard data'))
@@ -151,8 +164,70 @@ const Page = () => {
     fetchData()
   }, [timeFilter])
 
+  const handleWidgetClick = widgetType => {
+    const params = new URLSearchParams(searchParams)
+    params.set('view', widgetType)
+    router.push(`?${params.toString()}`)
+  }
+
+  const renderContent = () => {
+    switch (view) {
+      case 'teams':
+        return <TeamsDialogContent teams={teams} tickets={tickets} t={t} />
+      case 'users':
+        const userTickets = users.reduce((acc, user) => {
+          acc[user.id] = tickets.filter(t => t.assignedToUserId === user.id || t.createdByUser?.id === user.id)
+          return acc
+        }, {})
+        return <UsersDialogContent users={users} userTickets={userTickets} />
+      case 'yachts':
+        return <YachtsDialogContent yachts={yachts} tickets={tickets} t={t} />
+      case 'support':
+        return (
+          <Box sx={{ p: 3 }}>
+            <SupportTrackerDialogContent t={t} tickets={tickets} />
+          </Box>
+        )
+      default:
+        return (
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={6}>
+              <div onClick={() => handleWidgetClick('support')}>
+                <SupportTrackerWidget
+                  tickets={tickets}
+                  timeFilter={timeFilter}
+                  onTimeFilterChange={setTimeFilter}
+                  t={t}
+                />
+              </div>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <div onClick={() => handleWidgetClick('users')}>
+                <UserListWidget
+                  users={users}
+                  tickets={tickets}
+                  activeUsers={users.length > 5 ? users.slice(0, 5) : users}
+                  t={t}
+                />
+              </div>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <div onClick={() => handleWidgetClick('yachts')}>
+                <YachtListWidget yachts={yachts} tickets={tickets} t={t} />
+              </div>
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <div onClick={() => handleWidgetClick('teams')}>
+                <TeamListWidget teams={teams} tickets={tickets} t={t} />
+              </div>
+            </Grid>
+          </Grid>
+        )
+    }
+  }
+
   return (
-    <Container maxWidth="xl">
+    <Container maxWidth='xl'>
       <Box sx={{ py: 4, position: 'relative' }}>
         {loading && (
           <Box
@@ -172,38 +247,7 @@ const Page = () => {
             <CircularProgress size={60} />
           </Box>
         )}
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <SupportTrackerWidget
-              tickets={tickets}
-              timeFilter={timeFilter}
-              onTimeFilterChange={setTimeFilter}
-              t={t}
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <UserListWidget
-              users={users}
-              tickets={tickets}
-              activeUsers={users.length > 5 ? users.slice(0, 5) : users}
-              t={t}
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <YachtListWidget
-              yachts={yachts}
-              tickets={tickets}
-              t={t}
-            />
-          </Grid>
-          <Grid item xs={12} md={6}>
-            <TeamListWidget
-              teams={teams}
-              tickets={tickets}
-              t={t}
-            />
-          </Grid>
-        </Grid>
+        {renderContent()}
       </Box>
     </Container>
   )

@@ -3,7 +3,8 @@ import PropTypes from 'prop-types'
 import {
   Box,
   Card,
-  CardMedia, CircularProgress,
+  CardMedia,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
@@ -22,17 +23,7 @@ import Button from '@mui/material/Button'
 import MenuItem from '@mui/material/MenuItem'
 import { CloudUpload as CloudUploadIcon } from '@mui/icons-material'
 
-const CreateEditItemModal = ({
-  open,
-  onClose,
-  onSave,
-  isEdit,
-  loading,
-  options,
-  errors,
-  texts,
-  initialData
-}) => {
+const CreateEditItemModal = ({ open, onClose, onSave, isEdit, loading, options, errors, texts, initialData }) => {
   const [inputValue, setInputValue] = useState('')
   const [selectedFile, setSelectedFile] = useState(null)
   const [imagePreview, setImagePreview] = useState(null)
@@ -128,12 +119,25 @@ const CreateEditItemModal = ({
                 sx={{ flex: 2 }}
                 error={!!errors?.imageUrl}
                 helperText={errors?.imageUrl ? errors.imageUrl : ''}
-                value={selectedFile ? selectedFile.name : initialData?.imageUrl || ''}
+                value={
+                  selectedFile
+                    ? selectedFile.name
+                    : !!initialData?.imageUrl
+                      ? `${initialData?.name?.replaceAll(' ', '').toLowerCase()}.${initialData?.imageUrl?.split('.').slice(-1)}` ||
+                        ''
+                      : ''
+                }
                 InputProps={{
                   readOnly: true,
                   endAdornment: (
                     <InputAdornment position='end'>
-                      <IconButton onClick={() => document.getElementById('file-input').click()} edge='end'>
+                      <IconButton
+                        onClick={e => {
+                          e.stopPropagation()
+                          document.getElementById('file-input').click()
+                        }}
+                        edge='end'
+                      >
                         <CloudUploadIcon />
                       </IconButton>
                     </InputAdornment>

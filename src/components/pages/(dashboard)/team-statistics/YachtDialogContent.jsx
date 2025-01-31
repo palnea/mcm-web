@@ -1,41 +1,15 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
-  Avatar,
   Box,
-  Card,
-  CardContent,
-  Collapse,
-  Grid,
-  IconButton,
-  LinearProgress,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-  Chip,
-  Divider
+  TextField,
+  InputAdornment,
 } from '@mui/material'
-import {
-  AccessTime,
-  Assignment,
-  CheckCircle,
-  DirectionsBoat,
-  ErrorOutline,
-  KeyboardArrowDown,
-  KeyboardArrowUp
-} from '@mui/icons-material'
-import { Bar, BarChart, CartesianGrid, Cell, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
+import SearchIcon from '@mui/icons-material/Search'
 
 export const YachtsDialogContent = ({ yachts, tickets, t }) => {
   const [selectedYacht, setSelectedYacht] = useState(null)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [filteredYachts, setFilteredYachts] = useState(yachts)
 
   const getYachtStats = yachtId => {
     const yachtTickets = tickets.filter(t => t.yachtId === yachtId)
@@ -50,42 +24,72 @@ export const YachtsDialogContent = ({ yachts, tickets, t }) => {
     }
   }
 
+  useEffect(() => {
+    const searchableFields = ['name', 'hin', 'model', 'code', 'officialNumber', 'port', 'shipType']
+
+    const filtered = yachts.filter(yacht =>
+      searchableFields.some(field =>
+        yacht[field]?.toString().toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    )
+    setFilteredYachts(filtered)
+  }, [searchTerm, yachts])
+
   return (
-    <TableContainer component={Paper} elevation={3}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell />
-            <TableCell>{t('Yacht')}</TableCell>
-            <TableCell>{t('HIN')}</TableCell>
-            <TableCell>{t('Total Tickets')}</TableCell>
-            <TableCell>{t('Performance')}</TableCell>
-            <TableCell>{t('Status')}</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {yachts.map(yacht => {
-            const stats = getYachtStats(yacht.id)
-            return (
-              <YachtExpandableRow
-                key={yacht.id}
-                yacht={yacht}
-                stats={stats}
-                tickets={tickets}
-                isExpanded={selectedYacht === yacht.id}
-                onToggle={() => setSelectedYacht(selectedYacht === yacht.id ? null : yacht.id)}
-                t={t}
-              />
-            )
-          })}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Box>
+      <Box sx={{ p: 2 }}>
+        <TextField
+          fullWidth
+          variant="outlined"
+          placeholder={t('Search yachts...')}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+          sx={{ mb: 2 }}
+        />
+      </Box>
+      <TableContainer component={Paper} elevation={3}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell />
+              <TableCell>{t('Yacht')}</TableCell>
+              <TableCell>{t('HIN')}</TableCell>
+              <TableCell>{t('Total Tickets')}</TableCell>
+              <TableCell>{t('Performance')}</TableCell>
+              <TableCell>{t('Status')}</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredYachts.map(yacht => {
+              const stats = getYachtStats(yacht.id)
+              return (
+                <YachtExpandableRow
+                  key={yacht.id}
+                  yacht={yacht}
+                  stats={stats}
+                  tickets={tickets}
+                  onToggle={() => setSelectedYacht(selectedYacht === yacht.id ? null : yacht.id)}
+                  t={t}
+                />
+              )
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
   )
 }
 
 const YachtExpandableRow = ({ yacht, stats, tickets, isExpanded, onToggle, t }) => {
   const yachtTickets = tickets.filter(t => t.yachtId === yacht.id)
+  isExpanded = true;
 
   const getTicketPriorityStats = () => {
     return yachtTickets.reduce((acc, ticket) => {
@@ -101,14 +105,14 @@ const YachtExpandableRow = ({ yacht, stats, tickets, isExpanded, onToggle, t }) 
       <TableRow
         sx={{
           '& > *': { borderBottom: 'unset' },
-          '&:hover': { backgroundColor: 'action.hover' }
+          // '&:hover': { backgroundColor: 'action.hover' }
         }}
       >
-        <TableCell>
-          <IconButton size='small' onClick={onToggle}>
-            {isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
-          </IconButton>
-        </TableCell>
+        {/*<TableCell>*/}
+        {/*  <IconButton size='small' onClick={onToggle}>*/}
+        {/*    {isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />}*/}
+        {/*  </IconButton>*/}
+        {/*</TableCell>*/}
         <TableCell>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>

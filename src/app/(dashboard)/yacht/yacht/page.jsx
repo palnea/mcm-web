@@ -136,6 +136,7 @@ export default function Page() {
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [openNotesModal, setOpenNotesModal] = useState(false)
   const [id, setId] = useState('')
+  const [selectedYacht, setSelectedYacht] = useState('')
   const [openQR, setOpenQR] = useState(false)
 
   const [nameDel, setNameDel] = useState('')
@@ -228,6 +229,18 @@ export default function Page() {
 
   const columns = [
     { id: 'id', label: 'id' },
+    {
+      id: 'imageUrl',
+      label: 'Image',
+      render: row =>
+        row.imageUrl ? (
+          <img
+            src={process.env.NEXT_PUBLIC_CONTENT_BASE_URL + '/' + row.imageUrl}
+            alt={row.name}
+            style={{ height: '50px', width: 'auto' }}
+          />
+        ) : null
+    },
     { id: 'name', label: 'name' },
     {
       id: 'yachtBrand',
@@ -249,7 +262,6 @@ export default function Page() {
     { id: 'grossTonnage', label: 'grossTonnage' },
     { id: 'netTonnage', label: 'netTonnage' },
     { id: 'yearOfBuild', label: 'yearOfBuild' },
-
     {
       id: 'expiryDate',
       label: 'expiryDate',
@@ -290,7 +302,7 @@ export default function Page() {
           <IconButton size='small' color={'secondary'} onClick={() => handleNote(row.id)}>
             <i className='tabler-notes' />
           </IconButton>
-          <IconButton size='small' style={{color: '#585a63'}} onClick={() => handleQROpen(row.id)}>
+          <IconButton size='small' style={{ color: '#585a63' }} onClick={() => handleQROpen(row.id)}>
             <i className='tabler-qrcode' />
           </IconButton>
         </>
@@ -340,6 +352,7 @@ export default function Page() {
 
   const handleQROpen = id => {
     setOpenQR(true)
+    setSelectedYacht(rows.filter(row => row.id === id)[0])
     setId(id)
   }
 
@@ -836,13 +849,23 @@ export default function Page() {
                               sx={{ flex: 2 }}
                               error={!!errors?.imageUrl}
                               helperText={errors?.imageUrl ? errors.imageUrl : ''}
-                              value={selectedFile ? selectedFile.name : params.imageUrl || ''}
+                              value={
+                                selectedFile
+                                  ? selectedFile.name
+                                  : !!params?.imageUrl
+                                    ? `${params?.name?.replaceAll(' ', '').toLowerCase()}.${params?.imageUrl?.split('.').slice(-1)}` ||
+                                      ''
+                                    : ''
+                              }
                               InputProps={{
                                 readOnly: true,
                                 endAdornment: (
                                   <InputAdornment position='end'>
                                     <IconButton
-                                      onClick={() => document.getElementById('file-input').click()}
+                                      onClick={e => {
+                                        e.stopPropagation()
+                                        document.getElementById('file-input').click()
+                                      }}
                                       edge='end'
                                     >
                                       <CloudUploadIcon />
@@ -958,7 +981,14 @@ export default function Page() {
           </DialogActions>
         </form>
       </Dialog>
-      <YachtQRDialog open={openQR} yachtId={id} t={t} onClose={handleQRClose} />
+      <YachtQRDialog
+        open={openQR}
+        yachtId={id}
+        yachtName={selectedYacht?.name}
+        yachtHIN={selectedYacht?.hin}
+        t={t}
+        onClose={handleQRClose}
+      />
       <Grid container spacing={6}>
         <Grid item xs={12} sm={6} md={6} lg={6}>
           <Typography variant='h4'>{t('yachtOps')}</Typography>

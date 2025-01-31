@@ -1,33 +1,11 @@
 import { useEffect, useMemo, useState } from 'react'
-import {
-  Badge,
-  Box,
-  Card,
-  CardContent,
-  CardHeader,
-  Dialog,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  Grid,
-  MenuItem,
-  Paper,
-  Select,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography
-} from '@mui/material'
+import { Box, Card, CardContent, CardHeader, FormControl, Grid, MenuItem, Select, Typography } from '@mui/material'
 import { Cell, Pie, PieChart } from 'recharts'
 
 const SupportTrackerWidget = ({ tickets, timeFilter, onTimeFilterChange, t }) => {
   const [openTickets, setOpenTickets] = useState(0)
   const [newTickets, setNewTickets] = useState(0)
   const [closedTickets, setClosedTickets] = useState(0)
-  const [dialogOpen, setDialogOpen] = useState(false)
 
   const fillData = () => {
     const startDate = new Date()
@@ -44,8 +22,7 @@ const SupportTrackerWidget = ({ tickets, timeFilter, onTimeFilterChange, t }) =>
       setOpenTickets(filteredTickets.filter(t => !t.closeTime).length)
       setNewTickets(filteredTickets.filter(t => new Date(t.createdDate) >= startDate).length)
       setClosedTickets(filteredTickets.filter(t => t.closeTime && new Date(t.closeTime) >= startDate).length)
-    }
-    else {
+    } else {
       setOpenTickets(filteredTickets.filter(t => !t.closeTime).length)
       setNewTickets(filteredTickets.length)
       setClosedTickets(filteredTickets.filter(t => t.closeTime).length)
@@ -69,7 +46,7 @@ const SupportTrackerWidget = ({ tickets, timeFilter, onTimeFilterChange, t }) =>
 
   return (
     <>
-      <Card sx={{ height: '100%', cursor: 'pointer' }} onClick={() => setDialogOpen(true)}>
+      <Card sx={{ height: '100%', cursor: 'pointer' }}>
         <CardHeader
           title={t('Support Tracker')}
           action={
@@ -78,6 +55,7 @@ const SupportTrackerWidget = ({ tickets, timeFilter, onTimeFilterChange, t }) =>
                 value={timeFilter}
                 onChange={e => onTimeFilterChange(e.target.value)}
                 onClick={e => e.stopPropagation()}
+                variant={'standard'}
               >
                 <MenuItem value='week'>{t('Last Week')}</MenuItem>
                 <MenuItem value='month'>{t('Last Month')}</MenuItem>
@@ -137,38 +115,6 @@ const SupportTrackerWidget = ({ tickets, timeFilter, onTimeFilterChange, t }) =>
           </Grid>
         </CardContent>
       </Card>
-
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth='md' fullWidth>
-        <DialogTitle>{t('Support Tracker Details')}</DialogTitle>
-        <DialogContent>
-          <TableContainer component={Paper}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell>{t('Ticket ID')}</TableCell>
-                  <TableCell>{t('Created Date')}</TableCell>
-                  <TableCell>{t('Status')}</TableCell>
-                  <TableCell>{t('Assigned To')}</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {tickets.map(ticket => (
-                  <TableRow key={ticket.id}>
-                    <TableCell>{ticket.id}</TableCell>
-                    <TableCell>{new Date(ticket.createdDate).toLocaleDateString()}</TableCell>
-                    <TableCell>
-                      <Badge color={ticket.closeTime ? 'success' : 'warning'} variant='dot'>
-                        {ticket.closeTime ? t('Closed') : t('Open')}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>{ticket.assignedToUserId}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        </DialogContent>
-      </Dialog>
     </>
   )
 }

@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import {
   Avatar,
   Badge,
@@ -6,7 +5,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  Dialog, DialogContent, DialogTitle,
   IconButton,
   Table,
   TableBody,
@@ -18,14 +16,11 @@ import {
 } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
 import PeopleIcon from '@mui/icons-material/People'
-import TeamsDialogContent from '@components/pages/(dashboard)/team-statistics/TeamDialogContent'
 
-const TeamListWidget = ({ teams, tickets, t }) => {
-  const [dialogOpen, setDialogOpen] = useState(false)
-
+const TeamListWidget = ({ teams, t }) => {
   return (
     <>
-      <Card sx={{ height: '100%', cursor: 'pointer' }} onClick={() => setDialogOpen(true)}>
+      <Card sx={{ height: '100%', cursor: 'pointer' }}>
         <CardHeader
           title={t('Team List')}
           action={
@@ -68,13 +63,6 @@ const TeamListWidget = ({ teams, tickets, t }) => {
           </TableContainer>
         </CardContent>
       </Card>
-
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth='md' fullWidth>
-        <DialogTitle>{t('Team Details')}</DialogTitle>
-        <DialogContent>
-          <TeamsDialogContent teams={teams} tickets={tickets} t={t}/>
-        </DialogContent>
-      </Dialog>
     </>
   )
 }

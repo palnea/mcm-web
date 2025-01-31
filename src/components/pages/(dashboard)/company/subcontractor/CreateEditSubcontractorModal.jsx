@@ -21,17 +21,17 @@ import { CloudUpload as CloudUploadIcon } from '@mui/icons-material'
 import api from '../../../../../api_helper/api'
 
 const CreateEditSubcontractorModal = ({
-                                        open,
-                                        isEdit,
-                                        onClose,
-                                        onSave,
-                                        initialData,
-                                        errors,
-                                        loading,
-                                        translations,
-                                        companies,
-                                        defaultInputValue
-                                      }) => {
+  open,
+  isEdit,
+  onClose,
+  onSave,
+  initialData,
+  errors,
+  loading,
+  translations,
+  companies,
+  defaultInputValue
+}) => {
   const [inputValue, setInputValue] = useState(defaultInputValue || '')
   const [selectedFile, setSelectedFile] = useState(null)
   const [imagePreview, setImagePreview] = useState(null)
@@ -49,7 +49,7 @@ const CreateEditSubcontractorModal = ({
     }
   }, [isEdit, initialData])
 
-  const fetchSubcontractorDetails = async (id) => {
+  const fetchSubcontractorDetails = async id => {
     try {
       const response = await api.get(`/SubContractors/GetWithDetails/${id}`)
       const subcontractorDetails = response.data.data
@@ -68,13 +68,9 @@ const CreateEditSubcontractorModal = ({
   const handleCompanyChange = async (event, newValue) => {
     if (isEdit) {
       // Handle edit mode - need to make API calls for each change
-      const added = newValue.filter(company =>
-        !originalCompanies.find(orig => orig.id === company.id)
-      )
+      const added = newValue.filter(company => !originalCompanies.find(orig => orig.id === company.id))
 
-      const removed = originalCompanies.filter(company =>
-        !newValue.find(newComp => newComp.id === company.id)
-      )
+      const removed = originalCompanies.filter(company => !newValue.find(newComp => newComp.id === company.id))
 
       let hasError = false
       // Handle additions
@@ -107,8 +103,7 @@ const CreateEditSubcontractorModal = ({
 
       if (hasError) {
         await fetchSubcontractorDetails(initialData.id)
-      }
-      else {
+      } else {
         setOriginalCompanies(newValue)
       }
     }
@@ -174,28 +169,22 @@ const CreateEditSubcontractorModal = ({
 
               <Autocomplete
                 multiple
-                id="companies-select"
+                id='companies-select'
                 options={companies}
-                getOptionLabel={(option) => option.name}
+                getOptionLabel={option => option.name}
                 value={selectedCompanies}
                 onChange={handleCompanyChange}
-                renderInput={(params) => (
+                renderInput={params => (
                   <TextField
                     {...params}
                     label={translations.companiesLabel}
                     error={!!errors?.companies}
                     helperText={errors?.companies ? errors.companies : ''}
-                    margin="dense"
+                    margin='dense'
                   />
                 )}
                 renderTags={(value, getTagProps) =>
-                  value.map((option, index) => (
-                    <Chip
-                      label={option.name}
-                      {...getTagProps({ index })}
-                      key={option.id}
-                    />
-                  ))
+                  value.map((option, index) => <Chip label={option.name} {...getTagProps({ index })} key={option.id} />)
                 }
                 sx={{ flex: 2 }}
               />
@@ -215,12 +204,25 @@ const CreateEditSubcontractorModal = ({
                 fullWidth
                 error={!!errors?.imageUrl}
                 helperText={errors?.imageUrl ? errors.imageUrl : ''}
-                value={selectedFile ? selectedFile.name : initialData?.imageUrl || ''}
+                value={
+                  selectedFile
+                    ? selectedFile.name
+                    : !!initialData?.imageUrl
+                      ? `${initialData?.name?.replaceAll(' ', '').toLowerCase()}.${initialData?.imageUrl?.split('.').slice(-1)}` ||
+                        ''
+                      : ''
+                }
                 InputProps={{
                   readOnly: true,
                   endAdornment: (
                     <InputAdornment position='end'>
-                      <IconButton onClick={() => document.getElementById('file-input').click()} edge='end'>
+                      <IconButton
+                        onClick={e => {
+                          e.stopPropagation()
+                          document.getElementById('file-input').click()
+                        }}
+                        edge='end'
+                      >
                         <CloudUploadIcon />
                       </IconButton>
                     </InputAdornment>
@@ -256,12 +258,7 @@ const CreateEditSubcontractorModal = ({
           <Button onClick={handleCloseAndReset} color='secondary'>
             {translations.cancelText}
           </Button>
-          <Button
-            type='submit'
-            color='primary'
-            variant='contained'
-            disabled={!inputValue || loading}
-          >
+          <Button type='submit' color='primary' variant='contained' disabled={!inputValue || loading}>
             {loading ? <CircularProgress size={24} /> : isEdit ? translations.editText : translations.createText}
           </Button>
         </DialogActions>
@@ -280,10 +277,12 @@ CreateEditSubcontractorModal.propTypes = {
     id: PropTypes.number,
     name: PropTypes.string,
     imageUrl: PropTypes.string,
-    companies: PropTypes.arrayOf(PropTypes.shape({
-      id: PropTypes.number,
-      name: PropTypes.string
-    }))
+    companies: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number,
+        name: PropTypes.string
+      })
+    )
   }),
   errors: PropTypes.shape({
     name: PropTypes.string,
@@ -291,10 +290,12 @@ CreateEditSubcontractorModal.propTypes = {
     companies: PropTypes.string
   }),
   loading: PropTypes.bool,
-  companies: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.number,
-    name: PropTypes.string
-  })).isRequired,
+  companies: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number,
+      name: PropTypes.string
+    })
+  ).isRequired,
   translations: PropTypes.shape({
     editTitle: PropTypes.string.isRequired,
     createTitle: PropTypes.string.isRequired,

@@ -16,43 +16,64 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  Typography
+  Typography,
+  TextField
 } from '@mui/material'
-import { AccessTime, CheckCircle, Group, KeyboardArrowDown, KeyboardArrowUp } from '@mui/icons-material'
+import { AccessTime, CheckCircle, Group, KeyboardArrowDown, KeyboardArrowUp, Search } from '@mui/icons-material'
 import { toast } from 'react-toastify'
 import api from '../../../../api_helper/api'
 
 export const TeamsDialogContent = ({ teams, tickets, t }) => {
   const [selectedTeam, setSelectedTeam] = useState(null)
+  const [searchTerm, setSearchTerm] = useState('')
+
+  const filteredTeams = teams.filter(team =>
+    team.name.toLowerCase().includes(searchTerm.toLowerCase())
+  )
 
   return (
-    <TableContainer component={Paper} elevation={3}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell />
-            <TableCell>{t('Team')}</TableCell>
-            <TableCell>{t('Members')}</TableCell>
-            <TableCell>{t('Performance')}</TableCell>
-            <TableCell>{t('Status')}</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {teams.map(team => {
-            return (
-              <TeamExpandableRow
-                key={team.id}
-                team={team}
-                tickets={tickets}
-                isExpanded={selectedTeam === team.id}
-                onToggle={() => setSelectedTeam(selectedTeam === team.id ? null : team.id)}
-                t={t}
-              />
-            )
-          })}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Box>
+      <Box sx={{ mb: 2, display: 'flex', alignItems: 'center' }}>
+        <TextField
+          fullWidth
+          variant="outlined"
+          placeholder={t('Search teams...')}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          InputProps={{
+            startAdornment: <Search sx={{ color: 'text.secondary', mr: 1 }} />
+          }}
+          size="small"
+        />
+      </Box>
+      <TableContainer component={Paper} elevation={3}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell />
+              <TableCell>{t('Team')}</TableCell>
+              <TableCell>{t('Members')}</TableCell>
+              <TableCell>{t('Performance')}</TableCell>
+              <TableCell>{t('Status')}</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filteredTeams.map(team => {
+              return (
+                <TeamExpandableRow
+                  key={team.id}
+                  team={team}
+                  tickets={tickets}
+                  isExpanded={selectedTeam === team.id}
+                  onToggle={() => setSelectedTeam(selectedTeam === team.id ? null : team.id)}
+                  t={t}
+                />
+              )
+            })}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    </Box>
   )
 }
 
@@ -62,8 +83,23 @@ const TeamExpandableRow = ({ team, tickets, isExpanded, onToggle, t }) => {
     total: 0,
     closed: 0,
     members: 0,
-    completionRate: 0
+    completionRate: 0,
+    averageCloseTime: 0
   })
+  isExpanded = true;
+
+  const calculateAverageCloseTime = (tickets) => {
+    const closedTickets = tickets.filter(t => t.closeTime && t.assignTime);
+    if (closedTickets.length === 0) return 0;
+
+    const totalTime = closedTickets.reduce((sum, ticket) => {
+      const closeTime = new Date(ticket.closeTime);
+      const assignTime = new Date(ticket.assignTime);
+      return sum + (closeTime - assignTime);
+    }, 0);
+
+    return totalTime / closedTickets.length / (1000 * 60 * 60); // Convert to hours
+  };
 
   const fillTeamStats = users => {
     const teamUserIds = users?.map(u => u.id) || []
@@ -71,12 +107,14 @@ const TeamExpandableRow = ({ team, tickets, isExpanded, onToggle, t }) => {
       t => teamUserIds.includes(t.assignedToUserId) || teamUserIds.includes(t.createdBy)
     )
     const closedTickets = teamTickets.filter(t => t.closeTime)
+    const avgCloseTime = calculateAverageCloseTime(teamTickets)
 
     setTeamStats({
       total: teamTickets.length,
       closed: closedTickets.length,
       members: users?.length || 0,
-      completionRate: teamTickets.length ? (closedTickets.length / teamTickets.length) * 100 : 0
+      completionRate: teamTickets.length ? (closedTickets.length / teamTickets.length) * 100 : 0,
+      averageCloseTime: avgCloseTime
     })
   }
 
@@ -112,14 +150,14 @@ const TeamExpandableRow = ({ team, tickets, isExpanded, onToggle, t }) => {
       <TableRow
         sx={{
           '& > *': { borderBottom: 'unset' },
-          '&:hover': { backgroundColor: 'action.hover' }
+          // '&:hover': { backgroundColor: 'action.hover' }
         }}
       >
-        <TableCell>
-          <IconButton size='small' onClick={onToggle}>
-            {isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
-          </IconButton>
-        </TableCell>
+        {/*<TableCell>*/}
+        {/*  <IconButton size='small' onClick={onToggle}>*/}
+        {/*    {isExpanded ? <KeyboardArrowUp /> : <KeyboardArrowDown />}*/}
+        {/*  </IconButton>*/}
+        {/*</TableCell>*/}
         <TableCell>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Avatar sx={{ mr: 2, bgcolor: 'secondary.main' }}>
@@ -152,12 +190,17 @@ const TeamExpandableRow = ({ team, tickets, isExpanded, onToggle, t }) => {
           </Box>
         </TableCell>
         <TableCell>
-          <Chip
-            icon={teamStats.completionRate > 50 ? <CheckCircle /> : <AccessTime />}
-            label={teamStats.completionRate > 50 ? t('High Performing') : t('Progressing')}
-            color={teamStats.completionRate > 50 ? 'success' : 'warning'}
-            size='small'
-          />
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <Chip
+              icon={teamStats.completionRate > 50 ? <CheckCircle /> : <AccessTime />}
+              label={teamStats.completionRate > 50 ? t('High Performing') : t('Progressing')}
+              color={teamStats.completionRate > 50 ? 'success' : 'warning'}
+              size='small'
+            />
+            <Typography variant='caption' color='text.secondary'>
+              {t('Avg. Close Time')}: {teamStats.averageCloseTime.toFixed(1)} {t('hours')}
+            </Typography>
+          </Box>
         </TableCell>
       </TableRow>
       <TableRow>
@@ -175,7 +218,7 @@ const TeamExpandableRow = ({ team, tickets, isExpanded, onToggle, t }) => {
                       {teamStats.total}
                     </Typography>
                     <Typography variant='body2' color="text.secondary">
-                      {teamStats.closed} {t('closed')}
+                      {teamStats.closed} {t('closed')} • {teamStats.averageCloseTime.toFixed(1)} {t('hrs avg')}
                     </Typography>
                   </CardContent>
                 </Card>
@@ -186,6 +229,7 @@ const TeamExpandableRow = ({ team, tickets, isExpanded, onToggle, t }) => {
                   const completionRate = userTickets.length
                     ? (userTickets.filter(t => t.closeTime).length / userTickets.length) * 100
                     : 0
+                  const avgCloseTime = calculateAverageCloseTime(userTickets)
 
                   return (
                     <Grid item xs={12} md={6} key={user.id}>
@@ -218,6 +262,9 @@ const TeamExpandableRow = ({ team, tickets, isExpanded, onToggle, t }) => {
                               {t('Closed')}: {userTickets.filter(t => t.closeTime).length}
                             </Typography>
                           </Box>
+                          <Typography variant='body2' color='text.secondary' sx={{ mt: 1 }}>
+                            {t('Avg. Close Time')}: {avgCloseTime.toFixed(1)} {t('hours')}
+                          </Typography>
                         </CardContent>
                       </Card>
                     </Grid>

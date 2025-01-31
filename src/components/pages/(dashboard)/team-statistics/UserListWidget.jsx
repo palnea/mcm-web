@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import {
   Avatar,
   Badge,
@@ -6,9 +5,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  Dialog,
-  DialogContent,
-  DialogTitle,
   IconButton,
   LinearProgress,
   Table,
@@ -20,12 +16,8 @@ import {
   Typography
 } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
-import UserDialogContent from '@components/pages/(dashboard)/team-statistics/UserDialogContent'
 
-const UserListWidget = ({ users, tickets, activeUsers, t }) => {
-  const [selectedUser, setSelectedUser] = useState(null)
-  const [dialogOpen, setDialogOpen] = useState(false)
-
+const UserListWidget = ({ tickets, activeUsers, t }) => {
   // Group tickets for users (get assigned and created tickets) assignedToUserId, createdByUser
   const userTickets = tickets.reduce((acc, ticket) => {
     if (!acc[ticket.assignedToUserId]) {
@@ -34,12 +26,12 @@ const UserListWidget = ({ users, tickets, activeUsers, t }) => {
     if (!acc[ticket.createdByUser]) {
       acc[ticket.createdByUser] = []
     }
-    acc[ticket.assignedToUserId].push(ticket);
+    acc[ticket.assignedToUserId].push(ticket)
     if (ticket.createdByUser?.id && ticket.assignedToUserId !== ticket.createdByUser?.id) {
-      acc[ticket.createdByUser?.id].push(ticket);
+      acc[ticket.createdByUser?.id].push(ticket)
     }
-    return acc;
-  }, {});
+    return acc
+  }, {})
 
   // Fill active users data
   activeUsers = activeUsers.map(user => {
@@ -53,7 +45,7 @@ const UserListWidget = ({ users, tickets, activeUsers, t }) => {
 
   return (
     <>
-      <Card sx={{ height: '100%', cursor: 'pointer' }} onClick={() => setDialogOpen(true)}>
+      <Card sx={{ height: '100%', cursor: 'pointer' }}>
         <CardHeader
           title={t('Active Users')}
           action={
@@ -80,7 +72,9 @@ const UserListWidget = ({ users, tickets, activeUsers, t }) => {
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                           <Avatar sx={{ mr: 2 }}>{user.name?.[0] || 'U'}</Avatar>
-                          <Typography>{user.name || user.username || t('User {userId}', { userId: user.id })}</Typography>
+                          <Typography>
+                            {user.name || user.username || t('User {userId}', { userId: user.id })}
+                          </Typography>
                         </Box>
                       </TableCell>
                       <TableCell>
@@ -104,19 +98,6 @@ const UserListWidget = ({ users, tickets, activeUsers, t }) => {
           </TableContainer>
         </CardContent>
       </Card>
-
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth='md' fullWidth>
-        <DialogTitle>{t('User Details')}</DialogTitle>
-        <DialogContent>
-          <UserDialogContent
-            users={users}
-            userTickets={userTickets}
-            selectedUser={selectedUser}
-            setSelectedUser={setSelectedUser}
-            t={t}
-          />
-        </DialogContent>
-      </Dialog>
     </>
   )
 }

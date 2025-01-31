@@ -1,13 +1,9 @@
-import { useState } from 'react'
 import {
   Badge,
   Box,
   Card,
   CardContent,
   CardHeader,
-  Dialog,
-  DialogContent,
-  DialogTitle,
   IconButton,
   LinearProgress,
   Table,
@@ -19,11 +15,8 @@ import {
   Typography
 } from '@mui/material'
 import MoreVertIcon from '@mui/icons-material/MoreVert'
-import YachtsDialogContent from '@components/pages/(dashboard)/team-statistics/YachtDialogContent'
 
 const YachtListWidget = ({ yachts, tickets, t }) => {
-  const [dialogOpen, setDialogOpen] = useState(false)
-
   // Group tickets for yachts
   const yachtTickets = tickets.reduce((acc, ticket) => {
     if (!acc[ticket.yachtId]) {
@@ -41,7 +34,7 @@ const YachtListWidget = ({ yachts, tickets, t }) => {
 
   return (
     <>
-      <Card sx={{ height: '100%', cursor: 'pointer' }} onClick={() => setDialogOpen(true)}>
+      <Card sx={{ height: '100%', cursor: 'pointer' }}>
         <CardHeader
           title={t('Yacht List')}
           action={
@@ -73,9 +66,7 @@ const YachtListWidget = ({ yachts, tickets, t }) => {
                         </Box>
                       </TableCell>
                       <TableCell>{yacht.hin || t('N/A')}</TableCell>
-                      <TableCell>
-                        {yachtTickets[yacht.id]?.length || 0}
-                      </TableCell>
+                      <TableCell>{yachtTickets[yacht.id]?.length || 0}</TableCell>
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center' }}>
                           <Box sx={{ width: '100%', mr: 1 }}>
@@ -97,13 +88,6 @@ const YachtListWidget = ({ yachts, tickets, t }) => {
           </TableContainer>
         </CardContent>
       </Card>
-
-      <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth='md' fullWidth>
-        <DialogTitle>{t('Yacht Details')}</DialogTitle>
-        <DialogContent>
-          <YachtsDialogContent yachts={yachts} tickets={tickets} t={t} />
-        </DialogContent>
-      </Dialog>
     </>
   )
 }

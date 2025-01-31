@@ -64,8 +64,8 @@ const Logo = ({ color }) => {
       <Image
         src="/images/logo/marine.png"
         alt={""}
-        width={45}
-        height={20}
+        width={80}
+        height={80}
         priority
       />
       <LogoText
