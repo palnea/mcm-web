@@ -1,21 +1,19 @@
-import React, { useState, useMemo } from 'react'
-import {
-  Box,
-  Card,
-  CardContent,
-  FormControl,
-  Grid,
-  MenuItem,
-  Select,
-  TextField,
-  Typography
-} from '@mui/material'
+import React, { useMemo, useState } from 'react'
+import { Box, Card, CardContent, FormControl, Grid, MenuItem, Select, TextField, Typography } from '@mui/material'
+import { ArrowBack } from '@mui/icons-material'
 import CustomTable from '../../../../components/Table/CustomTable'
+import IconButton from '@mui/material/IconButton'
+import { useRouter } from 'next/navigation'
 
 const SupportTrackerDialogContent = ({ tickets, t }) => {
   const [timeFilter, setTimeFilter] = useState('all')
-  const [startDate, setStartDate] = useState(!!tickets && tickets.length > 0 ? tickets.slice(-1)[0].createdDate?.toISOString().split('T')[0] : '')
-  const [endDate, setEndDate] = useState(!!tickets && tickets.length > 0 ? tickets[0].createdDate?.toISOString().split('T')[0] : '')
+  const [startDate, setStartDate] = useState(
+    !!tickets && tickets.length > 0 ? tickets.slice(-1)[0].createdDate?.toISOString().split('T')[0] : ''
+  )
+  const [endDate, setEndDate] = useState(
+    !!tickets && tickets.length > 0 ? tickets[0].createdDate?.toISOString().split('T')[0] : ''
+  )
+  const router = useRouter()
 
   const filteredTickets = useMemo(() => {
     let result = tickets
@@ -50,7 +48,7 @@ const SupportTrackerDialogContent = ({ tickets, t }) => {
     {
       id: 'status',
       label: t('Status'),
-      render: row => row.closeTime ? t('Closed') : t('Open')
+      render: row => (row.closeTime ? t('Closed') : t('Open'))
     },
     {
       id: 'assignedTo',
@@ -67,8 +65,8 @@ const SupportTrackerDialogContent = ({ tickets, t }) => {
     }
   }, [filteredTickets])
 
-  const onPeriodChange = (event) => {
-    const newTimeFilter = event.target.value;
+  const onPeriodChange = event => {
+    const newTimeFilter = event.target.value
     setTimeFilter(event.target.value)
     const now = new Date()
     if (newTimeFilter === 'week') {
@@ -87,50 +85,55 @@ const SupportTrackerDialogContent = ({ tickets, t }) => {
 
   return (
     <>
+      <IconButton onClick={() => router.back()} sx={{ mr: 2 }}>
+        <ArrowBack />
+      </IconButton>
       <Card sx={{ mb: 3 }}>
         <CardContent>
-          <Grid container spacing={6} alignItems="center">
+          <Grid container spacing={6} alignItems='center'>
             <Grid item xs={12} sm={4}>
               <Box sx={{ display: 'flex', gap: 4 }}>
-                <Typography variant="h6">{t('Total Tickets')}: {statusSummary.total}</Typography>
-                <Typography variant="h6">{t('Open')}: {statusSummary.open}</Typography>
-                <Typography variant="h6">{t('Closed')}: {statusSummary.closed}</Typography>
+                <Typography variant='h6'>
+                  {t('Total Tickets')}: {statusSummary.total}
+                </Typography>
+                <Typography variant='h6'>
+                  {t('Open')}: {statusSummary.open}
+                </Typography>
+                <Typography variant='h6'>
+                  {t('Closed')}: {statusSummary.closed}
+                </Typography>
               </Box>
             </Grid>
             <Grid item xs={12} sm={3}>
-              <FormControl fullWidth variant="standard">
-                <Select
-                  value={timeFilter}
-                  onChange={onPeriodChange}
-                  variant={'standard'}
-                >
-                  <MenuItem value="week">{t('Last Week')}</MenuItem>
-                  <MenuItem value="month">{t('Last Month')}</MenuItem>
-                  <MenuItem value="all">{t('All Time')}</MenuItem>
+              <FormControl fullWidth variant='standard'>
+                <Select value={timeFilter} onChange={onPeriodChange} variant={'standard'}>
+                  <MenuItem value='week'>{t('Last Week')}</MenuItem>
+                  <MenuItem value='month'>{t('Last Month')}</MenuItem>
+                  <MenuItem value='all'>{t('All Time')}</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
             <Grid item xs={12} sm={2}>
               <TextField
                 label={t('Start Date')}
-                type="date"
+                type='date'
                 value={startDate}
-                onChange={(e) => setStartDate(e.target.value)}
+                onChange={e => setStartDate(e.target.value)}
                 InputLabelProps={{ shrink: true }}
                 fullWidth
-                variant="standard"
+                variant='standard'
                 inputProps={{ max: endDate || undefined }}
               />
             </Grid>
             <Grid item xs={12} sm={2}>
               <TextField
                 label={t('End Date')}
-                type="date"
+                type='date'
                 value={endDate}
-                onChange={(e) => setEndDate(e.target.value)}
+                onChange={e => setEndDate(e.target.value)}
                 InputLabelProps={{ shrink: true }}
                 fullWidth
-                variant="standard"
+                variant='standard'
                 inputProps={{ min: startDate || undefined }}
               />
             </Grid>
@@ -138,10 +141,7 @@ const SupportTrackerDialogContent = ({ tickets, t }) => {
         </CardContent>
       </Card>
 
-      <CustomTable
-        rows={filteredTickets}
-        columns={columns}
-      />
+      <CustomTable rows={filteredTickets} columns={columns} />
     </>
   )
 }
