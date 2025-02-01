@@ -46,30 +46,18 @@ export default function Page() {
     accessorySubCategoryId: '',
   });
 
-
-  const [params, setParams] = useState({
+  const  defaultParams = {
     "name": "",
     "companyId": null,
     "yachtBrandId": null,
     "accessoryCategoryId": null,
     "accessorySubCategoryId": null,
     "description": "",
-  });
+  }
+  const [params, setParams] = useState(defaultParams);
 
   const clearParams = () => {
-    let clearValues = {
-      "name": "",
-      "companyId": null,
-      "yachtBrandId": null,
-      "accessoryCategoryId": null,
-      "accessorySubCategoryId": null,
-      "description": "",
-    }
-    setParams(param => ({
-      ...param,
-      ...clearValues
-    }))
-
+    setParams(defaultParams);
     let clearValues2 = {
       name: '',
       companyId: '',
@@ -223,7 +211,7 @@ export default function Page() {
   const handleEdit = (row) => {
     setIsEdit(true);
     setParams(row);
-    removeKeysWithFilter([ "createdDate",  "updatedDate"]);  // Pass an array of keys to remove
+    removeKeysWithFilter([ "createdDate",  "updatedDate", "ticketCount"]);  // Pass an array of keys to remove
     handleOpen();
   };
 

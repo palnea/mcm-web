@@ -347,7 +347,8 @@ export default function Page() {
       'salesStatus',
       'yachtNotes',
       'createdDate',
-      'updatedDate'
+      'updatedDate',
+      'ticketCount'
     ]) // Pass an array of keys to remove
     handleOpen(row.id)
   }
