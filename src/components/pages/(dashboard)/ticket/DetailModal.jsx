@@ -71,14 +71,14 @@ const DetailModal = ({ ticket, open, onClose }) => {
                 value={
                   <Box sx={{ display: 'flex', gap: 2 }}>
                     <Chip
-                      label={t("Operator OK")}
-                      color={ticket.operatorOk ? 'success' : 'default'}
-                      variant={ticket.operatorOk ? 'filled' : 'outlined'}
-                    />
-                    <Chip
                       label={t("Technic OK")}
                       color={ticket.technicOk ? 'success' : 'default'}
                       variant={ticket.technicOk ? 'filled' : 'outlined'}
+                    />
+                    <Chip
+                      label={t("Operator OK")}
+                      color={ticket.operatorOk ? 'success' : 'default'}
+                      variant={ticket.operatorOk ? 'filled' : 'outlined'}
                     />
                     <Chip
                       label={t("Quality OK")}

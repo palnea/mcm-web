@@ -321,9 +321,9 @@
   "Assign Time": "Assign Time",
   "Close Description": "Close Description",
   "Status Checks": "Status Checks",
-  "Operator OK": "Operator OK",
-  "Technic OK": "Technic OK",
-  "Quality OK": "Quality OK",
+  "Operator OK": "Captain",
+  "Technic OK": "Regional Manager",
+  "Quality OK": "Boat Owner",
   "Close": "Close",
   "Low": "Low",
   "district": "District",
@@ -342,5 +342,10 @@
   "auditlogs": "Audit Logs",
   "See Details": "See Details",
   "Start Date": "Start Date",
-  "End Date": "End Date"
+  "End Date": "End Date",
+  "isBrandNew": "Is Brand New",
+  "isInSale": "Is In Sale",
+  "True": "Yes",
+  "False": "No",
+  "ticketCount": "Ticket Count"
 }

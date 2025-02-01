@@ -123,6 +123,7 @@ const SupportTrackerDialogContent = ({ tickets, t }) => {
                 fullWidth
                 variant='standard'
                 inputProps={{ max: endDate || undefined }}
+                sx={{ minWidth: '120px' }}
               />
             </Grid>
             <Grid item xs={12} sm={2}>
@@ -135,6 +136,7 @@ const SupportTrackerDialogContent = ({ tickets, t }) => {
                 fullWidth
                 variant='standard'
                 inputProps={{ min: startDate || undefined }}
+                sx={{ minWidth: '120px', mx: '20px' }}
               />
             </Grid>
           </Grid>
