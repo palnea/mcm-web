@@ -72,8 +72,11 @@ export default function Page() {
     officialNumber: '',
     userId: null,
     groupId: null,
+    companyId: null,
     yachtBrandId: null,
     yachtModelId: null,
+    isBrandNew: false,
+    isInSale: false,
     shipType: '',
     expiryDate: '',
     imoNumber: '',
@@ -97,8 +100,11 @@ export default function Page() {
       officialNumber: '',
       userId: null,
       groupId: null,
+      companyId: null,
       yachtBrandId: null,
       yachtModelId: null,
+      isBrandNew: false,
+      isInSale: false,
       expiryDate: '',
       imoNumber: '',
       radioCallSign: '',
@@ -148,6 +154,7 @@ export default function Page() {
   const [optionsGroups, setOptionsGroups] = useState([]) // Options for the Select component
   const [activeTab, setActiveTab] = useState(0) // 0 for yacht fields tab, 1 for notes tab
   const [notes, setNotes] = useState([])
+  const [companies, setCompanies] = useState([])
 
   const fetchData = async (id, name) => {
     try {
@@ -219,16 +226,27 @@ export default function Page() {
     }
   }
 
+  const fetchCompanies = async () => {
+    try {
+      const response = await api.get('/Companies')
+      const companiesData = response.data.data
+      setCompanies(companiesData)
+    } catch (err) {
+      console.error('Error fetching companies:', err)
+      toast.error(t('Error fetching companies'))
+    }
+  }
+
   useEffect(() => {
     fetchData()
     fetchSelectBrand()
-    // fetchSelectModel();
     fetchSelectUser()
     fetchSelectGroups()
+    fetchCompanies() // Add this line to fetch companies
   }, [])
 
   const columns = [
-    { id: 'id', label: 'id' },
+    // { id: 'id', label: 'id' },
     {
       id: 'imageUrl',
       label: 'Image',
@@ -257,10 +275,10 @@ export default function Page() {
       }
     },
     { id: 'port', label: 'port' },
-    { id: 'depth', label: 'depth' },
-    { id: 'breadth', label: 'breadth' },
-    { id: 'grossTonnage', label: 'grossTonnage' },
-    { id: 'netTonnage', label: 'netTonnage' },
+    // { id: 'depth', label: 'depth' },
+    // { id: 'breadth', label: 'breadth' },
+    // { id: 'grossTonnage', label: 'grossTonnage' },
+    // { id: 'netTonnage', label: 'netTonnage' },
     { id: 'yearOfBuild', label: 'yearOfBuild' },
     {
       id: 'expiryDate',
@@ -555,7 +573,7 @@ export default function Page() {
     } else {
       setParams(prevParams => ({
         ...prevParams,
-        [key]: typeof prevParams[key] === 'string' ? value : Number(value)
+        [key]: ['string', 'boolean'].includes(typeof prevParams[key]) ? value : Number(value)
       }))
     }
   }
@@ -640,6 +658,11 @@ export default function Page() {
       setParams(prevParams => ({ ...prevParams, imageUrl: previewUrl }))
     }
   }
+
+  const booleanOptions = [
+    { label: t('True'), value: true },
+    { label: t('False'), value: false }
+  ];
 
   return (
     <>
@@ -876,6 +899,72 @@ export default function Page() {
                               onClick={() => document.getElementById('file-input').click()}
                             />
                           </Box>
+                        ) : key === 'isBrandNew' ? (
+                          <Grid item xs={12} sm={6} key={key}>
+                            <FormControl fullWidth variant='outlined' error={!!errors[key]}>
+                              <InputLabel>{t('isBrandNew')}</InputLabel>
+                              <Select
+                                key={key}
+                                fullWidth
+                                label={t('isBrandNew')}
+                                variant='outlined'
+                                value={params[key] === undefined || params[key] === null ? false : params[key]}
+                                onChange={e => handleInputChange(key, e.target.value)}
+                                displayEmpty
+                              >
+                                {booleanOptions.map(option => (
+                                  <MenuItem key={option.value.toString()} value={option.value}>
+                                    {option.label}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                              <FormHelperText>{t(errors[key])}</FormHelperText>
+                            </FormControl>
+                          </Grid>
+                        ) : key === 'isInSale' ? (
+                          <Grid item xs={12} sm={6} key={key}>
+                            <FormControl fullWidth variant='outlined' error={!!errors[key]}>
+                              <InputLabel>{t('isInSale')}</InputLabel>
+                              <Select
+                                key={key}
+                                fullWidth
+                                label={t('isInSale')}
+                                variant='outlined'
+                                value={params[key] === undefined || params[key] === null ? false : params[key]}
+                                onChange={e => handleInputChange(key, e.target.value)}
+                                displayEmpty
+                              >
+                                {booleanOptions.map(option => (
+                                  <MenuItem key={option.value.toString()} value={option.value}>
+                                    {option.label}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                              <FormHelperText>{t(errors[key])}</FormHelperText>
+                            </FormControl>
+                          </Grid>
+                        ) : key === 'companyId' ? (
+                          <Grid item xs={12} sm={6} key={key}>
+                            <FormControl fullWidth variant='outlined' error={!!errors[key]}>
+                              <InputLabel>{t('selectCompany')}</InputLabel>
+                              <Select
+                                key={key}
+                                fullWidth
+                                label={t('selectCompany')}
+                                variant='outlined'
+                                value={params[key] || ''}
+                                onChange={e => handleInputChange(key, e.target.value)}
+                                displayEmpty
+                              >
+                                {companies.map(company => (
+                                  <MenuItem key={company.id} value={company.id}>
+                                    {company.name}
+                                  </MenuItem>
+                                ))}
+                              </Select>
+                              <FormHelperText>{t(errors[key])}</FormHelperText>
+                            </FormControl>
+                          </Grid>
                         ) : (
                           key !== 'id' && (
                             <TextField

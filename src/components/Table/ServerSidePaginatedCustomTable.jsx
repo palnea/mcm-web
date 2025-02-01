@@ -57,7 +57,7 @@ const ServerSidePaginatedCustomTable = ({
         count={totalCount}
         page={page - 1} // Convert 1-based to 0-based for MUI
         rowsPerPage={pageSize}
-        rowsPerPageOptions={[5, 10, 25, 50]}
+        rowsPerPageOptions={[5, 10, 25, 50, 100]}
         onPageChange={handleChangePage}
         onRowsPerPageChange={handleChangeRowsPerPage}
       />

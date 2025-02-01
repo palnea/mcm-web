@@ -325,9 +325,9 @@
   "Assign Time": "Atanma Zamanı",
   "Close Description": "Kapanış Açıklaması",
   "Status Checks": "Durum Kontrolleri",
-  "Operator OK": "Operatör Onayı",
-  "Technic OK": "Teknik Onayı",
-  "Quality OK": "Kalite Onayı",
+  "Operator OK": "Kaptan",
+  "Technic OK": "Bölge Müdürü",
+  "Quality OK": "Yat Sahibi",
   "Close": "Kapat",
   "Low": "Düşük",
   "district": "Bölge",
@@ -346,5 +346,10 @@
   "auditlogs": "Denetim Kayıtları",
   "See Details":  "Detayları Gör",
   "Start Date": "Başlangıç Tarihi",
-  "End Date": "Bitiş Tarihi"
+  "End Date": "Bitiş Tarihi",
+  "isBrandNew": "Yeni Marka",
+  "isInSale": "Satışta",
+  "True": "Evet",
+  "False": "Hayır",
+  "ticketCount": "Talep Sayısı"
 }
