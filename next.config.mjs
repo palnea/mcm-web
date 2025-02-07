@@ -10,7 +10,6 @@ const nextConfig = {
     defaultLocale: 'en',
     localeDetection: true,
   },
-  // Add any other configurations you need
   async headers() {
     return [
       {
@@ -26,4 +25,4 @@ const nextConfig = {
   },
 }
 
-module.exports = nextConfig
+export default nextConfig
