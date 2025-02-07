@@ -1,39 +1,41 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server'
+
+const unprotectedRoutes = ['/login']
 
 export function middleware(request) {
-  // Get locale information
-  const locale = request.nextUrl.locale || 'en';
+  console.log('in middleware>>>')
+  const { nextUrl } = request
+  const pathname = nextUrl.pathname
 
-  // Handle RSC requests
-  if (request.nextUrl.searchParams.has('_rsc')) {
-    const response = NextResponse.next();
-
-    // Set proper headers for RSC
-    response.headers.set('RSC', '1');
-    response.headers.set('Accept-Language', locale);
-    response.headers.set('Content-Type', 'application/x-react-server-component');
-
-    // Remove any existing cache headers
-    response.headers.delete('Cache-Control');
-    response.headers.set('Cache-Control', 'no-store, must-revalidate');
-
-    return response;
+  if (pathname.startsWith('/images/') || /\.(png|jpg|jpeg|gif|webp|svg|ico)$/i.test(pathname)) {
+    return NextResponse.next()
   }
 
-  // For non-RSC requests
-  const response = NextResponse.next();
+  const token = request.cookies.get('authToken')
+  console.log('token: ', token)
+  const isAuthenticated = token && token.value && token.value.length > 0
+  console.log('isAuthenticated: ', isAuthenticated)
+  console.log('request url: ', request.url)
 
-  // Set security headers
-  response.headers.set('X-Content-Type-Options', 'nosniff');
-  response.headers.set('X-Frame-Options', 'DENY');
-  response.headers.set('X-XSS-Protection', '1; mode=block');
+  if (nextUrl.pathname === '/') {
+    return isAuthenticated
+      ? NextResponse.redirect(new URL('/dashboard', request.url))
+      : NextResponse.redirect(new URL('/login', request.url))
+  }
 
-  return response;
+  if (nextUrl.pathname === '/login' && isAuthenticated) {
+    return NextResponse.redirect(new URL('/dashboard', request.url))
+  }
+
+  if (!unprotectedRoutes.includes(nextUrl.pathname) && !isAuthenticated) {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  return NextResponse.next()
 }
 
 export const config = {
   matcher: [
-    // Include all paths except static files and api routes
     '/((?!api/|_next/static|_next/image|favicon.ico|images).*)',
   ],
 };
