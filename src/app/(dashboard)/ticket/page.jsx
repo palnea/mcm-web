@@ -30,6 +30,7 @@ import DetailModal, {
 } from '@components/pages/(dashboard)/ticket/DetailModal'
 import CustomTable from '@components/Table/CustomTable'
 import TicketFilters from '@components/pages/(dashboard)/ticket/TicketFilters'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 export default function Page() {
   const [open, setOpen] = useState(false)

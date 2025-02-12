@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Box, Button, Typography } from '@mui/material'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useTranslation } from 'next-i18next'
 
 const FilterButton = ({ text, count, isActive, onClick }) => (
@@ -21,17 +22,19 @@ const FilterButton = ({ text, count, isActive, onClick }) => (
       }
     }}
   >
-    <Typography variant='body2' color='textSecondary' mb={1}>
+    <Typography variant="body2" color="textSecondary" mb={1}>
       {text}
     </Typography>
-    <Typography variant='h6' color='primary'>
+    <Typography variant="h6" color="primary">
       {count}
     </Typography>
   </Button>
 )
 
-const TicketFilters = ({ rows, setFilteredRows }) => {
-  const [activeFilter, setActiveFilter] = useState(null)
+const TicketFilters = ({ rows, setFilteredRows}) => {
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const [activeFilter, setActiveFilter] = useState(searchParams.get('filter') || null)
   const [counts, setCounts] = useState({
     openTickets: 0,
     notAssigneds: 0,
@@ -42,24 +45,11 @@ const TicketFilters = ({ rows, setFilteredRows }) => {
   })
   const { t } = useTranslation('common')
 
-  // Calculate counts based on ticket statuses
-  useEffect(() => {
-    const newCounts = {
-      openTickets: rows.filter(ticket => !ticket.operatorOk && !ticket.technicOk && !ticket.qualityOk).length,
-      notAssigneds: rows.filter(ticket => !ticket.assignedToUserId).length,
-      openTransfers: rows.filter(ticket => ticket.transferRequested).length,
-      pendingMaterial: rows.filter(ticket => ticket.waitingForParts).length,
-      outSourceJobs: rows.filter(ticket => ticket.externalSupport).length,
-      chronicOnHold: rows.filter(ticket => ticket.chronic).length
-    }
-    setCounts(newCounts)
-  }, [rows])
-
   const filterConfigs = [
     {
       key: 'openTickets',
       text: t('Open'),
-      filter: ticket => !ticket.operatorOk && !ticket.technicOk && !ticket.qualityOk
+      filter: ticket => !ticket.closeTime
     },
     {
       key: 'notAssigneds',
@@ -88,20 +78,47 @@ const TicketFilters = ({ rows, setFilteredRows }) => {
     }
   ]
 
-  const handleFilterClick = filterKey => {
-    if (activeFilter === filterKey) {
+  useEffect(() => {
+    const newCounts = {
+      openTickets: rows.filter(ticket => !ticket.operatorOk && !ticket.technicOk && !ticket.qualityOk).length,
+      notAssigneds: rows.filter(ticket => !ticket.assignedToUserId).length,
+      openTransfers: rows.filter(ticket => ticket.transferRequested).length,
+      pendingMaterial: rows.filter(ticket => ticket.waitingForParts).length,
+      outSourceJobs: rows.filter(ticket => ticket.externalSupport).length,
+      chronicOnHold: rows.filter(ticket => ticket.chronic).length
+    }
+    setCounts(newCounts)
+  }, [rows])
+
+  useEffect(() => {
+    const filterFromUrl = searchParams.get('filter')
+    if (filterFromUrl) {
+      const config = filterConfigs.find(c => c.key === filterFromUrl)
+      if (config) {
+        setActiveFilter(filterFromUrl)
+        setFilteredRows(rows.filter(config.filter))
+      }
+    } else {
       setActiveFilter(null)
       setFilteredRows(rows)
+    }
+  }, [searchParams, rows])
+
+  const handleFilterClick = (filterKey) => {
+    if (activeFilter === filterKey) {
+      const params = new URLSearchParams(searchParams)
+      params.delete('filter')
+      router.push(`?${params.toString()}`)
     } else {
-      setActiveFilter(filterKey)
-      const config = filterConfigs.find(c => c.key === filterKey)
-      setFilteredRows(rows.filter(config.filter))
+      const params = new URLSearchParams(searchParams)
+      params.set('filter', filterKey)
+      router.push(`?${params.toString()}`)
     }
   }
 
   return (
     <Box sx={{ display: 'flex', flexWrap: 'wrap', mb: 4 }}>
-      {filterConfigs.map(config => (
+      {filterConfigs.map((config) => (
         <FilterButton
           key={config.key}
           text={config.text}
