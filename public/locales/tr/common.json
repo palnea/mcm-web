@@ -351,5 +351,7 @@
   "isInSale": "Satışta",
   "True": "Evet",
   "False": "Hayır",
-  "ticketCount": "Talep Sayısı"
+  "ticketCount": "Talep Sayısı",
+  "page": "Sayfa",
+  "rowsPerPage": "Sayfa Başı Satır"
 }
