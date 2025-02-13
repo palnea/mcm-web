@@ -29,6 +29,8 @@ import DetailModal, {
   priorityOptions
 } from '@components/pages/(dashboard)/ticket/DetailModal'
 import CustomTable from '@components/Table/CustomTable'
+import TicketFilters from '@components/pages/(dashboard)/ticket/TicketFilters'
+import { useRouter, useSearchParams } from 'next/navigation'
 
 export default function Page() {
   const [open, setOpen] = useState(false)
@@ -42,6 +44,7 @@ export default function Page() {
   const [detailModalOpen, setDetailModalOpen] = useState(false)
   const [selectedTicket, setSelectedTicket] = useState(null)
   const { t, i18n } = useTranslation('common')
+  const [filteredRows, setFilteredRows] = useState([])
 
   const [errors, setErrors] = useState({
     description: '',
@@ -96,6 +99,10 @@ export default function Page() {
   useEffect(() => {
     fetchData()
   }, [])
+
+  useEffect(() => {
+    setFilteredRows(rows)
+  }, [rows])
 
   const handleRowClick = row => {
     setSelectedTicket(row)
@@ -317,7 +324,11 @@ export default function Page() {
             {/*    <i className='tabler-plus' />*/}
             {/*  </IconButton>*/}
             {/*</div>*/}
-            <CustomTable rows={rows} columns={columns} rowProps={{ style: { cursor: 'pointer' } }} />
+            <TicketFilters
+              rows={rows}
+              setFilteredRows={setFilteredRows}
+            />
+            <CustomTable rows={filteredRows} columns={columns} rowProps={{ style: { cursor: 'pointer' } }} />
           </Card>
         </Grid>
       </Grid>

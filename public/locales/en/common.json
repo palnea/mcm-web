@@ -347,5 +347,7 @@
   "isInSale": "Is In Sale",
   "True": "Yes",
   "False": "No",
-  "ticketCount": "Ticket Count"
+  "ticketCount": "Ticket Count",
+  "page": "Page",
+  "rowsPerPage": "Rows Per Page"
 }

@@ -11,6 +11,7 @@ import CardContent from '@mui/material/CardContent'
 import Typography from '@mui/material/Typography'
 import Box from '@mui/material/Box'
 import { useTranslation } from 'next-i18next'
+import { useRouter } from 'next/navigation'
 
 export default function Page() {
   const theme = useTheme()
@@ -18,6 +19,7 @@ export default function Page() {
   const [monthlyChartData, setMonthlyChartData] = useState([])
   const [dashboardData, setDashboardData] = useState(null)
   const {t, i18n} = useTranslation('common')
+  const router = useRouter()
 
   const processTicketData = (tickets, days) => {
     const now = new Date()
@@ -80,42 +82,42 @@ export default function Page() {
       stats: dashboardData?.openTickets || 0,
       avatarColor: 'warning',
       avatarIcon: 'tabler:solution1',
-      route: '/tickets/open'
+      route: '/ticket?filter=openTickets'
     },
     {
       title: t('NotAssigned'),
       stats: dashboardData?.notAssigneds || 0,
       avatarColor: 'primary',
       avatarIcon: 'tabler:exception1',
-      route: '/tickets/unassigned'
+      route: '/ticket?filter=notAssigneds'
     },
     {
       title: t('TransferRequest'),
       stats: dashboardData?.openTransfers || 0,
       avatarColor: 'success',
       avatarIcon: 'tabler:swap',
-      route: '/transfers'
+      route: '/ticket?filter=openTransfers'
     },
     {
       title: t('WaitingForSpareParts'),
       stats: dashboardData?.pendingMaterial || 0,
       avatarColor: 'warning',
       avatarIcon: 'tabler:shoppingcart',
-      route: '/tickets/pending-material'
+      route: '/ticket?filter=pendingMaterial'
     },
     {
       title: t('ExternalSupport'),
       stats: dashboardData?.outSourceJobs || 0,
       avatarColor: 'error',
       avatarIcon: 'tabler:phone',
-      route: '/tickets/outsource'
+      route: '/ticket?filter=outSourceJobs'
     },
     {
       title: t('ChronicOnHold'),
       stats: dashboardData?.chronicOnHold || 0,
       avatarColor: 'error',
       avatarIcon: 'tabler:pushpino',
-      route: '/tickets/chronic'
+      route: '/ticket?filter=chronicOnHold'
     }
   ]
 
@@ -180,7 +182,7 @@ export default function Page() {
       {cardConfigs.map((card, index) => (
         <Grid key={index} item xs={12} sm={6} md={4}>
           <Box
-            onClick={() => console.log('clicked on a stats card')}
+            onClick={() => router.push(card.route)}
             style={{
               cursor: 'pointer',
               transition: theme.transitions.create(['box-shadow', 'transform'], {

@@ -1,7 +1,7 @@
 'use client'
 
 // React Imports
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 // Next Imports
 import { useRouter } from 'next/navigation'
@@ -47,6 +47,7 @@ const UserDropdown = () => {
   const router = useRouter()
   const { settings } = useSettings()
   const { t, i18n } = useTranslation('common');
+  const [userPhoto, setUserPhoto] = useState('/images/avatars/1.png')
 
   const handleDropdownOpen = () => {
     !open ? setOpen(true) : setOpen(false)
@@ -63,6 +64,17 @@ const UserDropdown = () => {
 
     setOpen(false)
   }
+
+  useEffect(() => {
+    updatePhoto();
+  }, []);
+
+  const updatePhoto = async () => {
+    const user = secureLocalStorage.getItem("user");
+    if (user) {
+      setUserPhoto(process.env.NEXT_PUBLIC_CONTENT_BASE_URL + '/' + user.photoUrl);
+    }
+  };
 
   const handleUserLogout = async () => {
     // Redirect to login page
@@ -86,7 +98,7 @@ const UserDropdown = () => {
         <Avatar
           ref={anchorRef}
           alt='John Doe'
-          src='/images/avatars/1.png'
+          src={userPhoto}
           onClick={handleDropdownOpen}
           className='cursor-pointer bs-[38px] is-[38px]'
         />
