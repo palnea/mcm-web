@@ -23,8 +23,7 @@ import secureLocalStorage from "react-secure-storage";
 
 // Hook Imports
 import { useSettings } from '@core/hooks/useSettings'
-import {useTranslation} from "react-i18next";
-
+import { useTranslation } from "react-i18next";
 
 // Styled component for badge content
 const BadgeContentSpan = styled('span')({
@@ -39,6 +38,8 @@ const BadgeContentSpan = styled('span')({
 const UserDropdown = () => {
   // States
   const [open, setOpen] = useState(false)
+  const [userData, setUserData] = useState(null)
+  const [userPhoto, setUserPhoto] = useState('/images/avatars/1.png')
 
   // Refs
   const anchorRef = useRef(null)
@@ -46,8 +47,7 @@ const UserDropdown = () => {
   // Hooks
   const router = useRouter()
   const { settings } = useSettings()
-  const { t, i18n } = useTranslation('common');
-  const [userPhoto, setUserPhoto] = useState('/images/avatars/1.png')
+  const { t, i18n } = useTranslation('common')
 
   const handleDropdownOpen = () => {
     !open ? setOpen(true) : setOpen(false)
@@ -66,25 +66,30 @@ const UserDropdown = () => {
   }
 
   useEffect(() => {
-    updatePhoto();
-  }, []);
-
-  const updatePhoto = async () => {
-    const user = secureLocalStorage.getItem("user");
-    if (user) {
-      setUserPhoto(process.env.NEXT_PUBLIC_CONTENT_BASE_URL + '/' + user.photoUrl);
+    const storedUser = secureLocalStorage.getItem("user")
+    if (storedUser) {
+      setUserData(storedUser)
+      console.log('stored User: ', storedUser)
+      if (storedUser.photoUrl) {
+        setUserPhoto(process.env.NEXT_PUBLIC_EXTERNAL_CONTENT_BASE_URL + '/' + storedUser.photoUrl)
+      } else if (storedUser.imageUrl) {
+        setUserPhoto(process.env.NEXT_PUBLIC_EXTERNAL_CONTENT_BASE_URL + '/' + storedUser.imageUrl)
+      }
     }
-  };
+  }, [])
 
   const handleUserLogout = async () => {
     // Redirect to login page
-    secureLocalStorage.removeItem("accessToken");
-    secureLocalStorage.removeItem("user");
+    secureLocalStorage.removeItem("accessToken")
+    secureLocalStorage.removeItem("user")
     // Set the authToken cookie
-    document.cookie = `authToken=; path=/; max-age=${60 * 60 * 24}; secure; SameSite=Strict;`;
+    document.cookie = `authToken=; path=/; max-age=${60 * 60 * 24}; secure; SameSite=Strict;`
 
     router.push('/login')
   }
+
+  const userName = userData?.name || userData?.username || userData?.fullName || "User"
+  const userEmail = userData?.email || ""
 
   return (
     <>
@@ -97,7 +102,7 @@ const UserDropdown = () => {
       >
         <Avatar
           ref={anchorRef}
-          alt='John Doe'
+          alt={userName}
           src={userPhoto}
           onClick={handleDropdownOpen}
           className='cursor-pointer bs-[38px] is-[38px]'
@@ -122,31 +127,15 @@ const UserDropdown = () => {
               <ClickAwayListener onClickAway={e => handleDropdownClose(e)}>
                 <MenuList>
                   <div className='flex items-center plb-2 pli-6 gap-2' tabIndex={-1}>
-                    <Avatar alt='John Doe' src='/images/avatars/1.png' />
+                    <Avatar alt={userName} src={userPhoto} />
                     <div className='flex items-start flex-col'>
                       <Typography className='font-medium' color='text.primary'>
-                        {secureLocalStorage.getItem("user") ? secureLocalStorage.getItem("user").username : "John Doe"}
+                        {userName}
                       </Typography>
-                      <Typography variant='caption'>{secureLocalStorage.getItem("user") ? secureLocalStorage.getItem("user").email : "test@example.com"}</Typography>
+                      <Typography variant='caption'>{userEmail}</Typography>
                     </div>
                   </div>
                   <Divider className='mlb-1' />
-                  {/*<MenuItem className='mli-2 gap-3' onClick={e => handleDropdownClose(e)}>
-                    <i className='tabler-user' />
-                    <Typography color='text.primary'>My Profile</Typography>
-                  </MenuItem>
-                  <MenuItem className='mli-2 gap-3' onClick={e => handleDropdownClose(e)}>
-                    <i className='tabler-settings' />
-                    <Typography color='text.primary'>Settings</Typography>
-                  </MenuItem>*/}
-                 {/* <MenuItem className='mli-2 gap-3' onClick={e => handleDropdownClose(e)}>
-                    <i className='tabler-currency-dollar' />
-                    <Typography color='text.primary'>Pricing</Typography>
-                  </MenuItem>*/}
-                  {/*<MenuItem className='mli-2 gap-3' onClick={e => handleDropdownClose(e)}>*/}
-                  {/*  <i className='tabler-help-circle' />*/}
-                  {/*  <Typography color='text.primary'>FAQ</Typography>*/}
-                  {/*</MenuItem>*/}
                   <div className='flex items-center plb-2 pli-3'>
                     <Button
                       fullWidth
