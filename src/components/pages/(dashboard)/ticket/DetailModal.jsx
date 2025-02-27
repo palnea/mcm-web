@@ -14,9 +14,10 @@ import { useTranslation } from 'react-i18next'
 
 // Priority options for tickets
 export const priorityOptions = [
-  { label: 'Low', value: 1, color: 'info' },
-  { label: 'Medium', value: 2, color: 'warning' },
-  { label: 'High', value: 3, color: 'error' }
+  { label: 'Low', value: 4, color: 'info' },
+  { label: 'Medium', value: 3, color: 'warning' },
+  { label: 'High', value: 2, color: 'error' },
+  { label: 'Urgent', value: 1, color: 'error' },
 ]
 
 // Status configurations with colors and icons
