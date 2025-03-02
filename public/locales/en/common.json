@@ -94,7 +94,7 @@
   "partCodes": "Part Codes",
   "selectSparePartCategory": "Select Spare Part Category",
   "selectCompany": "Select Company",
-  "expiryDate": "Expiry Date",
+  "expiryDate": "Guarantee Expiry Date",
   "partCodeName": "Part Code Name",
   "deleteSparePart": "Delete Spare Part",
   "deleteSparePartMessage": "Are you sure you want to delete spare part ",
