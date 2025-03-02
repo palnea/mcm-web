@@ -203,7 +203,7 @@ export default function Page() {
       <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} closeOnClick pauseOnHover />
 
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>{isEdit ? t("Edit Fault") : t("Create New Fault")}</DialogTitle>
+        <DialogTitle>{isEdit ? t("Edit Fault") : t("Create Fault")}</DialogTitle>
         <form
           noValidate
           autoComplete="off"

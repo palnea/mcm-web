@@ -23,10 +23,10 @@ const FooterContent = () => {
       <p>
         <span className='text-textSecondary'>{`© ${new Date().getFullYear()}, Made with `}</span>
         <span>{`❤️`}</span>
-        {/*<span className='text-textSecondary'>{` by `}</span>*/}
-        {/*<Link href='https://pixinvent.com' target='_blank' className='text-primary uppercase'>*/}
-        {/*  Pixinvent*/}
-        {/*</Link>*/}
+        <span className='text-textSecondary'>{` by `}</span>
+        <Link href='https://tsmart.ai/' target='_blank' className='text-primary'>
+          tsmart.ai
+        </Link>
       </p>
       {/*{!isBreakpointReached && (*/}
       {/*  <div className='flex items-center gap-4'>*/}

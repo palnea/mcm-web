@@ -348,7 +348,9 @@ export default function Page() {
       'yachtNotes',
       'createdDate',
       'updatedDate',
-      'ticketCount'
+      'ticketCount',
+      'documentUrl',
+      'company'
     ]) // Pass an array of keys to remove
     handleOpen(row.id)
   }

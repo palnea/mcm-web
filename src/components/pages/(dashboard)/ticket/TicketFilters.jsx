@@ -14,18 +14,45 @@ const FilterButton = ({ text, count, isActive, onClick }) => (
       alignItems: 'center',
       flex: 1,
       m: 1,
-      border: isActive ? '2px solid' : '1px solid',
-      borderColor: isActive ? 'primary.main' : 'divider',
+      border: 'none',
       borderRadius: 2,
+      margin: 5,
+      position: 'relative',
+      overflow: 'hidden',
+      background: isActive
+        ? 'linear-gradient(135deg, #1976d2 100%, rgba(25, 118, 210, 0.85) 0%)'
+        : 'background.paper',
+      boxShadow: isActive ? '0 4px 12px rgba(0, 0, 0, 0.1)' : 'none',
+      transform: isActive ? 'translateY(-2px)' : 'none',
+      transition: 'all 0.3s ease',
       '&:hover': {
-        borderColor: 'primary.main'
-      }
+        backgroundColor: !isActive ? 'rgba(0, 0, 0, 0.02)' : undefined,
+        transform: 'translateY(-2px)',
+        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)',
+      },
+
     }}
   >
-    <Typography variant="body2" color="textSecondary" mb={1}>
+    <Typography
+      variant="body2"
+      color={isActive ? 'white' : 'textSecondary'}
+      mb={1}
+      sx={{
+        fontWeight: isActive ? 600 : 400,
+        transition: 'all 0.3s ease',
+      }}
+    >
       {text}
     </Typography>
-    <Typography variant="h6" color="primary">
+    <Typography
+      variant="h6"
+      color={isActive ? 'white' : 'primary'}
+      sx={{
+        fontWeight: isActive ? 700 : 500,
+        fontSize: isActive ? '1.5rem' : '1.25rem',
+        transition: 'all 0.3s ease',
+      }}
+    >
       {count}
     </Typography>
   </Button>
